@@ -7,8 +7,8 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-primary/5" />
-        <div className="container mx-auto px-4 py-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-primary/5 pointer-events-none" />
+        <div className="container mx-auto px-4 py-8 relative z-10">
           <nav className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center">
@@ -17,19 +17,17 @@ export default function Home() {
               <span className="text-xl font-bold">LiveDrop</span>
             </div>
             <div className="flex items-center gap-4">
-              <Link href="/login">
-                <Button variant="ghost" size="sm">
-                  Log in
-                </Button>
-              </Link>
-              <Link href="/signup">
-                <Button size="sm">Get Started</Button>
-              </Link>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/login">Log in</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link href="/signup">Get Started</Link>
+              </Button>
             </div>
           </nav>
         </div>
 
-        <div className="container mx-auto px-4 py-24 md:py-32">
+        <div className="container mx-auto px-4 py-24 md:py-32 relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-8">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
               <span className="text-primary">Live photos.</span>
@@ -41,16 +39,12 @@ export default function Home() {
               snap photos, and watch them appear on the big screen instantly.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/signup">
-                <Button size="lg" className="w-full sm:w-auto">
-                  Host an Event
-                </Button>
-              </Link>
-              <Link href="/join">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                  Join with Code
-                </Button>
-              </Link>
+              <Button size="lg" className="w-full sm:w-auto" asChild>
+                <Link href="/signup">Host an Event</Link>
+              </Button>
+              <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
+                <Link href="/join">Join with Code</Link>
+              </Button>
             </div>
           </div>
         </div>
@@ -109,9 +103,9 @@ export default function Home() {
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
             Set up your first event in under a minute. No credit card required.
           </p>
-          <Link href="/signup">
-            <Button size="lg">Create Your First Event</Button>
-          </Link>
+          <Button size="lg" asChild>
+            <Link href="/signup">Create Your First Event</Link>
+          </Button>
         </div>
       </section>
 

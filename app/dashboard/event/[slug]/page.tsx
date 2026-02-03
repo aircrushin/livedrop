@@ -53,11 +53,11 @@ export default async function EventManagePage({ params }: Props) {
       <header className="border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/dashboard">
                 <ArrowLeft className="h-4 w-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center">
                 <Camera className="h-4 w-4 text-accent-foreground" />
@@ -107,12 +107,12 @@ export default async function EventManagePage({ params }: Props) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link href={liveUrl} target="_blank">
-                  <Button className="w-full">
+                <Button className="w-full" asChild>
+                  <Link href={liveUrl} target="_blank">
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Open Live View
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           </div>

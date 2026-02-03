@@ -74,16 +74,14 @@ export default async function DashboardPage() {
                     <code className="bg-secondary px-2 py-0.5 rounded">{event.slug}</code>
                   </div>
                   <div className="flex gap-2">
-                    <Link href={`/dashboard/event/${event.slug}`} className="flex-1">
-                      <Button variant="outline" className="w-full" size="sm">
-                        Manage
-                      </Button>
-                    </Link>
-                    <Link href={`/live/${event.slug}`} target="_blank">
-                      <Button variant="secondary" size="sm">
+                    <Button variant="outline" className="w-full flex-1" size="sm" asChild>
+                      <Link href={`/dashboard/event/${event.slug}`}>Manage</Link>
+                    </Button>
+                    <Button variant="secondary" size="sm" asChild>
+                      <Link href={`/live/${event.slug}`} target="_blank">
                         <ExternalLink className="h-4 w-4" />
-                      </Button>
-                    </Link>
+                      </Link>
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

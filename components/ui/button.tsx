@@ -1,19 +1,22 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { forwardRef, type ButtonHTMLAttributes } from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { forwardRef, type ComponentPropsWithoutRef, type ElementRef } from "react";
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ComponentPropsWithoutRef<"button"> {
   variant?: "default" | "secondary" | "outline" | "ghost" | "destructive";
   size?: "default" | "sm" | "lg" | "icon";
+  asChild?: boolean;
 }
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "default", size = "default", ...props }, ref) => {
+const Button = forwardRef<ElementRef<"button">, ButtonProps>(
+  ({ className, variant = "default", size = "default", asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button";
     return (
-      <button
+      <Comp
         className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
+          "inline-flex items-center justify-center whitespace-nowrap rounded-lg font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] cursor-pointer",
           {
             "bg-primary text-primary-foreground hover:bg-primary/90":
               variant === "default",
@@ -33,7 +36,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           },
           className
         )}
-        ref={ref}
+        ref={ref as React.Ref<HTMLButtonElement>}
         {...props}
       />
     );

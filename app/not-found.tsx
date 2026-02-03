@@ -15,12 +15,12 @@ export default function NotFound() {
             The page you&apos;re looking for doesn&apos;t exist or has been moved.
           </p>
         </div>
-        <Link href="/">
-          <Button>
+        <Button asChild>
+          <Link href="/">
             <Home className="h-4 w-4 mr-2" />
             Go Home
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
     </div>
   );
