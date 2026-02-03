@@ -1,36 +1,134 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LiveDrop
+
+Real-time event photo sharing platform. Create a live photo wall for your event - guests scan a QR code, snap photos, and watch them appear on the big screen instantly.
+
+## Features
+
+- **Zero-Friction Entry**: Guests scan a QR code and start taking photos immediately (anonymous auth)
+- **Real-time Gallery**: Photos appear on the projector view instantly via Supabase Realtime
+- **PWA Support**: Installable as a native-like app on mobile devices
+- **Host Dashboard**: Create events, generate QR codes, moderate photos
+- **Offline Resilience**: Built with service workers for reliable uploads
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Database**: Supabase (PostgreSQL)
+- **Storage**: Supabase Storage
+- **Real-time**: Supabase Realtime
+- **Auth**: Supabase Auth (Email + Anonymous)
+- **PWA**: Serwist (Service Workers)
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- A Supabase project
+
+### 1. Clone and Install
+
+```bash
+git clone <repo-url>
+cd livedrop
+npm install
+```
+
+### 2. Set up Supabase
+
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Go to SQL Editor and run the migration in `supabase/migrations/001_initial_schema.sql`
+3. Create a storage bucket named `event-photos` with:
+   - Public access enabled
+   - File size limit: 5MB
+   - Allowed MIME types: image/jpeg, image/png, image/webp, image/gif
+4. Run the storage policies in `supabase/storage_policies.sql`
+5. Enable Anonymous Sign-ins in Authentication > Settings > Auth Providers
+
+### 3. Configure Environment
+
+Copy the example env file and fill in your Supabase credentials:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Edit `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### 4. Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 5. Build for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build -- --webpack
+npm start
+```
 
-## Learn More
+## Usage
 
-To learn more about Next.js, take a look at the following resources:
+### As a Host
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Sign up with email/password
+2. Create a new event from the dashboard
+3. Share the QR code with guests
+4. Open the "Live View" on a projector or big screen
+5. Moderate photos from the event management page
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### As a Guest
 
-## Deploy on Vercel
+1. Scan the QR code or enter the event code
+2. The app will open in your browser (no download needed)
+3. Take photos using the camera interface
+4. Watch your photos appear on the big screen!
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+livedrop/
+├── app/
+│   ├── dashboard/        # Host dashboard
+│   ├── e/[slug]/         # Guest camera view
+│   ├── live/[slug]/      # Projector view
+│   ├── login/            # Auth pages
+│   ├── signup/
+│   └── join/             # Join event with code
+├── components/
+│   ├── ui/               # Reusable UI components
+│   └── pwa-install-prompt.tsx
+├── lib/
+│   ├── supabase/         # Supabase client & types
+│   └── utils.ts
+├── public/
+│   ├── icons/            # PWA icons
+│   └── manifest.json
+└── supabase/
+    └── migrations/       # Database schema
+```
+
+## Deployment
+
+Deploy to Vercel:
+
+```bash
+vercel
+```
+
+Make sure to add your environment variables in the Vercel dashboard.
+
+## License
+
+MIT
