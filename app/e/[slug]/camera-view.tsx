@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Camera, Zap, ZapOff, Check, Loader2, X, Upload } from "lucide-react";
+import { Camera, Zap, ZapOff, Check, Loader2, X, Upload, ImagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
@@ -21,6 +21,7 @@ export function CameraView({ event }: CameraViewProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -154,6 +155,10 @@ export function CameraView({ event }: CameraViewProps) {
     fileInputRef.current?.click();
   }
 
+  function triggerGallery() {
+    galleryInputRef.current?.click();
+  }
+
   if (!isAuthenticated) {
     return (
       <div className="fixed inset-0 bg-black flex items-center justify-center">
@@ -213,7 +218,7 @@ export function CameraView({ event }: CameraViewProps) {
         ) : (
           <div className="text-center text-white/40 p-8">
             <Camera className="h-16 w-16 mx-auto mb-4 opacity-50" />
-            <p className="text-lg">Tap the button below to take a photo</p>
+            <p className="text-lg">Take a photo or choose from gallery</p>
           </div>
         )}
       </div>
@@ -248,22 +253,46 @@ export function CameraView({ event }: CameraViewProps) {
             </Button>
           </>
         ) : (
-          <button
-            onClick={triggerCamera}
-            disabled={status !== "idle"}
-            className="h-20 w-20 rounded-full border-4 border-white flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all disabled:opacity-50"
-          >
-            <div className="h-14 w-14 rounded-full bg-white" />
-          </button>
+          <>
+            {/* Gallery button */}
+            <button
+              onClick={triggerGallery}
+              disabled={status !== "idle"}
+              className="h-14 w-14 rounded-full border-2 border-white/60 flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all disabled:opacity-50"
+            >
+              <ImagePlus className="h-6 w-6 text-white" />
+            </button>
+
+            {/* Camera button */}
+            <button
+              onClick={triggerCamera}
+              disabled={status !== "idle"}
+              className="h-20 w-20 rounded-full border-4 border-white flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all disabled:opacity-50"
+            >
+              <div className="h-14 w-14 rounded-full bg-white" />
+            </button>
+
+            {/* Spacer to center camera button */}
+            <div className="w-14" />
+          </>
         )}
       </div>
 
-      {/* Hidden file input */}
+      {/* Hidden file input for camera */}
       <input
         ref={fileInputRef}
         type="file"
         accept="image/*"
         capture="environment"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+
+      {/* Hidden file input for gallery */}
+      <input
+        ref={galleryInputRef}
+        type="file"
+        accept="image/*"
         onChange={handleFileSelect}
         className="hidden"
       />
