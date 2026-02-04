@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Loader2, X, Download, ZoomIn, ZoomOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Event, Photo } from "@/lib/supabase/types";
 
@@ -15,11 +15,59 @@ interface LiveGalleryProps {
 export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
   const [photos, setPhotos] = useState<Photo[]>(initialPhotos);
   const [isConnected, setIsConnected] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [imageScale, setImageScale] = useState(1);
   const supabase = createClient();
 
   const getImageUrl = (storagePath: string) => {
     const { data } = supabase.storage.from("event-photos").getPublicUrl(storagePath);
     return data.publicUrl;
+  };
+
+  const handleDownload = async (photo: Photo) => {
+    try {
+      const url = getImageUrl(photo.storage_path);
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `photo-${photo.id}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  };
+
+  const handleZoomIn = () => {
+    setImageScale((prev) => Math.min(prev + 0.25, 3));
+  };
+
+  const handleZoomOut = () => {
+    setImageScale((prev) => Math.max(prev - 0.25, 0.5));
+  };
+
+  const handleResetZoom = () => {
+    setImageScale(1);
+  };
+
+  const handlePreviousPhoto = () => {
+    if (!selectedPhoto) return;
+    const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
+    const previousIndex = currentIndex === photos.length - 1 ? 0 : currentIndex + 1;
+    setSelectedPhoto(photos[previousIndex]);
+    setImageScale(1);
+  };
+
+  const handleNextPhoto = () => {
+    if (!selectedPhoto) return;
+    const currentIndex = photos.findIndex((p) => p.id === selectedPhoto.id);
+    const nextIndex = currentIndex === 0 ? photos.length - 1 : currentIndex - 1;
+    setSelectedPhoto(photos[nextIndex]);
+    setImageScale(1);
   };
 
   useEffect(() => {
@@ -91,6 +139,39 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
     };
   }, [event.id, supabase]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedPhoto) return;
+
+      switch (e.key) {
+        case "Escape":
+          setSelectedPhoto(null);
+          setImageScale(1);
+          break;
+        case "ArrowLeft":
+          handlePreviousPhoto();
+          break;
+        case "ArrowRight":
+          handleNextPhoto();
+          break;
+        case "+":
+        case "=":
+          handleZoomIn();
+          break;
+        case "-":
+          handleZoomOut();
+          break;
+        case "0":
+          handleResetZoom();
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedPhoto]);
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
@@ -143,7 +224,10 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
                   }}
                   className="mb-4 break-inside-avoid"
                 >
-                  <div className="relative rounded-lg overflow-hidden bg-white/5">
+                  <div
+                    className="relative rounded-lg overflow-hidden bg-white/5 cursor-pointer hover:bg-white/10 transition-colors"
+                    onClick={() => setSelectedPhoto(photo)}
+                  >
                     <Image
                       src={getImageUrl(photo.storage_path)}
                       alt="Event photo"
@@ -159,6 +243,118 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
           </div>
         </div>
       )}
+
+      {/* Photo Preview Modal */}
+      <AnimatePresence>
+        {selectedPhoto && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+            onClick={() => setSelectedPhoto(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="relative w-full h-full flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
+                <div className="flex items-center gap-2">
+                  <span className="text-white/60 text-sm">
+                    {photos.findIndex((p) => p.id === selectedPhoto.id) + 1} / {photos.length}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleDownload(selectedPhoto)}
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                    title="Download"
+                  >
+                    <Download className="h-5 w-5 text-white" />
+                  </button>
+                  <button
+                    onClick={() => setSelectedPhoto(null)}
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                  >
+                    <X className="h-5 w-5 text-white" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Main Image Area */}
+              <div className="flex-1 flex items-center justify-center overflow-hidden p-4">
+                <div className="relative max-w-full max-h-full">
+                  <img
+                    src={getImageUrl(selectedPhoto.storage_path)}
+                    alt="Event photo"
+                    className="max-w-full max-h-[calc(100vh-200px)] object-contain transition-transform duration-200"
+                    style={{
+                      transform: `scale(${imageScale})`,
+                    }}
+                    onDoubleClick={handleResetZoom}
+                  />
+                </div>
+              </div>
+
+              {/* Controls */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                <div className="flex items-center justify-center gap-4">
+                  {/* Navigation */}
+                  <button
+                    onClick={handlePreviousPhoto}
+                    className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    disabled={photos.length <= 1}
+                  >
+                    <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  {/* Zoom Controls */}
+                  <div className="flex items-center gap-2 bg-white/10 rounded-full px-2 py-1">
+                    <button
+                      onClick={handleZoomOut}
+                      className="p-2 rounded-full hover:bg-white/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      disabled={imageScale <= 0.5}
+                    >
+                      <ZoomOut className="h-4 w-4 text-white" />
+                    </button>
+                    <span className="text-white text-sm min-w-[3rem] text-center">
+                      {Math.round(imageScale * 100)}%
+                    </span>
+                    <button
+                      onClick={handleZoomIn}
+                      className="p-2 rounded-full hover:bg-white/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      disabled={imageScale >= 3}
+                    >
+                      <ZoomIn className="h-4 w-4 text-white" />
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={handleNextPhoto}
+                    className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    disabled={photos.length <= 1}
+                  >
+                    <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Keyboard shortcuts hint */}
+                <p className="text-center text-white/40 text-xs mt-3">
+                  Press ESC to close • Double-click to reset zoom • Arrow keys to navigate
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Connection indicator pulse */}
       {isConnected && (

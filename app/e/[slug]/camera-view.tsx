@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Camera, Zap, ZapOff, Check, Loader2, X, Upload, ImagePlus } from "lucide-react";
+import { Camera, Zap, ZapOff, Check, Loader2, X, Upload, ImagePlus, MonitorPlay } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
@@ -175,14 +176,26 @@ export function CameraView({ event }: CameraViewProps) {
           <p className="text-xs text-white/60 uppercase tracking-wide">LiveDrop</p>
           <p className="font-medium">{event.name}</p>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setFlash(!flash)}
-          className="text-white hover:bg-white/10"
-        >
-          {flash ? <Zap className="h-5 w-5" /> : <ZapOff className="h-5 w-5" />}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className="text-white hover:bg-white/10"
+          >
+            <Link href={`/live/${event.slug}`}>
+              <MonitorPlay className="h-5 w-5" />
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setFlash(!flash)}
+            className="text-white hover:bg-white/10"
+          >
+            {flash ? <Zap className="h-5 w-5" /> : <ZapOff className="h-5 w-5" />}
+          </Button>
+        </div>
       </div>
 
       {/* Preview/Camera Area */}
