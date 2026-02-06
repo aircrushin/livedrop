@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
+import { compressImage, formatFileSize } from "@/lib/utils/image-compression";
 import type { Event } from "@/lib/supabase/types";
 
 interface CameraViewProps {
@@ -88,28 +89,40 @@ export function CameraView({ event }: CameraViewProps) {
 
       // Fetch the blob from preview URL
       const response = await fetch(previewUrl);
-      const blob = await response.blob();
+      const originalBlob = await response.blob();
 
       // Double-check file type before upload
-      if (!blob.type.startsWith("image/")) {
+      if (!originalBlob.type.startsWith("image/")) {
         throw new Error("Invalid file type. Only images are allowed.");
       }
 
-      // Generate unique filename
+      // Compress image before upload
+      // Create a temporary File from blob for compression
+      const tempFile = new File([originalBlob], "temp.jpg", { type: originalBlob.type });
+      
+      setProgress(10);
+      console.log(`Original size: ${formatFileSize(originalBlob.size)}`);
+      
+      const compressedBlob = await compressImage(tempFile, 1920, 1920, 0.85);
+      
+      console.log(`Compressed size: ${formatFileSize(compressedBlob.size)}`);
+      const compressionRatio = ((1 - compressedBlob.size / originalBlob.size) * 100).toFixed(1);
+      console.log(`Compression ratio: ${compressionRatio}%`);
+
+      // Generate unique filename (always use jpg since we compress to JPEG)
       const timestamp = Date.now();
-      const extension = blob.type.split("/")[1] || "jpg";
-      const fileName = `${event.slug}/${user.id}-${timestamp}.${extension}`;
+      const fileName = `${event.slug}/${user.id}-${timestamp}.jpg`;
 
       // Simulate progress
       const progressInterval = setInterval(() => {
         setProgress((prev) => Math.min(prev + 10, 90));
       }, 100);
 
-      // Upload to Supabase Storage
+      // Upload compressed image to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from("event-photos")
-        .upload(fileName, blob, {
-          contentType: blob.type,
+        .upload(fileName, compressedBlob, {
+          contentType: "image/jpeg",
           upsert: false,
         });
 
