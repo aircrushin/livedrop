@@ -7,6 +7,7 @@ import { Camera, ArrowLeft, ExternalLink, Tv, QrCode } from "lucide-react";
 import { QRCodeDisplay } from "./qr-code-display";
 import { PhotoGrid } from "./photo-grid";
 import { CopyButton } from "./copy-button";
+import { DownloadQRButton } from "./download-qr-button";
 import type { Event, Photo } from "@/lib/supabase/types";
 
 interface Props {
@@ -91,6 +92,7 @@ export default async function EventManagePage({ params }: Props) {
                       {guestUrl}
                     </code>
                     <CopyButton text={guestUrl} />
+                    <DownloadQRButton url={guestUrl} />
                   </div>
                 </div>
               </CardContent>

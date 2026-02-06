@@ -8,7 +8,7 @@ interface QRCodeDisplayProps {
 
 export function QRCodeDisplay({ url }: QRCodeDisplayProps) {
   return (
-    <div className="bg-white p-4 rounded-lg flex items-center justify-center">
+    <div className="qr-code-container bg-white p-4 rounded-lg flex items-center justify-center">
       <QRCode
         value={url}
         size={200}
