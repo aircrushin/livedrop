@@ -70,6 +70,25 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
     setImageScale(1);
   };
 
+  // Poll for photos every 5 seconds as a fallback
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      const { data } = await supabase
+        .from("photos")
+        .select("*")
+        .eq("event_id", event.id)
+        .eq("is_visible", true)
+        .order("created_at", { ascending: false });
+
+      if (data) {
+        setPhotos(data as Photo[]);
+      }
+    };
+
+    const interval = setInterval(fetchPhotos, 5000);
+    return () => clearInterval(interval);
+  }, [event.id, supabase]);
+
   useEffect(() => {
     // Subscribe to new photos
     const channel = supabase
