@@ -1,0 +1,108 @@
+{
+  "landing": {
+    "nav": {
+      "login": "登录",
+      "getStarted": "开始使用"
+    },
+    "hero": {
+      "title1": "实时照片。",
+      "title2": "即时回忆。",
+      "subtitle": "为您的活动创建实时照片墙。宾客扫描二维码，拍摄照片，即可在大屏幕上实时显示。",
+      "hostEvent": "举办活动",
+      "joinWithCode": "输入代码加入"
+    },
+    "features": {
+      "title": "工作原理",
+      "step1Title": "1. 创建并分享",
+      "step1Desc": "创建您的活动并与宾客分享二维码。无需下载应用。",
+      "step2Title": "2. 拍摄照片",
+      "step2Desc": "宾客打开网页应用，直接用手机拍照。",
+      "step3Title": "3. 见证魔法",
+      "step3Desc": "照片实时显示在投影屏幕上。纯粹的魔法。"
+    },
+    "useCases": {
+      "title": "适合任何活动",
+      "subtitle": "从私密聚会到大型庆典",
+      "weddings": "婚礼",
+      "conferences": "会议",
+      "parties": "派对",
+      "meetups": "聚会"
+    },
+    "cta": {
+      "title": "准备好创造回忆了吗？",
+      "subtitle": "不到一分钟即可设置您的第一个活动。无需信用卡。",
+      "button": "创建您的第一个活动"
+    },
+    "footer": {
+      "builtFor": "为 WaytoAGI 打造"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "欢迎回来",
+      "subtitle": "登录以管理您的活动",
+      "email": "邮箱",
+      "password": "密码",
+      "submit": "登录",
+      "noAccount": "还没有账户？",
+      "signUp": "注册"
+    },
+    "signup": {
+      "title": "创建账户",
+      "subtitle": "开始创建难忘的活动",
+      "email": "邮箱",
+      "password": "密码",
+      "submit": "创建账户",
+      "hasAccount": "已有账户？",
+      "signIn": "登录"
+    }
+  },
+  "dashboard": {
+    "title": "我的活动",
+    "createEvent": "创建活动",
+    "noEvents": "暂无活动",
+    "noEventsDesc": "创建您的第一个活动开始使用",
+    "viewEvent": "查看活动",
+    "signOut": "退出登录"
+  },
+  "event": {
+    "eventCode": "活动代码",
+    "guestUploadUrl": "宾客上传链接",
+    "projectorUrl": "投影仪链接",
+    "shareQr": "与宾客分享此二维码",
+    "downloadQr": "下载二维码",
+    "photos": "照片",
+    "noPhotos": "暂无照片",
+    "waitingForPhotos": "等待宾客上传照片...",
+    "delete": "删除",
+    "rename": "重命名",
+    "backToDashboard": "返回控制台"
+  },
+  "camera": {
+    "title": "拍摄照片",
+    "selectPhoto": "选择照片",
+    "takePhoto": "拍照",
+    "uploading": "上传中...",
+    "uploadSuccess": "照片已上传！",
+    "uploadError": "上传照片失败"
+  },
+  "join": {
+    "title": "加入活动",
+    "subtitle": "输入活动代码开始上传照片",
+    "eventCode": "活动代码",
+    "placeholder": "输入6位数代码",
+    "submit": "加入活动",
+    "notFound": "未找到活动"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "copy": "复制",
+    "copied": "已复制！",
+    "close": "关闭"
+  }
+}

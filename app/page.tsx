@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import { Camera, Zap, Users, QrCode } from "lucide-react";
 
 export default function Home() {
+  const t = useTranslations('landing');
+  
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -18,10 +21,10 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/login">Log in</Link>
+                <Link href="/login">{t('nav.login')}</Link>
               </Button>
               <Button size="sm" asChild>
-                <Link href="/signup">Get Started</Link>
+                <Link href="/signup">{t('nav.getStarted')}</Link>
               </Button>
             </div>
           </nav>
@@ -30,20 +33,19 @@ export default function Home() {
         <div className="container mx-auto px-4 py-24 md:py-32 relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-8">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-              <span className="text-primary">Live photos.</span>
+              <span className="text-primary">{t('hero.title1')}</span>
               <br />
-              <span className="text-accent">Instant memories.</span>
+              <span className="text-accent">{t('hero.title2')}</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto">
-              Create a live photo wall for your event. Guests scan a QR code, 
-              snap photos, and watch them appear on the big screen instantly.
+              {t('hero.subtitle')}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button size="lg" className="w-full sm:w-auto" asChild>
-                <Link href="/signup">Host an Event</Link>
+                <Link href="/signup">{t('hero.hostEvent')}</Link>
               </Button>
               <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
-                <Link href="/join">Join with Code</Link>
+                <Link href="/join">{t('hero.joinWithCode')}</Link>
               </Button>
             </div>
           </div>
@@ -54,23 +56,23 @@ export default function Home() {
       <section className="py-24 bg-card/50">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-16">
-            How it works
+            {t('features.title')}
           </h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <FeatureCard
               icon={<QrCode className="h-6 w-6" />}
-              title="1. Create & Share"
-              description="Create your event and share the QR code with guests. No app downloads required."
+              title={t('features.step1Title')}
+              description={t('features.step1Desc')}
             />
             <FeatureCard
               icon={<Camera className="h-6 w-6" />}
-              title="2. Snap Photos"
-              description="Guests open the web app and take photos directly from their phones."
+              title={t('features.step2Title')}
+              description={t('features.step2Desc')}
             />
             <FeatureCard
               icon={<Zap className="h-6 w-6" />}
-              title="3. Watch the Magic"
-              description="Photos appear on your projector screen in real-time. Pure magic."
+              title={t('features.step3Title')}
+              description={t('features.step3Desc')}
             />
           </div>
         </div>
@@ -80,16 +82,16 @@ export default function Home() {
       <section className="py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">
-            Perfect for any event
+            {t('useCases.title')}
           </h2>
           <p className="text-muted-foreground text-center mb-16 max-w-xl mx-auto">
-            From intimate gatherings to large celebrations
+            {t('useCases.subtitle')}
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            <UseCaseCard icon={<Users />} title="Weddings" />
-            <UseCaseCard icon={<Users />} title="Conferences" />
-            <UseCaseCard icon={<Users />} title="Parties" />
-            <UseCaseCard icon={<Users />} title="Meetups" />
+            <UseCaseCard icon={<Users />} title={t('useCases.weddings')} />
+            <UseCaseCard icon={<Users />} title={t('useCases.conferences')} />
+            <UseCaseCard icon={<Users />} title={t('useCases.parties')} />
+            <UseCaseCard icon={<Users />} title={t('useCases.meetups')} />
           </div>
         </div>
       </section>
@@ -98,13 +100,13 @@ export default function Home() {
       <section className="py-24 bg-gradient-to-t from-accent/10 to-transparent">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Ready to create memories?
+            {t('cta.title')}
           </h2>
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-            Set up your first event in under a minute. No credit card required.
+            {t('cta.subtitle')}
           </p>
           <Button size="lg" asChild>
-            <Link href="/signup">Create Your First Event</Link>
+            <Link href="/signup">{t('cta.button')}</Link>
           </Button>
         </div>
       </section>
@@ -120,7 +122,7 @@ export default function Home() {
               <span className="text-sm font-medium">LiveDrop</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Built for Builders Week
+              {t('footer.builtFor')}
             </p>
           </div>
         </div>

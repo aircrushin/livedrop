@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +11,7 @@ import { Camera, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SignUpPage() {
+  const t = useTranslations('auth.signup');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -74,8 +76,8 @@ export default function SignUpPage() {
 
         <Card>
           <CardHeader className="text-center">
-            <CardTitle>Create an account</CardTitle>
-            <CardDescription>Start hosting your live photo events</CardDescription>
+            <CardTitle>{t('title')}</CardTitle>
+            <CardDescription>{t('subtitle')}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -86,7 +88,7 @@ export default function SignUpPage() {
               )}
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium">
-                  Email
+                  {t('email')}
                 </label>
                 <Input
                   id="email"
@@ -99,7 +101,7 @@ export default function SignUpPage() {
               </div>
               <div className="space-y-2">
                 <label htmlFor="password" className="text-sm font-medium">
-                  Password
+                  {t('password')}
                 </label>
                 <Input
                   id="password"
@@ -127,7 +129,7 @@ export default function SignUpPage() {
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Account
+                {t('submit')}
               </Button>
             </form>
             <div className="relative my-6">
@@ -170,9 +172,9 @@ export default function SignUpPage() {
               Continue with Google
             </Button>
             <p className="text-center text-sm text-muted-foreground mt-6">
-              Already have an account?{" "}
+              {t('hasAccount')}{" "}
               <Link href="/login" className="text-accent hover:underline">
-                Sign in
+                {t('signIn')}
               </Link>
             </p>
           </CardContent>

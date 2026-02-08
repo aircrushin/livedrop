@@ -1,0 +1,108 @@
+{
+  "landing": {
+    "nav": {
+      "login": "Log in",
+      "getStarted": "Get Started"
+    },
+    "hero": {
+      "title1": "Live photos.",
+      "title2": "Instant memories.",
+      "subtitle": "Create a live photo wall for your event. Guests scan a QR code, snap photos, and watch them appear on the big screen instantly.",
+      "hostEvent": "Host an Event",
+      "joinWithCode": "Join with Code"
+    },
+    "features": {
+      "title": "How it works",
+      "step1Title": "1. Create & Share",
+      "step1Desc": "Create your event and share the QR code with guests. No app downloads required.",
+      "step2Title": "2. Snap Photos",
+      "step2Desc": "Guests open the web app and take photos directly from their phones.",
+      "step3Title": "3. Watch the Magic",
+      "step3Desc": "Photos appear on your projector screen in real-time. Pure magic."
+    },
+    "useCases": {
+      "title": "Perfect for any event",
+      "subtitle": "From intimate gatherings to large celebrations",
+      "weddings": "Weddings",
+      "conferences": "Conferences",
+      "parties": "Parties",
+      "meetups": "Meetups"
+    },
+    "cta": {
+      "title": "Ready to create memories?",
+      "subtitle": "Set up your first event in under a minute. No credit card required.",
+      "button": "Create Your First Event"
+    },
+    "footer": {
+      "builtFor": "Built for WaytoAGI"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to manage your events",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign In",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up"
+    },
+    "signup": {
+      "title": "Create your account",
+      "subtitle": "Start creating memorable events",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create Account",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in"
+    }
+  },
+  "dashboard": {
+    "title": "My Events",
+    "createEvent": "Create Event",
+    "noEvents": "No events yet",
+    "noEventsDesc": "Create your first event to get started",
+    "viewEvent": "View Event",
+    "signOut": "Sign Out"
+  },
+  "event": {
+    "eventCode": "Event Code",
+    "guestUploadUrl": "Guest Upload URL",
+    "projectorUrl": "Projector URL",
+    "shareQr": "Share this QR code with guests",
+    "downloadQr": "Download QR",
+    "photos": "Photos",
+    "noPhotos": "No photos yet",
+    "waitingForPhotos": "Waiting for guests to upload photos...",
+    "delete": "Delete",
+    "rename": "Rename",
+    "backToDashboard": "Back to Dashboard"
+  },
+  "camera": {
+    "title": "Take a Photo",
+    "selectPhoto": "Select Photo",
+    "takePhoto": "Take Photo",
+    "uploading": "Uploading...",
+    "uploadSuccess": "Photo uploaded!",
+    "uploadError": "Failed to upload photo"
+  },
+  "join": {
+    "title": "Join an Event",
+    "subtitle": "Enter your event code to start uploading photos",
+    "eventCode": "Event Code",
+    "placeholder": "Enter 6-digit code",
+    "submit": "Join Event",
+    "notFound": "Event not found"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "close": "Close"
+  }
+}
