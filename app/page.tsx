@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { Camera, Zap, Users, QrCode } from "lucide-react";
 
 export default function Home() {
@@ -20,6 +21,7 @@ export default function Home() {
               <span className="text-xl font-bold">LiveDrop</span>
             </div>
             <div className="flex items-center gap-4">
+              <LanguageSwitcher />
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/login">{t('nav.login')}</Link>
               </Button>
