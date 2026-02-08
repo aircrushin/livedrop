@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Loader2, X, Download, ZoomIn, ZoomOut } from "lucide-react";
@@ -13,6 +14,7 @@ interface LiveGalleryProps {
 }
 
 export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
+  const t = useTranslations('live');
   const [photos, setPhotos] = useState<Photo[]>(initialPhotos);
   const [isConnected, setIsConnected] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
@@ -212,7 +214,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
               }`}
             />
             <span className="text-sm text-white/60">
-              {isConnected ? "Live" : "Connecting..."}
+              {isConnected ? t('live') : t('connecting')}
             </span>
           </div>
         </div>
@@ -222,8 +224,8 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
       {photos.length === 0 ? (
         <div className="min-h-screen flex flex-col items-center justify-center text-white/40">
           <Camera className="h-24 w-24 mb-6 opacity-30" />
-          <p className="text-2xl font-medium mb-2">Waiting for photos...</p>
-          <p className="text-lg">Guests can scan the QR code to start sharing</p>
+          <p className="text-2xl font-medium mb-2">{t('waitingForPhotos')}</p>
+          <p className="text-lg">{t('scanPrompt')}</p>
         </div>
       ) : (
         <div className="pt-24 pb-8 px-4">
@@ -291,7 +293,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
                   <button
                     onClick={() => handleDownload(selectedPhoto)}
                     className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                    title="Download"
+                    title={t('download')}
                   >
                     <Download className="h-5 w-5 text-white" />
                   </button>
@@ -367,7 +369,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
 
                 {/* Keyboard shortcuts hint */}
                 <p className="text-center text-white/40 text-xs mt-3">
-                  Press ESC to close • Double-click to reset zoom • Arrow keys to navigate
+                  {t('keyboardHints')}
                 </p>
               </div>
             </motion.div>
@@ -383,7 +385,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
             </span>
-            <span className="text-xs text-white/60">{photos.length} photos</span>
+            <span className="text-xs text-white/60">{photos.length} {t('photos')}</span>
           </div>
         </div>
       )}

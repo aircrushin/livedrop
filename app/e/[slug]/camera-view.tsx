@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useTranslations } from 'next-intl';
 import { Camera, Zap, ZapOff, Check, Loader2, X, Upload, ImagePlus, MonitorPlay } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,8 @@ interface CameraViewProps {
 type UploadStatus = "idle" | "uploading" | "success" | "error";
 
 export function CameraView({ event }: CameraViewProps) {
+  const t = useTranslations('camera');
+  const tCommon = useTranslations('common');
   const [status, setStatus] = useState<UploadStatus>("idle");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
@@ -35,7 +38,7 @@ export function CameraView({ event }: CameraViewProps) {
         const { error } = await supabase.auth.signInAnonymously();
         if (error) {
           console.error("Anonymous auth failed:", error);
-          setError("Could not connect. Please refresh the page.");
+          setError(t('connectError'));
           return;
         }
       }
@@ -52,7 +55,7 @@ export function CameraView({ event }: CameraViewProps) {
     // Validate file type - must be an image
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/heic", "image/heif"];
     if (!file.type.startsWith("image/") && !allowedTypes.some(type => file.type === type)) {
-      setError("Please select an image file (JPEG, PNG, GIF, WebP, or HEIC)");
+      setError(t('invalidFileType'));
       e.target.value = "";
       return;
     }
@@ -60,7 +63,7 @@ export function CameraView({ event }: CameraViewProps) {
     // Validate file size (max 10MB)
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      setError("Image is too large. Maximum size is 10MB.");
+      setError(t('fileTooLarge'));
       e.target.value = "";
       return;
     }
@@ -229,7 +232,7 @@ export function CameraView({ event }: CameraViewProps) {
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <p className="text-white/60 text-sm mt-2">Uploading...</p>
+                <p className="text-white/60 text-sm mt-2">{t('uploading')}</p>
               </div>
             )}
             {status === "success" && (
@@ -237,14 +240,14 @@ export function CameraView({ event }: CameraViewProps) {
                 <div className="h-16 w-16 rounded-full bg-green-500 flex items-center justify-center mb-4">
                   <Check className="h-8 w-8 text-white" />
                 </div>
-                <p className="text-white font-medium">Photo uploaded!</p>
+                <p className="text-white font-medium">{t('uploadSuccess')}</p>
               </div>
             )}
           </div>
         ) : (
           <div className="text-center text-white/40 p-8">
             <Camera className="h-16 w-16 mx-auto mb-4 opacity-50" />
-            <p className="text-lg">Take a photo or choose from gallery</p>
+            <p className="text-lg">{t('prompt')}</p>
           </div>
         )}
       </div>
@@ -267,7 +270,7 @@ export function CameraView({ event }: CameraViewProps) {
               className="text-white hover:bg-white/10"
             >
               <X className="h-6 w-6 mr-2" />
-              Cancel
+              {tCommon('cancel')}
             </Button>
             <Button
               size="lg"
@@ -275,7 +278,7 @@ export function CameraView({ event }: CameraViewProps) {
               className="bg-accent text-accent-foreground hover:bg-accent/90"
             >
               <Upload className="h-6 w-6 mr-2" />
-              Upload
+              {t('upload')}
             </Button>
           </>
         ) : (

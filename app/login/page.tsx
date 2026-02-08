@@ -116,7 +116,7 @@ export default function LoginPage() {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+                <span className="bg-card px-2 text-muted-foreground">{t('orContinueWith')}</span>
               </div>
             </div>
             <Button
@@ -148,7 +148,7 @@ export default function LoginPage() {
                   />
                 </svg>
               )}
-              Continue with Google
+              {t('continueWithGoogle')}
             </Button>
             <p className="text-center text-sm text-muted-foreground mt-6">
               {t('noAccount')}{" "}

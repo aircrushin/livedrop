@@ -40,7 +40,7 @@ export default function SignUpPage() {
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t('passwordsMismatch'));
       return;
     }
 
@@ -115,7 +115,7 @@ export default function SignUpPage() {
               </div>
               <div className="space-y-2">
                 <label htmlFor="confirmPassword" className="text-sm font-medium">
-                  Confirm Password
+                  {t('confirmPassword')}
                 </label>
                 <Input
                   id="confirmPassword"
@@ -137,7 +137,7 @@ export default function SignUpPage() {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+                <span className="bg-card px-2 text-muted-foreground">{t('orContinueWith')}</span>
               </div>
             </div>
             <Button
@@ -169,7 +169,7 @@ export default function SignUpPage() {
                   />
                 </svg>
               )}
-              Continue with Google
+              {t('continueWithGoogle')}
             </Button>
             <p className="text-center text-sm text-muted-foreground mt-6">
               {t('hasAccount')}{" "}

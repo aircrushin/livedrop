@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Camera, Home } from "lucide-react";
+import { getTranslations } from 'next-intl/server';
 
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getTranslations('notFound');
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
       <div className="text-center space-y-6">
@@ -10,15 +13,15 @@ export default function NotFound() {
           <Camera className="h-10 w-10 text-accent" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold mb-2">Page Not Found</h1>
+          <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
           <p className="text-muted-foreground">
-            The page you&apos;re looking for doesn&apos;t exist or has been moved.
+            {t('description')}
           </p>
         </div>
         <Button asChild>
           <Link href="/">
             <Home className="h-4 w-4 mr-2" />
-            Go Home
+            {t('goHome')}
           </Link>
         </Button>
       </div>

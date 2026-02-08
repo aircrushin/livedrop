@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +16,8 @@ interface RenameEventModalProps {
 }
 
 export function RenameEventModal({ eventId, currentName, onClose }: RenameEventModalProps) {
+  const t = useTranslations('dashboard');
+  const tCommon = useTranslations('common');
   const [newName, setNewName] = useState(currentName);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -24,7 +27,7 @@ export function RenameEventModal({ eventId, currentName, onClose }: RenameEventM
     e.preventDefault();
 
     if (!newName.trim()) {
-      setError("Event name is required");
+      setError(t('eventNameRequired'));
       return;
     }
 
@@ -63,7 +66,7 @@ export function RenameEventModal({ eventId, currentName, onClose }: RenameEventM
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Edit2 className="h-5 w-5" />
-            Rename Event
+            {t('renameEvent')}
           </CardTitle>
           <Button
             variant="ghost"
@@ -82,7 +85,7 @@ export function RenameEventModal({ eventId, currentName, onClose }: RenameEventM
             )}
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm font-medium">
-                Event Name
+                {t('eventName')}
               </label>
               <Input
                 id="name"
@@ -101,11 +104,11 @@ export function RenameEventModal({ eventId, currentName, onClose }: RenameEventM
                 className="flex-1"
                 onClick={onClose}
               >
-                Cancel
+                {tCommon('cancel')}
               </Button>
               <Button type="submit" className="flex-1" disabled={loading || !newName.trim()}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Rename
+                {t('rename')}
               </Button>
             </div>
           </form>

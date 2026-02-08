@@ -45,25 +45,51 @@
       "password": "密码",
       "submit": "登录",
       "noAccount": "还没有账户？",
-      "signUp": "注册"
+      "signUp": "注册",
+      "orContinueWith": "或通过以下方式继续",
+      "continueWithGoogle": "使用 Google 继续"
     },
     "signup": {
       "title": "创建账户",
       "subtitle": "开始创建难忘的活动",
       "email": "邮箱",
       "password": "密码",
+      "confirmPassword": "确认密码",
       "submit": "创建账户",
       "hasAccount": "已有账户？",
-      "signIn": "登录"
+      "signIn": "登录",
+      "orContinueWith": "或通过以下方式继续",
+      "continueWithGoogle": "使用 Google 继续",
+      "passwordsMismatch": "两次输入的密码不一致"
     }
   },
   "dashboard": {
-    "title": "我的活动",
+    "title": "你的活动",
+    "subtitle": "管理你的实时照片活动",
     "createEvent": "创建活动",
     "noEvents": "暂无活动",
-    "noEventsDesc": "创建您的第一个活动开始使用",
+    "noEventsDesc": "创建你的第一个活动，开始收集照片",
     "viewEvent": "查看活动",
-    "signOut": "退出登录"
+    "signOut": "退出登录",
+    "code": "代码：",
+    "manage": "管理",
+    "rename": "重命名",
+    "delete": "删除",
+    "created": "创建于",
+    "newEvent": "新活动",
+    "createNewEvent": "创建新活动",
+    "eventName": "活动名称",
+    "eventNamePlaceholder": "例如 Sarah 的婚礼",
+    "mustBeLoggedIn": "请先登录",
+    "renameEvent": "重命名活动",
+    "newEventNamePlaceholder": "输入新的活动名称",
+    "eventNameRequired": "活动名称不能为空",
+    "deleteEvent": "删除活动",
+    "deleteWarning": "此操作无法撤销。这将永久删除该活动",
+    "deleteWarningPhotos": "及其所有照片。",
+    "typeToConfirm": "输入以下内容以确认：",
+    "confirmError": "请正确输入活动名称以确认删除",
+    "deleteEventButton": "删除活动"
   },
   "event": {
     "eventCode": "活动代码",
@@ -72,11 +98,23 @@
     "shareQr": "与宾客分享此二维码",
     "downloadQr": "下载二维码",
     "photos": "照片",
+    "photosCount": "照片 ({count})",
     "noPhotos": "暂无照片",
     "waitingForPhotos": "等待宾客上传照片...",
     "delete": "删除",
     "rename": "重命名",
-    "backToDashboard": "返回控制台"
+    "backToDashboard": "返回控制台",
+    "shareWithGuests": "分享给宾客",
+    "shareDesc": "宾客扫描此二维码即可加入并上传照片",
+    "guestUrl": "宾客链接",
+    "projectorView": "投影视图",
+    "projectorDesc": "在大屏幕上打开此页面",
+    "openLiveView": "打开实时视图",
+    "photosDesc": "点击照片可将其从实时视图中隐藏",
+    "noPhotosMessage": "暂无照片。将二维码分享给宾客，开始收集照片吧！",
+    "hide": "隐藏",
+    "show": "显示",
+    "confirmDeletePhoto": "确定要删除这张照片吗？"
   },
   "camera": {
     "title": "拍摄照片",
@@ -84,15 +122,42 @@
     "takePhoto": "拍照",
     "uploading": "上传中...",
     "uploadSuccess": "照片已上传！",
-    "uploadError": "上传照片失败"
+    "uploadError": "上传照片失败",
+    "prompt": "拍摄照片或从相册中选择",
+    "upload": "上传",
+    "connectError": "无法连接，请刷新页面。",
+    "invalidFileType": "请选择图片文件（JPEG、PNG、GIF、WebP 或 HEIC）",
+    "fileTooLarge": "图片太大，最大不超过 10MB。"
   },
   "join": {
     "title": "加入活动",
-    "subtitle": "输入活动代码开始上传照片",
+    "subtitle": "输入活动代码开始分享照片",
     "eventCode": "活动代码",
-    "placeholder": "输入6位数代码",
+    "placeholder": "例如 sarahs-wedding",
     "submit": "加入活动",
-    "notFound": "未找到活动"
+    "notFound": "未找到活动",
+    "hostPrompt": "想举办自己的活动？",
+    "signUp": "注册"
+  },
+  "live": {
+    "waitingForPhotos": "等待照片中...",
+    "scanPrompt": "宾客可以扫描二维码开始分享",
+    "live": "直播",
+    "connecting": "连接中...",
+    "photos": "张照片",
+    "download": "下载",
+    "keyboardHints": "按 ESC 关闭 • 双击重置缩放 • 方向键导航"
+  },
+  "notFound": {
+    "title": "页面未找到",
+    "description": "您访问的页面不存在或已被移动。",
+    "goHome": "返回首页"
+  },
+  "pwa": {
+    "installTitle": "安装 LiveDrop",
+    "installDesc": "添加到主屏幕以获得最佳体验",
+    "iosInstallDesc": "点击分享按钮，然后选择「添加到主屏幕」",
+    "install": "安装"
   },
   "common": {
     "loading": "加载中...",

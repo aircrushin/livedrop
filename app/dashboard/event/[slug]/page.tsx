@@ -1,5 +1,6 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from 'next-intl/server';
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +17,7 @@ interface Props {
 
 export default async function EventManagePage({ params }: Props) {
   const { slug } = await params;
+  const t = await getTranslations('event');
   const supabase = await createClient();
   
   const { data: { user } } = await supabase.auth.getUser();
@@ -77,16 +79,16 @@ export default async function EventManagePage({ params }: Props) {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <QrCode className="h-5 w-5" />
-                  Share with Guests
+                  {t('shareWithGuests')}
                 </CardTitle>
                 <CardDescription>
-                  Guests scan this code to join and upload photos
+                  {t('shareDesc')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <QRCodeDisplay url={guestUrl} />
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Guest URL</label>
+                  <label className="text-sm font-medium">{t('guestUrl')}</label>
                   <div className="flex items-center gap-2">
                     <code className="flex-1 text-xs bg-secondary p-2 rounded truncate">
                       {guestUrl}
@@ -102,17 +104,17 @@ export default async function EventManagePage({ params }: Props) {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Tv className="h-5 w-5" />
-                  Projector View
+                  {t('projectorView')}
                 </CardTitle>
                 <CardDescription>
-                  Open this on your big screen
+                  {t('projectorDesc')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Button className="w-full" asChild>
                   <Link href={liveUrl} target="_blank">
                     <ExternalLink className="h-4 w-4 mr-2" />
-                    Open Live View
+                    {t('openLiveView')}
                   </Link>
                 </Button>
               </CardContent>
@@ -123,9 +125,9 @@ export default async function EventManagePage({ params }: Props) {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Photos ({photos?.length || 0})</CardTitle>
+                <CardTitle>{t('photos')} ({photos?.length || 0})</CardTitle>
                 <CardDescription>
-                  Click on a photo to hide it from the live view
+                  {t('photosDesc')}
                 </CardDescription>
               </CardHeader>
               <CardContent>

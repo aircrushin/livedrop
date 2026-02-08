@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Trash2, Loader2 } from "lucide-react";
@@ -17,6 +18,7 @@ interface PhotoGridProps {
 export function PhotoGrid({ photos, eventId, eventSlug }: PhotoGridProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const router = useRouter();
+  const t = useTranslations('event');
   const supabase = createClient();
 
   const getImageUrl = (storagePath: string) => {
@@ -37,7 +39,7 @@ export function PhotoGrid({ photos, eventId, eventSlug }: PhotoGridProps) {
   }
 
   async function deletePhoto(photo: Photo) {
-    if (!confirm("Are you sure you want to delete this photo?")) return;
+    if (!confirm(t('confirmDeletePhoto'))) return;
     
     setLoading(photo.id);
     
@@ -59,7 +61,7 @@ export function PhotoGrid({ photos, eventId, eventSlug }: PhotoGridProps) {
   if (photos.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
-        <p>No photos yet. Share the QR code with guests to start collecting!</p>
+        <p>{t('noPhotosMessage')}</p>
       </div>
     );
   }
@@ -89,7 +91,7 @@ export function PhotoGrid({ photos, eventId, eventSlug }: PhotoGridProps) {
                   variant="secondary"
                   size="icon"
                   onClick={() => toggleVisibility(photo)}
-                  title={photo.is_visible ? "Hide" : "Show"}
+                  title={photo.is_visible ? t('hide') : t('show')}
                 >
                   {photo.is_visible ? (
                     <EyeOff className="h-4 w-4" />
@@ -101,7 +103,7 @@ export function PhotoGrid({ photos, eventId, eventSlug }: PhotoGridProps) {
                   variant="destructive"
                   size="icon"
                   onClick={() => deletePhoto(photo)}
-                  title="Delete"
+                  title={t('delete')}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
-import { X, Download, Share } from "lucide-react";
+import { X, Download } from "lucide-react";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -14,6 +15,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function PWAInstallPrompt() {
+  const t = useTranslations('pwa');
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -79,20 +81,18 @@ export function PWAInstallPrompt() {
           <Download className="h-6 w-6 text-accent-foreground" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-medium">Install LiveDrop</p>
+          <p className="font-medium">{t('installTitle')}</p>
           {isIOS ? (
-            <p className="text-sm text-muted-foreground">
-              Tap <Share className="h-4 w-4 inline mx-1" /> then &quot;Add to Home Screen&quot;
-            </p>
+            <p className="text-sm text-muted-foreground">{t('iosInstallDesc')}</p>
           ) : (
             <p className="text-sm text-muted-foreground">
-              Add to your home screen for the best experience
+              {t('installDesc')}
             </p>
           )}
         </div>
         {!isIOS && deferredPrompt && (
           <Button size="sm" onClick={handleInstall}>
-            Install
+            {t('install')}
           </Button>
         )}
         <Button variant="ghost" size="icon" onClick={handleDismiss}>

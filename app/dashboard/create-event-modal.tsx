@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +11,8 @@ import { createClient } from "@/lib/supabase/client";
 import { generateSlug } from "@/lib/utils";
 
 export function CreateEventModal() {
+  const t = useTranslations('dashboard');
+  const tCommon = useTranslations('common');
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,7 +28,7 @@ export function CreateEventModal() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      setError("You must be logged in");
+      setError(t('mustBeLoggedIn'));
       setLoading(false);
       return;
     }
@@ -55,7 +58,7 @@ export function CreateEventModal() {
     return (
       <Button onClick={() => setIsOpen(true)}>
         <Plus className="h-4 w-4 mr-2" />
-        New Event
+        {t('newEvent')}
       </Button>
     );
   }
@@ -68,7 +71,7 @@ export function CreateEventModal() {
       />
       <Card className="relative w-full max-w-md animate-in">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Create New Event</CardTitle>
+          <CardTitle>{t('createNewEvent')}</CardTitle>
           <Button
             variant="ghost"
             size="icon"
@@ -86,7 +89,7 @@ export function CreateEventModal() {
             )}
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm font-medium">
-                Event Name
+                {t('eventName')}
               </label>
               <Input
                 id="name"
@@ -105,11 +108,11 @@ export function CreateEventModal() {
                 className="flex-1"
                 onClick={() => setIsOpen(false)}
               >
-                Cancel
+                {tCommon('cancel')}
               </Button>
               <Button type="submit" className="flex-1" disabled={loading || !name}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Event
+                {t('createEvent')}
               </Button>
             </div>
           </form>

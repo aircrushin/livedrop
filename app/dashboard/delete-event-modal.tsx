@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, X, Loader2 } from "lucide-react";
@@ -14,6 +15,8 @@ interface DeleteEventModalProps {
 }
 
 export function DeleteEventModal({ eventId, eventName, onClose }: DeleteEventModalProps) {
+  const t = useTranslations('dashboard');
+  const tCommon = useTranslations('common');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [confirmText, setConfirmText] = useState("");
@@ -21,7 +24,7 @@ export function DeleteEventModal({ eventId, eventName, onClose }: DeleteEventMod
 
   async function handleDelete() {
     if (confirmText !== eventName) {
-      setError("Please type the event name correctly to confirm deletion");
+      setError(t('confirmError'));
       return;
     }
 
@@ -30,7 +33,6 @@ export function DeleteEventModal({ eventId, eventName, onClose }: DeleteEventMod
 
     const supabase = createClient();
 
-    // Delete all photos first (cascade delete will handle this, but we need to delete from storage)
     const { data: photos } = await supabase
       .from("photos")
       .select("storage_path")
@@ -41,7 +43,6 @@ export function DeleteEventModal({ eventId, eventName, onClose }: DeleteEventMod
       await supabase.storage.from("event-photos").remove(storagePaths);
     }
 
-    // Delete the event
     const { error: deleteError } = await supabase
       .from("events")
       .delete()
@@ -67,7 +68,7 @@ export function DeleteEventModal({ eventId, eventName, onClose }: DeleteEventMod
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-destructive">
             <AlertTriangle className="h-5 w-5" />
-            Delete Event
+            {t('deleteEvent')}
           </CardTitle>
           <Button
             variant="ghost"
@@ -86,12 +87,12 @@ export function DeleteEventModal({ eventId, eventName, onClose }: DeleteEventMod
             )}
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">
-                This action cannot be undone. This will permanently delete the event
+                {t('deleteWarning')}
                 <span className="font-semibold text-foreground"> &quot;{eventName}&quot; </span>
-                and all its photos.
+                {t('deleteWarningPhotos')}
               </p>
               <p className="text-sm font-medium">
-                Type <code className="bg-secondary px-1.5 py-0.5 rounded">{eventName}</code> to confirm:
+                {t('typeToConfirm')} <code className="bg-secondary px-1.5 py-0.5 rounded">{eventName}</code>
               </p>
               <input
                 type="text"
@@ -108,7 +109,7 @@ export function DeleteEventModal({ eventId, eventName, onClose }: DeleteEventMod
                 className="flex-1"
                 onClick={onClose}
               >
-                Cancel
+                {tCommon('cancel')}
               </Button>
               <Button 
                 type="button" 
@@ -118,7 +119,7 @@ export function DeleteEventModal({ eventId, eventName, onClose }: DeleteEventMod
                 onClick={handleDelete}
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Delete Event
+                {t('deleteEvent')}
               </Button>
             </div>
           </div>

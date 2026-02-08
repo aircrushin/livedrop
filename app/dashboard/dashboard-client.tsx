@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Camera, ExternalLink, Edit2, Trash2, MoreVertical } from "lucide-react";
@@ -24,6 +25,8 @@ interface DashboardClientProps {
 }
 
 export function DashboardClient({ events, userEmail }: DashboardClientProps) {
+  const t = useTranslations('dashboard');
+  const tCommon = useTranslations('common');
   const [renameEvent, setRenameEvent] = useState<Event | null>(null);
   const [deleteEvent, setDeleteEvent] = useState<Event | null>(null);
 
@@ -51,8 +54,8 @@ export function DashboardClient({ events, userEmail }: DashboardClientProps) {
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold">Your Events</h1>
-            <p className="text-muted-foreground">Manage your live photo events</p>
+            <h1 className="text-2xl font-bold">{t('title')}</h1>
+            <p className="text-muted-foreground">{t('subtitle')}</p>
           </div>
           <CreateEventModal />
         </div>
@@ -68,7 +71,7 @@ export function DashboardClient({ events, userEmail }: DashboardClientProps) {
                         {event.name}
                       </CardTitle>
                       <CardDescription>
-                        Created {formatDate(event.created_at)}
+                        {t('created')} {formatDate(event.created_at)}
                       </CardDescription>
                     </div>
                     <DropdownMenu>
@@ -80,14 +83,14 @@ export function DashboardClient({ events, userEmail }: DashboardClientProps) {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => setRenameEvent(event)}>
                           <Edit2 className="h-4 w-4 mr-2" />
-                          Rename
+                          {t('rename')}
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                           onClick={() => setDeleteEvent(event)}
                           className="text-destructive focus:text-destructive"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
+                          {tCommon('delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -95,12 +98,12 @@ export function DashboardClient({ events, userEmail }: DashboardClientProps) {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="text-sm text-muted-foreground">
-                    <span className="font-medium text-foreground">Code:</span>{" "}
+                    <span className="font-medium text-foreground">{t('code')}</span>{" "}
                     <code className="bg-secondary px-2 py-0.5 rounded">{event.slug}</code>
                   </div>
                   <div className="flex gap-2">
                     <Button variant="outline" className="w-full flex-1" size="sm" asChild>
-                      <Link href={`/dashboard/event/${event.slug}`}>Manage</Link>
+                      <Link href={`/dashboard/event/${event.slug}`}>{t('manage')}</Link>
                     </Button>
                     <Button variant="secondary" size="sm" asChild>
                       <Link href={`/live/${event.slug}`} target="_blank">
@@ -118,9 +121,9 @@ export function DashboardClient({ events, userEmail }: DashboardClientProps) {
               <div className="h-16 w-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-4">
                 <Camera className="h-8 w-8 text-accent" />
               </div>
-              <CardTitle>No events yet</CardTitle>
+              <CardTitle>{t('noEvents')}</CardTitle>
               <CardDescription>
-                Create your first event and start collecting photos
+                {t('noEventsDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
