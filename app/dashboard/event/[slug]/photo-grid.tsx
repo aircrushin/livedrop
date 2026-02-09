@@ -78,6 +78,7 @@ export function PhotoGrid({ photos, eventId, eventSlug }: PhotoGridProps) {
             src={getImageUrl(photo.storage_path)}
             alt="Event photo"
             fill
+            unoptimized
             className="object-cover"
             sizes="(max-width: 768px) 50vw, 25vw"
           />

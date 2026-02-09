@@ -254,6 +254,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
                       alt="Event photo"
                       width={400}
                       height={400}
+                      unoptimized
                       className="w-full h-auto"
                       sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />

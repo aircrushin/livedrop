@@ -5,14 +5,15 @@ import { r2Client, R2_BUCKET_NAME, R2_PUBLIC_URL } from "./client";
 
 export async function uploadToR2(
   fileName: string,
-  fileBuffer: Buffer,
+  fileData: Uint8Array | Buffer,
   contentType: string = "image/jpeg"
 ): Promise<{ success: boolean; url: string; error?: string }> {
   try {
+    const body = Buffer.from(fileData);
     const command = new PutObjectCommand({
       Bucket: R2_BUCKET_NAME,
       Key: fileName,
-      Body: fileBuffer,
+      Body: body,
       ContentType: contentType,
     });
 

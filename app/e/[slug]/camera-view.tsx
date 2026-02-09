@@ -122,12 +122,12 @@ export function CameraView({ event }: CameraViewProps) {
         setProgress((prev) => Math.min(prev + 10, 90));
       }, 100);
 
-      // Convert blob to buffer for R2 upload
+      // Convert blob to Uint8Array for R2 upload
       const arrayBuffer = await compressedBlob.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
+      const uint8Array = new Uint8Array(arrayBuffer);
 
       // Upload compressed image to R2
-      const uploadResult = await uploadToR2(fileName, buffer, "image/jpeg");
+      const uploadResult = await uploadToR2(fileName, uint8Array, "image/jpeg");
 
       clearInterval(progressInterval);
 
@@ -219,14 +219,14 @@ export function CameraView({ event }: CameraViewProps) {
       {/* Preview/Camera Area */}
       <div className="flex-1 flex items-center justify-center relative">
         {previewUrl ? (
-          <div className="relative w-full h-full">
+          <div className="relative max-h-full max-w-full md:max-h-[60vh] md:max-w-[50vw]">
             <img
               src={previewUrl}
               alt="Preview"
-              className="w-full h-full object-contain"
+              className="max-h-full max-w-full object-contain rounded-lg"
             />
             {status === "uploading" && (
-              <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center">
+              <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center rounded-lg">
                 <Loader2 className="h-12 w-12 animate-spin text-white mb-4" />
                 <div className="w-48 h-2 bg-white/20 rounded-full overflow-hidden">
                   <div
@@ -238,7 +238,7 @@ export function CameraView({ event }: CameraViewProps) {
               </div>
             )}
             {status === "success" && (
-              <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center">
+              <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center rounded-lg">
                 <div className="h-16 w-16 rounded-full bg-green-500 flex items-center justify-center mb-4">
                   <Check className="h-8 w-8 text-white" />
                 </div>
