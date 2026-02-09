@@ -7,6 +7,8 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Trash2, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { getR2PublicUrl } from "@/lib/r2/utils";
+import { deleteFromR2 } from "@/lib/r2/actions";
 import type { Photo } from "@/lib/supabase/types";
 
 interface PhotoGridProps {
@@ -22,8 +24,7 @@ export function PhotoGrid({ photos, eventId, eventSlug }: PhotoGridProps) {
   const supabase = createClient();
 
   const getImageUrl = (storagePath: string) => {
-    const { data } = supabase.storage.from("event-photos").getPublicUrl(storagePath);
-    return data.publicUrl;
+    return getR2PublicUrl(storagePath);
   };
 
   async function toggleVisibility(photo: Photo) {
@@ -40,14 +41,12 @@ export function PhotoGrid({ photos, eventId, eventSlug }: PhotoGridProps) {
 
   async function deletePhoto(photo: Photo) {
     if (!confirm(t('confirmDeletePhoto'))) return;
-    
+
     setLoading(photo.id);
-    
-    // Delete from storage
-    await supabase.storage
-      .from("event-photos")
-      .remove([photo.storage_path]);
-    
+
+    // Delete from R2 storage
+    await deleteFromR2(photo.storage_path);
+
     // Delete from database
     await supabase
       .from("photos")

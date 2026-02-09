@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Loader2, X, Download, ZoomIn, ZoomOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { getR2PublicUrl } from "@/lib/r2/utils";
 import type { Event, Photo } from "@/lib/supabase/types";
 
 interface LiveGalleryProps {
@@ -22,8 +23,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
   const supabase = createClient();
 
   const getImageUrl = (storagePath: string) => {
-    const { data } = supabase.storage.from("event-photos").getPublicUrl(storagePath);
-    return data.publicUrl;
+    return getR2PublicUrl(storagePath);
   };
 
   const handleDownload = async (photo: Photo) => {

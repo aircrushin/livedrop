@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "*.supabase.co",
       },
+      {
+        protocol: "https",
+        hostname: "*.r2.cloudflarestorage.com",
+      },
     ],
   },
   // Use webpack for build (Serwist doesn't support Turbopack yet)

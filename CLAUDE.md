@@ -51,7 +51,20 @@ The live gallery (`app/live/[slug]/live-gallery.tsx`) subscribes to Supabase Rea
 - UPDATE events: Moderation (hide/show) reflects immediately
 - DELETE events: Removed photos disappear from gallery
 
-Photos are stored in Supabase Storage bucket `event-photos` with paths like `{eventSlug}/{userId}-{timestamp}.{ext}`.
+### Storage Architecture
+Photos are stored in **Cloudflare R2** (S3-compatible storage) with paths like `{eventSlug}/{userId}-{timestamp}.{ext}`.
+
+**R2 Configuration:**
+- Client configuration: `lib/r2/client.ts`
+- Server actions: `lib/r2/actions.ts` (upload, delete, batch delete)
+- URL utilities: `lib/r2/utils.ts` (getR2PublicUrl)
+
+### R2 Setup
+After creating a Cloudflare R2 bucket:
+1. Create a public bucket named `event-photos`
+2. Generate S3 API tokens (Access Key ID + Secret Access Key)
+3. Update `.env.local` with R2 credentials
+4. Configure CORS for the bucket to allow uploads from your domain
 
 ### App Routes Structure
 - `/` - Landing page
@@ -76,9 +89,19 @@ Row Level Security policies govern access:
 ### Environment Variables
 Required in `.env.local`:
 ```
+# Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+
+# App Configuration
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Cloudflare R2 Configuration
+R2_ENDPOINT=https://your-account.r2.cloudflarestorage.com
+R2_BUCKET=event-photos
+R2_ACCESS_KEY_ID=your-access-key-id
+R2_SECRET_ACCESS_KEY=your-secret-access-key
+NEXT_PUBLIC_R2_PUBLIC_URL=https://your-account.r2.cloudflarestorage.com/event-photos
 ```
 
 ## Key Implementation Details
@@ -87,7 +110,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 1. Guest opens `/e/[slug]` page
 2. Anonymous auth is auto-triggered if not authenticated
 3. User selects/captures photo via file input with `capture="environment"`
-4. Photo uploaded to Supabase Storage
+4. Photo uploaded to Cloudflare R2 via Server Action `uploadToR2()`
 5. Photo metadata inserted into `photos` table with `is_visible = true`
 6. Realtime subscription triggers live gallery update on `/live/[slug]`
 

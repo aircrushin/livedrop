@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, X, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { deleteMultipleFromR2 } from "@/lib/r2/actions";
 
 interface DeleteEventModalProps {
   eventId: string;
@@ -40,7 +41,7 @@ export function DeleteEventModal({ eventId, eventName, onClose }: DeleteEventMod
 
     if (photos && photos.length > 0) {
       const storagePaths = photos.map(p => p.storage_path);
-      await supabase.storage.from("event-photos").remove(storagePaths);
+      await deleteMultipleFromR2(storagePaths);
     }
 
     const { error: deleteError } = await supabase

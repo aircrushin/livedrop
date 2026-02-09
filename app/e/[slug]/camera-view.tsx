@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { compressImage, formatFileSize } from "@/lib/utils/image-compression";
+import { uploadToR2 } from "@/lib/r2/actions";
 import type { Event } from "@/lib/supabase/types";
 
 interface CameraViewProps {
@@ -121,17 +122,18 @@ export function CameraView({ event }: CameraViewProps) {
         setProgress((prev) => Math.min(prev + 10, 90));
       }, 100);
 
-      // Upload compressed image to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from("event-photos")
-        .upload(fileName, compressedBlob, {
-          contentType: "image/jpeg",
-          upsert: false,
-        });
+      // Convert blob to buffer for R2 upload
+      const arrayBuffer = await compressedBlob.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      // Upload compressed image to R2
+      const uploadResult = await uploadToR2(fileName, buffer, "image/jpeg");
 
       clearInterval(progressInterval);
 
-      if (uploadError) throw uploadError;
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.error || "Upload to R2 failed");
+      }
 
       // Save metadata to database
       const { error: insertError } = await supabase.from("photos").insert({
