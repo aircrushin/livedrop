@@ -15,7 +15,7 @@ export async function proxy(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
+          cookiesToSet.forEach(({ name, value, options }) =>
             request.cookies.set(name, value)
           );
           supabaseResponse = NextResponse.next({
@@ -29,7 +29,8 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  // Refresh session if expired
+  // Refreshing the session is not required - cookies are automatically refreshed by the client
+  // But we ensure the user is available for server components
   await supabase.auth.getUser();
 
   return supabaseResponse;
@@ -42,7 +43,7 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - public folder
+     * Feel free to modify this pattern to include more paths.
      */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],

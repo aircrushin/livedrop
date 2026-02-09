@@ -2,7 +2,8 @@
   "landing": {
     "nav": {
       "login": "Log in",
-      "getStarted": "Get Started"
+      "getStarted": "Get Started",
+      "dashboard": "Dashboard"
     },
     "hero": {
       "title1": "Live photos.",

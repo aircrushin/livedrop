@@ -2,11 +2,12 @@
   "landing": {
     "nav": {
       "login": "登录",
-      "getStarted": "开始使用"
+      "getStarted": "开始使用",
+      "dashboard": "控制台"
     },
     "hero": {
-      "title1": "实时照片。",
-      "title2": "即时回忆。",
+      "title1": "实时照片",
+      "title2": "即时回忆",
       "subtitle": "为您的活动创建实时照片墙。宾客扫描二维码，拍摄照片，即可在大屏幕上实时显示。",
       "hostEvent": "举办活动",
       "joinWithCode": "输入代码加入"

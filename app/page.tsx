@@ -1,11 +1,14 @@
 import Link from "next/link";
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Camera, Zap, Users, QrCode } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
-  const t = useTranslations('landing');
+export default async function Home() {
+  const t = await getTranslations('landing');
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   
   return (
     <div className="min-h-screen bg-background">
@@ -22,12 +25,20 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-4">
               <LanguageSwitcher />
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/login">{t('nav.login')}</Link>
-              </Button>
-              <Button size="sm" asChild>
-                <Link href="/signup">{t('nav.getStarted')}</Link>
-              </Button>
+              {user ? (
+                <Button size="sm" asChild>
+                  <Link href="/dashboard">{t('nav.dashboard')}</Link>
+                </Button>
+              ) : (
+                <>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link href="/login">{t('nav.login')}</Link>
+                  </Button>
+                  <Button size="sm" asChild>
+                    <Link href="/signup">{t('nav.getStarted')}</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </nav>
         </div>
@@ -43,9 +54,15 @@ export default function Home() {
               {t('hero.subtitle')}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" className="w-full sm:w-auto" asChild>
-                <Link href="/signup">{t('hero.hostEvent')}</Link>
-              </Button>
+              {user ? (
+                <Button size="lg" className="w-full sm:w-auto" asChild>
+                  <Link href="/dashboard">{t('nav.dashboard')}</Link>
+                </Button>
+              ) : (
+                <Button size="lg" className="w-full sm:w-auto" asChild>
+                  <Link href="/signup">{t('hero.hostEvent')}</Link>
+                </Button>
+              )}
               <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
                 <Link href="/join">{t('hero.joinWithCode')}</Link>
               </Button>
@@ -107,9 +124,15 @@ export default function Home() {
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
             {t('cta.subtitle')}
           </p>
-          <Button size="lg" asChild>
-            <Link href="/signup">{t('cta.button')}</Link>
-          </Button>
+          {user ? (
+            <Button size="lg" asChild>
+              <Link href="/dashboard">{t('nav.dashboard')}</Link>
+            </Button>
+          ) : (
+            <Button size="lg" asChild>
+              <Link href="/signup">{t('cta.button')}</Link>
+            </Button>
+          )}
         </div>
       </section>
 
