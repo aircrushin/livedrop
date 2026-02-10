@@ -94,7 +94,7 @@ export default async function EventManagePage({ params }: Props) {
                       {guestUrl}
                     </code>
                     <CopyButton text={guestUrl} />
-                    <DownloadQRButton url={guestUrl} />
+                    <DownloadQRButton url={guestUrl} eventName={event.name} slug={event.slug} />
                   </div>
                 </div>
               </CardContent>
