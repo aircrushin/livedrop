@@ -147,7 +147,11 @@
     "connecting": "连接中...",
     "photos": "张照片",
     "download": "下载",
-    "keyboardHints": "按 ESC 关闭 • 双击重置缩放 • 方向键导航"
+    "keyboardHints": "按 ESC 关闭 • 双击重置缩放 • 方向键导航",
+    "timeline": "时间轴",
+    "grid": "方格图",
+    "timelineView": "时间轴视图",
+    "gridView": "方格图视图"
   },
   "notFound": {
     "title": "页面未找到",

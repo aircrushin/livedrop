@@ -147,7 +147,11 @@
     "connecting": "Connecting...",
     "photos": "photos",
     "download": "Download",
-    "keyboardHints": "Press ESC to close • Double-click to reset zoom • Arrow keys to navigate"
+    "keyboardHints": "Press ESC to close • Double-click to reset zoom • Arrow keys to navigate",
+    "timeline": "Timeline",
+    "grid": "Grid",
+    "timelineView": "Timeline View",
+    "gridView": "Grid View"
   },
   "notFound": {
     "title": "Page Not Found",

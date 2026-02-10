@@ -4,15 +4,19 @@ import { useState, useEffect } from "react";
 import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, Loader2, X, Download, ZoomIn, ZoomOut } from "lucide-react";
+import { Camera, X, Download, ZoomIn, ZoomOut, LayoutGrid, Clock } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getR2PublicUrl } from "@/lib/r2/utils";
 import type { Event, Photo } from "@/lib/supabase/types";
+
+type ViewMode = "timeline" | "grid";
 
 interface LiveGalleryProps {
   event: Pick<Event, "id" | "name" | "slug">;
   initialPhotos: Photo[];
 }
+
+const STORAGE_KEY = `livedrop-view-mode-${typeof window !== 'undefined' ? window.location.pathname : ''}`;
 
 export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
   const t = useTranslations('live');
@@ -20,7 +24,30 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
   const [isConnected, setIsConnected] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [imageScale, setImageScale] = useState(1);
+  const [viewMode, setViewMode] = useState<ViewMode>("timeline");
+  const [mounted, setMounted] = useState(false);
   const supabase = createClient();
+
+  // Load view mode from localStorage on mount
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === "timeline" || saved === "grid") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setViewMode(saved);
+    }
+  }, [mounted]);
+
+  // Save view mode to localStorage when changed
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem(STORAGE_KEY, viewMode);
+  }, [viewMode, mounted]);
 
   const getImageUrl = (storagePath: string) => {
     return getR2PublicUrl(storagePath);
@@ -207,15 +234,46 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
               <p className="font-bold text-lg">{event.name}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div
-              className={`h-2 w-2 rounded-full ${
-                isConnected ? "bg-green-500" : "bg-yellow-500"
-              }`}
-            />
-            <span className="text-sm text-white/60">
-              {isConnected ? t('live') : t('connecting')}
-            </span>
+          <div className="flex items-center gap-4">
+            {/* View Mode Toggle */}
+            {mounted && (
+              <div className="flex items-center bg-white/10 rounded-full p-1">
+                <button
+                  onClick={() => setViewMode("timeline")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                    viewMode === "timeline"
+                      ? "bg-white/20 text-white shadow-sm"
+                      : "text-white/60 hover:text-white/80"
+                  }`}
+                  title={t('timelineView')}
+                >
+                  <Clock className="h-4 w-4" />
+                  <span className="hidden sm:inline">{t('timeline')}</span>
+                </button>
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                    viewMode === "grid"
+                      ? "bg-white/20 text-white shadow-sm"
+                      : "text-white/60 hover:text-white/80"
+                  }`}
+                  title={t('gridView')}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                  <span className="hidden sm:inline">{t('grid')}</span>
+                </button>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <div
+                className={`h-2 w-2 rounded-full ${
+                  isConnected ? "bg-green-500" : "bg-yellow-500"
+                }`}
+              />
+              <span className="text-sm text-white/60">
+                {isConnected ? t('live') : t('connecting')}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -229,40 +287,94 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
         </div>
       ) : (
         <div className="pt-24 pb-8 px-4">
-          <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 max-w-screen-2xl mx-auto">
-            <AnimatePresence mode="popLayout">
-              {photos.map((photo) => (
-                <motion.div
-                  key={photo.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 25,
-                  }}
-                  className="mb-4 break-inside-avoid"
-                >
-                  <div
-                    className="relative rounded-lg overflow-hidden bg-white/5 cursor-pointer hover:bg-white/10 transition-colors"
-                    onClick={() => setSelectedPhoto(photo)}
-                  >
-                    <Image
-                      src={getImageUrl(photo.storage_path)}
-                      alt="Event photo"
-                      width={400}
-                      height={400}
-                      unoptimized
-                      className="w-full h-auto"
-                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    />
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
+          <AnimatePresence mode="wait">
+            {viewMode === "timeline" ? (
+              <motion.div
+                key="timeline"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 max-w-screen-2xl mx-auto"
+              >
+                <AnimatePresence mode="popLayout">
+                  {photos.map((photo, index) => (
+                    <motion.div
+                      key={photo.id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 25,
+                        delay: index < 10 ? index * 0.05 : 0,
+                      }}
+                      className="mb-4 break-inside-avoid"
+                    >
+                      <div
+                        className="relative rounded-lg overflow-hidden bg-white/5 cursor-pointer hover:bg-white/10 transition-all duration-200 hover:scale-[1.02]"
+                        onClick={() => setSelectedPhoto(photo)}
+                      >
+                        <Image
+                          src={getImageUrl(photo.storage_path)}
+                          alt="Event photo"
+                          width={400}
+                          height={400}
+                          unoptimized
+                          className="w-full h-auto"
+                          sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="grid"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 max-w-screen-2xl mx-auto"
+              >
+                <AnimatePresence mode="popLayout">
+                  {photos.map((photo, index) => (
+                    <motion.div
+                      key={photo.id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 25,
+                        delay: index < 12 ? index * 0.04 : 0,
+                      }}
+                      className="aspect-square"
+                    >
+                      <div
+                        className="relative w-full h-full rounded-lg overflow-hidden bg-white/5 cursor-pointer hover:bg-white/10 transition-all duration-200 hover:scale-[1.02]"
+                        onClick={() => setSelectedPhoto(photo)}
+                      >
+                        <Image
+                          src={getImageUrl(photo.storage_path)}
+                          alt="Event photo"
+                          fill
+                          unoptimized
+                          className="object-cover"
+                          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
