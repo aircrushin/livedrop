@@ -173,7 +173,16 @@
     "deselectAll": "Deselect All",
     "downloadSelected": "Download Selected",
     "packaging": "Packaging...",
-    "batchDownloadError": "Batch download failed, please try again"
+    "batchDownloadError": "Batch download failed, please try again",
+    "newest": "Newest",
+    "popular": "Popular",
+    "comments": "Comments",
+    "writeComment": "Write a comment...",
+    "noCommentsYet": "No comments yet. Be the first!",
+    "justNow": "Just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago"
   },
   "statistics": {
     "title": "Statistics",
@@ -205,5 +214,14 @@
     "copy": "Copy",
     "copied": "Copied!",
     "close": "Close"
-  }
+  },
+  "comments": "Comments",
+  "writeComment": "Write a comment...",
+  "noCommentsYet": "No comments yet. Be the first!",
+  "justNow": "Just now",
+  "minutesAgo": "{count}m ago",
+  "hoursAgo": "{count}h ago",
+  "daysAgo": "{count}d ago",
+  "close": "Close",
+  "delete": "Delete"
 }

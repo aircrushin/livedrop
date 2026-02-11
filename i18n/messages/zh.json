@@ -173,7 +173,16 @@
     "deselectAll": "取消全选",
     "downloadSelected": "下载选中",
     "packaging": "打包中...",
-    "batchDownloadError": "批量下载失败，请重试"
+    "batchDownloadError": "批量下载失败，请重试",
+    "newest": "最新",
+    "popular": "热门",
+    "comments": "评论",
+    "writeComment": "写下评论...",
+    "noCommentsYet": "暂无评论，来抢沙发吧！",
+    "justNow": "刚刚",
+    "minutesAgo": "{count}分钟前",
+    "hoursAgo": "{count}小时前",
+    "daysAgo": "{count}天前"
   },
   "statistics": {
     "title": "数据统计",
@@ -205,5 +214,14 @@
     "copy": "复制",
     "copied": "已复制！",
     "close": "关闭"
-  }
+  },
+  "comments": "评论",
+  "writeComment": "写下评论...",
+  "noCommentsYet": "暂无评论，来抢沙发吧！",
+  "justNow": "刚刚",
+  "minutesAgo": "{count}分钟前",
+  "hoursAgo": "{count}小时前",
+  "daysAgo": "{count}天前",
+  "close": "关闭",
+  "delete": "删除"
 }

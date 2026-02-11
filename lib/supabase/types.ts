@@ -104,6 +104,65 @@ export interface Database {
           }
         ];
       };
+      photo_likes: {
+        Row: {
+          id: string;
+          photo_id: string;
+          user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          photo_id: string;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          photo_id?: string;
+          user_id?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "photo_likes_photo_id_fkey";
+            columns: ["photo_id"];
+            referencedRelation: "photos";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      photo_comments: {
+        Row: {
+          id: string;
+          photo_id: string;
+          user_id: string;
+          content: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          photo_id: string;
+          user_id: string;
+          content: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          photo_id?: string;
+          user_id?: string;
+          content?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "photo_comments_photo_id_fkey";
+            columns: ["photo_id"];
+            referencedRelation: "photos";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -114,3 +173,5 @@ export interface Database {
 
 export type Event = Database["public"]["Tables"]["events"]["Row"];
 export type Photo = Database["public"]["Tables"]["photos"]["Row"];
+export type PhotoLike = Database["public"]["Tables"]["photo_likes"]["Row"];
+export type PhotoComment = Database["public"]["Tables"]["photo_comments"]["Row"];
