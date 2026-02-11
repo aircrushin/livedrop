@@ -19,6 +19,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { getR2PublicUrl } from "@/lib/r2/utils";
 import { useBatchDownload } from "@/lib/hooks/use-batch-download";
+import { useViewerTracking } from "@/lib/hooks/use-viewer-tracking";
 import type { Event, Photo } from "@/lib/supabase/types";
 
 type ViewMode = "timeline" | "grid";
@@ -56,6 +57,8 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
       alert(t('batchDownloadError'));
     },
   });
+
+  useViewerTracking(event.id);
 
   // Load view mode from localStorage on mount
   useEffect(() => {
@@ -229,19 +232,6 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
               return prev.filter((p) => p.id !== updatedPhoto.id);
             }
           });
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "DELETE",
-          schema: "public",
-          table: "photos",
-          filter: `event_id=eq.${event.id}`,
-        },
-        (payload: { old: Photo }) => {
-          const deletedPhoto = payload.old;
-          setPhotos((prev) => prev.filter((p) => p.id !== deletedPhoto.id));
         }
       )
       .subscribe((status: string) => {

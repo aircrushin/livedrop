@@ -9,6 +9,8 @@ import { QRCodeDisplay } from "./qr-code-display";
 import { PhotoGrid } from "./photo-grid";
 import { CopyButton } from "./copy-button";
 import { DownloadQRButton } from "./download-qr-button";
+import { StatisticsPanel } from "./statistics-panel";
+import { getEventStatistics } from "@/lib/supabase/statistics";
 import type { Event, Photo } from "@/lib/supabase/types";
 
 interface Props {
@@ -47,6 +49,8 @@ export default async function EventManagePage({ params }: Props) {
 
   const photos = (photosData || []) as Photo[];
 
+  const statistics = await getEventStatistics(event.id);
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const guestUrl = `${appUrl}/e/${event.slug}`;
   const liveUrl = `${appUrl}/live/${event.slug}`;
@@ -73,7 +77,7 @@ export default async function EventManagePage({ params }: Props) {
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-3">
-          {/* QR Code and Links */}
+          {/* QR Code, Links, and Statistics */}
           <div className="space-y-4">
             <Card>
               <CardHeader>
@@ -119,6 +123,8 @@ export default async function EventManagePage({ params }: Props) {
                 </Button>
               </CardContent>
             </Card>
+
+            <StatisticsPanel eventId={event.id} initialStats={statistics} />
           </div>
 
           {/* Photos Grid */}

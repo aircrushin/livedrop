@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { r2Client, R2_BUCKET_NAME } from "@/lib/r2/client";
 import { createClient } from "@/lib/supabase/server";
+import { incrementDownloadCount } from "@/lib/supabase/statistics";
 import JSZip from "jszip";
 
 export const runtime = "nodejs";
@@ -124,6 +125,16 @@ export async function POST(
     if (successful.length === 0) {
       return NextResponse.json({ error: "Failed to download any photos" }, { status: 500 });
     }
+
+    // Track download counts for successfully downloaded photos
+    const downloadTrackingPromises = successful
+      .filter((r): r is { id: string; filename: string; success: boolean } => r !== null)
+      .map((r) => incrementDownloadCount(r.id));
+    
+    // Don't wait for tracking to complete
+    void Promise.all(downloadTrackingPromises).catch((err) => {
+      console.error("Failed to track download counts:", err);
+    });
 
     // Generate ZIP file
     const zipBuffer = await zip.generateAsync({ type: "nodebuffer" });

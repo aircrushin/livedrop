@@ -44,6 +44,7 @@ export interface Database {
           user_id: string;
           storage_path: string;
           is_visible: boolean;
+          download_count: number;
         };
         Insert: {
           id?: string;
@@ -52,6 +53,7 @@ export interface Database {
           user_id: string;
           storage_path: string;
           is_visible?: boolean;
+          download_count?: number;
         };
         Update: {
           id?: string;
@@ -60,10 +62,42 @@ export interface Database {
           user_id?: string;
           storage_path?: string;
           is_visible?: boolean;
+          download_count?: number;
         };
         Relationships: [
           {
             foreignKeyName: "photos_event_id_fkey";
+            columns: ["event_id"];
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      event_viewers: {
+        Row: {
+          id: string;
+          created_at: string;
+          event_id: string;
+          user_id: string;
+          last_seen_at: string;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          event_id: string;
+          user_id: string;
+          last_seen_at?: string;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          event_id?: string;
+          user_id?: string;
+          last_seen_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_viewers_event_id_fkey";
             columns: ["event_id"];
             referencedRelation: "events";
             referencedColumns: ["id"];

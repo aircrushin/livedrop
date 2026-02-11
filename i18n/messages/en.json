@@ -175,6 +175,15 @@
     "packaging": "Packaging...",
     "batchDownloadError": "Batch download failed, please try again"
   },
+  "statistics": {
+    "title": "Statistics",
+    "description": "Real-time event analytics",
+    "totalPhotos": "Total Photos",
+    "todayPhotos": "Today's Uploads",
+    "onlineViewers": "Online Viewers",
+    "totalDownloads": "Total Downloads",
+    "uploadDistribution": "Upload Distribution (24h)"
+  },
   "notFound": {
     "title": "Page Not Found",
     "description": "The page you're looking for doesn't exist or has been moved.",
