@@ -135,6 +135,7 @@ export default async function EventManagePage({ params }: Props) {
                   photos={photos} 
                   eventId={event.id}
                   eventSlug={event.slug}
+                  eventCreatedAt={event.created_at}
                 />
               </CardContent>
             </Card>

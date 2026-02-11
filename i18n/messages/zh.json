@@ -115,7 +115,21 @@
     "noPhotosMessage": "暂无照片。将二维码分享给宾客，开始收集照片吧！",
     "hide": "隐藏",
     "show": "显示",
-    "confirmDeletePhoto": "确定要删除这张照片吗？"
+    "confirmDeletePhoto": "确定要删除这张照片吗？",
+    "downloadAll": "下载全部",
+    "batchDownload": "批量下载",
+    "totalPhotos": "共 {count} 张照片",
+    "willBeDownloaded": "将被打包下载",
+    "filterByDate": "按日期筛选",
+    "dateFrom": "开始日期",
+    "dateTo": "结束日期",
+    "clearFilters": "清除筛选",
+    "packagingPhotos": "正在打包照片...",
+    "downloadComplete": "下载完成！",
+    "cancel": "取消",
+    "downloading": "下载中...",
+    "downloadZip": "下载 ZIP",
+    "downloadError": "下载失败，请重试"
   },
   "camera": {
     "title": "拍摄照片",
@@ -151,7 +165,15 @@
     "timeline": "时间轴",
     "grid": "方格图",
     "timelineView": "时间轴视图",
-    "gridView": "方格图视图"
+    "gridView": "方格图视图",
+    "selectPhotos": "选择照片",
+    "cancelSelection": "取消选择",
+    "selectedCount": "已选择 {count} / {total}",
+    "selectAll": "全选",
+    "deselectAll": "取消全选",
+    "downloadSelected": "下载选中",
+    "packaging": "打包中...",
+    "batchDownloadError": "批量下载失败，请重试"
   },
   "notFound": {
     "title": "页面未找到",

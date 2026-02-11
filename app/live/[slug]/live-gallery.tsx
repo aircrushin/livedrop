@@ -4,9 +4,21 @@ import { useState, useEffect } from "react";
 import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, X, Download, ZoomIn, ZoomOut, LayoutGrid, Clock } from "lucide-react";
+import { 
+  Camera, 
+  X, 
+  Download, 
+  ZoomIn, 
+  ZoomOut, 
+  LayoutGrid, 
+  Clock,
+  Square,
+  CheckSquare,
+  Loader2
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getR2PublicUrl } from "@/lib/r2/utils";
+import { useBatchDownload } from "@/lib/hooks/use-batch-download";
 import type { Event, Photo } from "@/lib/supabase/types";
 
 type ViewMode = "timeline" | "grid";
@@ -26,7 +38,24 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
   const [imageScale, setImageScale] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>("timeline");
   const [mounted, setMounted] = useState(false);
+  
+  // Batch selection state
+  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
+  
   const supabase = createClient();
+
+  const { isDownloading, downloadPhotos } = useBatchDownload({
+    eventSlug: event.slug,
+    onSuccess: () => {
+      setIsSelectMode(false);
+      setSelectedPhotos(new Set());
+    },
+    onError: (error) => {
+      console.error("Batch download error:", error);
+      alert(t('batchDownloadError'));
+    },
+  });
 
   // Load view mode from localStorage on mount
   useEffect(() => {
@@ -68,6 +97,43 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
       window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
       console.error("Download failed:", error);
+    }
+  };
+
+  const toggleSelectMode = () => {
+    setIsSelectMode(!isSelectMode);
+    if (isSelectMode) {
+      setSelectedPhotos(new Set());
+    }
+  };
+
+  const togglePhotoSelection = (photoId: string) => {
+    const newSelected = new Set(selectedPhotos);
+    if (newSelected.has(photoId)) {
+      newSelected.delete(photoId);
+    } else {
+      newSelected.add(photoId);
+    }
+    setSelectedPhotos(newSelected);
+  };
+
+  const selectAll = () => {
+    setSelectedPhotos(new Set(photos.map(p => p.id)));
+  };
+
+  const deselectAll = () => {
+    setSelectedPhotos(new Set());
+  };
+
+  const handleBatchDownload = async () => {
+    if (selectedPhotos.size === 0) return;
+    
+    try {
+      await downloadPhotos({
+        photoIds: Array.from(selectedPhotos),
+      });
+    } catch {
+      // Error handled in onError callback
     }
   };
 
@@ -130,8 +196,8 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
           table: "photos",
           filter: `event_id=eq.${event.id}`,
         },
-        (payload) => {
-          const newPhoto = payload.new as Photo;
+        (payload: { new: Photo }) => {
+          const newPhoto = payload.new;
           if (newPhoto.is_visible) {
             setPhotos((prev) => [newPhoto, ...prev]);
           }
@@ -145,8 +211,8 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
           table: "photos",
           filter: `event_id=eq.${event.id}`,
         },
-        (payload) => {
-          const updatedPhoto = payload.new as Photo;
+        (payload: { new: Photo }) => {
+          const updatedPhoto = payload.new;
           setPhotos((prev) => {
             if (updatedPhoto.is_visible) {
               // If photo is now visible and not in list, add it
@@ -173,12 +239,12 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
           table: "photos",
           filter: `event_id=eq.${event.id}`,
         },
-        (payload) => {
-          const deletedPhoto = payload.old as Photo;
+        (payload: { old: Photo }) => {
+          const deletedPhoto = payload.old;
           setPhotos((prev) => prev.filter((p) => p.id !== deletedPhoto.id));
         }
       )
-      .subscribe((status) => {
+      .subscribe((status: string) => {
         setIsConnected(status === "SUBSCRIBED");
       });
 
@@ -220,6 +286,70 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedPhoto]);
 
+  const renderPhotoItem = (photo: Photo, index: number) => {
+    const isSelected = selectedPhotos.has(photo.id);
+    
+    return (
+      <motion.div
+        key={photo.id}
+        layout
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 25,
+          delay: index < 12 ? index * 0.04 : 0,
+        }}
+        className={viewMode === "timeline" ? "mb-4 break-inside-avoid" : "aspect-square"}
+      >
+        <div
+          className={`relative ${viewMode === "grid" ? "w-full h-full" : ""} rounded-lg overflow-hidden bg-white/5 cursor-pointer hover:bg-white/10 transition-all duration-200 hover:scale-[1.02] ${
+            isSelected ? "ring-4 ring-primary" : ""
+          }`}
+          onClick={() => {
+            if (isSelectMode) {
+              togglePhotoSelection(photo.id);
+            } else {
+              setSelectedPhoto(photo);
+            }
+          }}
+        >
+          {isSelectMode && (
+            <div className="absolute top-2 right-2 z-10">
+              {isSelected ? (
+                <CheckSquare className="h-6 w-6 text-primary fill-primary" />
+              ) : (
+                <Square className="h-6 w-6 text-white/70" />
+              )}
+            </div>
+          )}
+          {viewMode === "timeline" ? (
+            <Image
+              src={getImageUrl(photo.storage_path)}
+              alt="Event photo"
+              width={400}
+              height={400}
+              unoptimized
+              className="w-full h-auto"
+              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            />
+          ) : (
+            <Image
+              src={getImageUrl(photo.storage_path)}
+              alt="Event photo"
+              fill
+              unoptimized
+              className="object-cover"
+              sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
+            />
+          )}
+        </div>
+      </motion.div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
@@ -235,8 +365,32 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
             </div>
           </div>
           <div className="flex items-center gap-4">
+            {/* Batch Selection Toggle */}
+            {photos.length > 0 && mounted && (
+              <button
+                onClick={toggleSelectMode}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                  isSelectMode
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-white/10 text-white/80 hover:bg-white/20"
+                }`}
+              >
+                {isSelectMode ? (
+                  <>
+                    <X className="h-4 w-4" />
+                    <span className="hidden sm:inline">{t('cancelSelection')}</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckSquare className="h-4 w-4" />
+                    <span className="hidden sm:inline">{t('selectPhotos')}</span>
+                  </>
+                )}
+              </button>
+            )}
+
             {/* View Mode Toggle */}
-            {mounted && (
+            {mounted && !isSelectMode && (
               <div className="flex items-center bg-white/10 rounded-full p-1">
                 <button
                   onClick={() => setViewMode("timeline")}
@@ -264,6 +418,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
                 </button>
               </div>
             )}
+
             <div className="flex items-center gap-2">
               <div
                 className={`h-2 w-2 rounded-full ${
@@ -276,6 +431,48 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
             </div>
           </div>
         </div>
+
+        {/* Selection Toolbar */}
+        {isSelectMode && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-screen-2xl mx-auto mt-3 flex items-center justify-between bg-white/10 backdrop-blur rounded-lg px-4 py-2"
+          >
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-white/80">
+                {t('selectedCount', { count: selectedPhotos.size, total: photos.length })}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  onClick={selectAll}
+                  className="text-xs text-white/60 hover:text-white transition-colors"
+                >
+                  {t('selectAll')}
+                </button>
+                <span className="text-white/30">|</span>
+                <button
+                  onClick={deselectAll}
+                  className="text-xs text-white/60 hover:text-white transition-colors"
+                >
+                  {t('deselectAll')}
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={handleBatchDownload}
+              disabled={selectedPhotos.size === 0 || isDownloading}
+              className="flex items-center gap-2 px-4 py-1.5 bg-primary text-primary-foreground rounded-full text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
+            >
+              {isDownloading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              {isDownloading ? t('packaging') : t('downloadSelected')}
+            </button>
+          </motion.div>
+        )}
       </div>
 
       {/* Photo Grid */}
@@ -298,37 +495,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
                 className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 max-w-screen-2xl mx-auto"
               >
                 <AnimatePresence mode="popLayout">
-                  {photos.map((photo, index) => (
-                    <motion.div
-                      key={photo.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 25,
-                        delay: index < 10 ? index * 0.05 : 0,
-                      }}
-                      className="mb-4 break-inside-avoid"
-                    >
-                      <div
-                        className="relative rounded-lg overflow-hidden bg-white/5 cursor-pointer hover:bg-white/10 transition-all duration-200 hover:scale-[1.02]"
-                        onClick={() => setSelectedPhoto(photo)}
-                      >
-                        <Image
-                          src={getImageUrl(photo.storage_path)}
-                          alt="Event photo"
-                          width={400}
-                          height={400}
-                          unoptimized
-                          className="w-full h-auto"
-                          sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        />
-                      </div>
-                    </motion.div>
-                  ))}
+                  {photos.map((photo, index) => renderPhotoItem(photo, index))}
                 </AnimatePresence>
               </motion.div>
             ) : (
@@ -341,36 +508,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
                 className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 max-w-screen-2xl mx-auto"
               >
                 <AnimatePresence mode="popLayout">
-                  {photos.map((photo, index) => (
-                    <motion.div
-                      key={photo.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 25,
-                        delay: index < 12 ? index * 0.04 : 0,
-                      }}
-                      className="aspect-square"
-                    >
-                      <div
-                        className="relative w-full h-full rounded-lg overflow-hidden bg-white/5 cursor-pointer hover:bg-white/10 transition-all duration-200 hover:scale-[1.02]"
-                        onClick={() => setSelectedPhoto(photo)}
-                      >
-                        <Image
-                          src={getImageUrl(photo.storage_path)}
-                          alt="Event photo"
-                          fill
-                          unoptimized
-                          className="object-cover"
-                          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
-                        />
-                      </div>
-                    </motion.div>
-                  ))}
+                  {photos.map((photo, index) => renderPhotoItem(photo, index))}
                 </AnimatePresence>
               </motion.div>
             )}
@@ -380,7 +518,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
 
       {/* Photo Preview Modal */}
       <AnimatePresence>
-        {selectedPhoto && (
+        {selectedPhoto && !isSelectMode && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
