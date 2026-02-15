@@ -2,8 +2,10 @@ import Link from "next/link";
 import { getTranslations } from 'next-intl/server';
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Logo } from "@/components/logo";
 import { DraggablePhotoCollage } from "@/components/landing/draggable-photo-collage";
-import { Camera, Zap, Users, QrCode } from "lucide-react";
+import Image from "next/image";
+import { Camera, Zap, QrCode } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 const HERO_PHOTOS = [
@@ -84,12 +86,9 @@ export default async function Home() {
         <div className="absolute inset-0 bg-linear-to-br from-accent/10 via-transparent to-primary/5 pointer-events-none" />
         <div className="container mx-auto px-4 py-8 relative z-10">
           <nav className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center">
-                <Camera className="h-4 w-4 text-accent-foreground" />
-              </div>
-              <span className="text-xl font-bold">LiveDrop</span>
-            </div>
+            <Link href="/" className="flex items-center gap-2">
+              <Logo variant="full" size="sm" className="h-7" />
+            </Link>
             <div className="flex items-center gap-4">
               <LanguageSwitcher />
               {user ? (
@@ -182,10 +181,10 @@ export default async function Home() {
             {t('useCases.subtitle')}
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
-            <UseCaseCard icon={<Users />} title={t('useCases.weddings')} />
-            <UseCaseCard icon={<Users />} title={t('useCases.conferences')} />
-            <UseCaseCard icon={<Users />} title={t('useCases.parties')} />
-            <UseCaseCard icon={<Users />} title={t('useCases.meetups')} />
+            <UseCaseCard icon={<Image src="https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=ffdfbf&seed=Wedding" alt="" width={40} height={40} className="rounded-full" unoptimized />} title={t('useCases.weddings')} />
+            <UseCaseCard icon={<Image src="https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=ffdfbf&seed=Conference" alt="" width={40} height={40} className="rounded-full" unoptimized />} title={t('useCases.conferences')} />
+            <UseCaseCard icon={<Image src="https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=ffdfbf&seed=Party" alt="" width={40} height={40} className="rounded-full" unoptimized />} title={t('useCases.parties')} />
+            <UseCaseCard icon={<Image src="https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=ffdfbf&seed=Meetup" alt="" width={40} height={40} className="rounded-full" unoptimized />} title={t('useCases.meetups')} />
           </div>
         </div>
       </section>
@@ -220,12 +219,9 @@ export default async function Home() {
       <footer className="border-t border-border/70 bg-card/35 py-8 relative z-10">
         <div className="container mx-auto px-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded-full bg-accent flex items-center justify-center">
-                <Camera className="h-3 w-3 text-accent-foreground" />
-              </div>
-              <span className="text-sm font-medium">LiveDrop</span>
-            </div>
+            <Link href="/" className="flex items-center">
+              <Logo variant="full" size="sm" className="h-5" animated={false} />
+            </Link>
             <p className="text-sm text-muted-foreground">
               {t('footer.builtFor')}
             </p>

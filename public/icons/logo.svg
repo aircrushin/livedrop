@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120">
+  <defs>
+    <linearGradient id="markGrad" x1="0.25" y1="0" x2="0.75" y2="1">
+      <stop offset="0%" stop-color="#f7e27a"/>
+      <stop offset="45%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#a8861e"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f5f5dc"/>
+      <stop offset="100%" stop-color="#e8e4c9"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0d860"/>
+      <stop offset="100%" stop-color="#d4af37"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Mark: Drop shape -->
+  <path d="M48 6
+           C48 6, 90 46, 90 68
+           C90 88, 72 102, 48 102
+           C24 102, 6 88, 6 68
+           C6 46, 48 6, 48 6Z"
+        fill="url(#markGrad)"/>
+
+  <!-- Mark: Lens outer ring -->
+  <circle cx="48" cy="69" r="19" fill="rgba(10,10,10,0.2)"/>
+  <circle cx="48" cy="69" r="13" fill="none" stroke="rgba(10,10,10,0.12)" stroke-width="2"/>
+
+  <!-- Mark: Lens center -->
+  <circle cx="48" cy="69" r="6.5" fill="rgba(10,10,10,0.22)"/>
+
+  <!-- Mark: Highlight -->
+  <ellipse cx="39" cy="54" rx="7" ry="4" fill="white" opacity="0.22" transform="rotate(-32 39 54)"/>
+
+  <!-- Mark: Live dot -->
+  <circle cx="80" cy="18" r="7" fill="#dc2626"/>
+  <circle cx="80" cy="18" r="7" fill="none" stroke="#dc2626" stroke-width="1.5">
+    <animate attributeName="r" values="7;13" dur="1.6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0" dur="1.6s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="80" cy="18" r="2.5" fill="white" opacity="0.9"/>
+
+  <!-- Text: "Live" -->
+  <text x="108" y="73" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="52" font-weight="300" fill="url(#textGrad)" letter-spacing="-1">Live</text>
+
+  <!-- Text: "Drop" -->
+  <text x="234" y="73" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="52" font-weight="700" fill="url(#accentGrad)" letter-spacing="-1">Drop</text>
+</svg>

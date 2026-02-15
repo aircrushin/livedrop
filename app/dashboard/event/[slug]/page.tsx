@@ -4,7 +4,8 @@ import { getTranslations } from 'next-intl/server';
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Camera, ArrowLeft, ExternalLink, Tv, QrCode } from "lucide-react";
+import { Logo } from "@/components/logo";
+import { ArrowLeft, ExternalLink, Tv, QrCode } from "lucide-react";
 import { QRCodeDisplay } from "./qr-code-display";
 import { PhotoGrid } from "./photo-grid";
 import { CopyButton } from "./copy-button";
@@ -66,9 +67,7 @@ export default async function EventManagePage({ params }: Props) {
               </Link>
             </Button>
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center">
-                <Camera className="h-4 w-4 text-accent-foreground" />
-              </div>
+              <Logo variant="icon" size="sm" className="h-8 w-8 shrink-0" animated={false} />
               <span className="text-xl font-bold">{event.name}</span>
             </div>
           </div>

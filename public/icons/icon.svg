@@ -1,25 +1,84 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <rect width="512" height="512" fill="#000000"/>
-  <g stroke="#f5f5f5" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none">
-    <!-- Aperture blade 1 (top) -->
-    <path d="M205 70 C280 65, 350 100, 390 165 C340 145, 290 150, 256 175 C230 130, 215 95, 205 70"/>
-    
-    <!-- Aperture blade 2 (top-right) -->
-    <path d="M420 120 C465 185, 470 265, 435 340 C420 285, 390 250, 350 235 C385 200, 410 160, 420 120"/>
-    
-    <!-- Aperture blade 3 (bottom-right) -->
-    <path d="M455 380 C420 450, 350 490, 270 485 C320 460, 345 420, 345 370 C380 385, 425 385, 455 380"/>
-    
-    <!-- Aperture blade 4 (bottom) -->
-    <path d="M230 490 C155 480, 90 430, 70 355 C115 390, 165 395, 215 375 C200 420, 205 460, 230 490"/>
-    
-    <!-- Aperture blade 5 (bottom-left) -->
-    <path d="M55 310 C40 235, 65 160, 120 105 C100 160, 110 210, 145 250 C105 265, 70 285, 55 310"/>
-    
-    <!-- Aperture blade 6 (top-left) -->
-    <path d="M100 75 C160 35, 240 30, 310 55 C260 70, 225 100, 210 145 C175 115, 135 90, 100 75"/>
-    
-    <!-- Center droplet -->
-    <path d="M256 185 C295 225, 305 275, 295 310 C285 345, 260 365, 256 365 C252 365, 227 345, 217 310 C207 275, 217 225, 256 185"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="dropGrad" x1="0.25" y1="0" x2="0.75" y2="1">
+      <stop offset="0%" stop-color="#f7e27a"/>
+      <stop offset="45%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#a8861e"/>
+    </linearGradient>
+    <linearGradient id="lensGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a0a" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0.28"/>
+    </linearGradient>
+    <radialGradient id="bgGlow" cx="0.5" cy="0.58" r="0.48">
+      <stop offset="0%" stop-color="#d4af37" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="liveGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#dc2626" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#dc2626" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="#0a0a0a"/>
+  <rect width="512" height="512" rx="112" fill="url(#bgGlow)"/>
+
+  <!-- Drop shape -->
+  <path d="M256 62
+           C256 62, 416 242, 416 338
+           C416 422, 344 482, 256 482
+           C168 482, 96 422, 96 338
+           C96 242, 256 62, 256 62Z"
+        fill="url(#dropGrad)"/>
+
+  <!-- Drop inner shadow (top) -->
+  <path d="M256 62
+           C256 62, 416 242, 416 338
+           C416 422, 344 482, 256 482
+           C168 482, 96 422, 96 338
+           C96 242, 256 62, 256 62Z"
+        fill="none" stroke="#0a0a0a" stroke-width="4" opacity="0.08"/>
+
+  <!-- Camera lens - outer ring -->
+  <circle cx="256" cy="340" r="80" fill="url(#lensGrad)"/>
+  <circle cx="256" cy="340" r="80" fill="none" stroke="#0a0a0a" stroke-width="3" opacity="0.08"/>
+
+  <!-- Lens middle ring -->
+  <circle cx="256" cy="340" r="56" fill="none" stroke="#0a0a0a" stroke-width="7" opacity="0.12"/>
+
+  <!-- Lens inner opening -->
+  <circle cx="256" cy="340" r="28" fill="#0a0a0a" opacity="0.22"/>
+
+  <!-- Lens center dot -->
+  <circle cx="256" cy="340" r="10" fill="#0a0a0a" opacity="0.1"/>
+
+  <!-- Glass highlight - large -->
+  <ellipse cx="220" cy="278" rx="30" ry="16" fill="white" opacity="0.2" transform="rotate(-32 220 278)"/>
+
+  <!-- Glass highlight - small -->
+  <ellipse cx="200" cy="302" rx="10" ry="6" fill="white" opacity="0.12" transform="rotate(-32 200 302)"/>
+
+  <!-- Drop tip highlight -->
+  <path d="M256 86 C256 86, 230 148, 218 190" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" opacity="0.12"/>
+
+  <!-- LIVE indicator - glow backdrop -->
+  <circle cx="398" cy="102" r="50" fill="url(#liveGlow)"/>
+
+  <!-- LIVE indicator - main dot -->
+  <circle cx="398" cy="102" r="26" fill="#dc2626"/>
+
+  <!-- LIVE indicator - pulse ring -->
+  <circle cx="398" cy="102" r="26" fill="none" stroke="#dc2626" stroke-width="3.5">
+    <animate attributeName="r" values="26;46" dur="1.6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0" dur="1.6s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- LIVE indicator - second pulse ring (delayed) -->
+  <circle cx="398" cy="102" r="26" fill="none" stroke="#dc2626" stroke-width="2.5">
+    <animate attributeName="r" values="26;56" dur="1.6s" begin="0.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.35;0" dur="1.6s" begin="0.5s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- LIVE indicator - white center -->
+  <circle cx="398" cy="102" r="9" fill="white" opacity="0.92"/>
 </svg>
