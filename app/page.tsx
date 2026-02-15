@@ -75,9 +75,12 @@ export default async function Home() {
   const { data: { user } } = await supabase.auth.getUser();
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground relative">
+      {/* Shared dot-matrix background for the whole page */}
+      <div className="pointer-events-none fixed inset-0 opacity-45 bg-[radial-gradient(hsl(var(--foreground)/0.18)_1px,transparent_1px)] bg-size-[18px_18px] z-0" />
+
       {/* Hero Section */}
-      <header className="relative overflow-hidden">
+      <header className="relative overflow-hidden z-10">
         <div className="absolute inset-0 bg-linear-to-br from-accent/10 via-transparent to-primary/5 pointer-events-none" />
         <div className="container mx-auto px-4 py-8 relative z-10">
           <nav className="flex items-center justify-between">
@@ -142,33 +145,35 @@ export default async function Home() {
       </header>
 
       {/* Features Section */}
-      <section className="py-24 bg-card/50">
+      <section className="relative py-24 md:py-28 z-10">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-16">
-            {t('features.title')}
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <FeatureCard
-              icon={<QrCode className="h-6 w-6" />}
-              title={t('features.step1Title')}
-              description={t('features.step1Desc')}
-            />
-            <FeatureCard
-              icon={<Camera className="h-6 w-6" />}
-              title={t('features.step2Title')}
-              description={t('features.step2Desc')}
-            />
-            <FeatureCard
-              icon={<Zap className="h-6 w-6" />}
-              title={t('features.step3Title')}
-              description={t('features.step3Desc')}
-            />
+          <div className="mx-auto max-w-6xl rounded-3xl border border-border/70 bg-card/55 p-6 shadow-[0_30px_80px_-50px_rgba(0,0,0,0.85)] backdrop-blur-sm md:p-10">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 md:mb-14">
+              {t('features.title')}
+            </h2>
+            <div className="grid gap-5 md:grid-cols-3">
+              <FeatureCard
+                icon={<QrCode className="h-6 w-6" />}
+                title={t('features.step1Title')}
+                description={t('features.step1Desc')}
+              />
+              <FeatureCard
+                icon={<Camera className="h-6 w-6" />}
+                title={t('features.step2Title')}
+                description={t('features.step2Desc')}
+              />
+              <FeatureCard
+                icon={<Zap className="h-6 w-6" />}
+                title={t('features.step3Title')}
+                description={t('features.step3Desc')}
+              />
+            </div>
           </div>
         </div>
       </section>
 
       {/* Use Cases */}
-      <section className="py-24">
+      <section className="relative py-24 md:py-28 z-10">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">
             {t('useCases.title')}
@@ -176,7 +181,7 @@ export default async function Home() {
           <p className="text-muted-foreground text-center mb-16 max-w-xl mx-auto">
             {t('useCases.subtitle')}
           </p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
             <UseCaseCard icon={<Users />} title={t('useCases.weddings')} />
             <UseCaseCard icon={<Users />} title={t('useCases.conferences')} />
             <UseCaseCard icon={<Users />} title={t('useCases.parties')} />
@@ -186,30 +191,35 @@ export default async function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-linear-to-t from-accent/10 to-transparent">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            {t('cta.title')}
-          </h2>
-          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-            {t('cta.subtitle')}
-          </p>
-          {user ? (
-            <Button size="lg" asChild>
-              <Link href="/dashboard">{t('nav.dashboard')}</Link>
-            </Button>
-          ) : (
-            <Button size="lg" asChild>
-              <Link href="/signup">{t('cta.button')}</Link>
-            </Button>
-          )}
+      <section className="py-24 relative z-10">
+        <div className="container mx-auto px-4">
+          <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl border border-border/70 bg-card px-6 py-14 text-center shadow-[0_30px_80px_-48px_rgba(0,0,0,0.85)] md:px-10">
+            <div className="pointer-events-none absolute -left-8 top-0 h-12 w-56 -rotate-3 rounded-b-3xl border-b border-border/60 bg-background/70" />
+            <div className="pointer-events-none absolute -right-10 bottom-0 h-12 w-64 rotate-2 rounded-t-3xl border-t border-border/60 bg-background/70" />
+
+            <h2 className="relative text-2xl md:text-3xl font-bold mb-4">
+              {t('cta.title')}
+            </h2>
+            <p className="relative text-muted-foreground mb-8 max-w-md mx-auto">
+              {t('cta.subtitle')}
+            </p>
+            {user ? (
+              <Button size="lg" className="relative" asChild>
+                <Link href="/dashboard">{t('nav.dashboard')}</Link>
+              </Button>
+            ) : (
+              <Button size="lg" className="relative" asChild>
+                <Link href="/signup">{t('cta.button')}</Link>
+              </Button>
+            )}
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-border">
+      <footer className="border-t border-border/70 bg-card/35 py-8 relative z-10">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 rounded-full bg-accent flex items-center justify-center">
                 <Camera className="h-3 w-3 text-accent-foreground" />
@@ -236,12 +246,12 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="text-center space-y-4 p-6">
-      <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center mx-auto text-accent">
+    <div className="group rounded-2xl border border-border/70 bg-background/70 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-[0_22px_40px_-30px_rgba(0,0,0,0.9)]">
+      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-accent/15 text-accent transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
         {icon}
       </div>
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <p className="text-muted-foreground text-sm">{description}</p>
+      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
+      <p className="text-sm leading-6 text-muted-foreground">{description}</p>
     </div>
   );
 }
@@ -254,9 +264,12 @@ function UseCaseCard({
   title: string;
 }) {
   return (
-    <div className="flex items-center gap-3 p-4 rounded-lg border border-border bg-card hover:border-accent/50 transition-colors">
-      <div className="text-accent">{icon}</div>
-      <span className="font-medium">{title}</span>
+    <div className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card/65 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-[0_22px_40px_-32px_rgba(0,0,0,0.85)]">
+      <div className="pointer-events-none absolute right-0 top-0 h-16 w-16 translate-x-6 -translate-y-6 rounded-full bg-accent/12 blur-xl transition-opacity group-hover:opacity-100" />
+      <div className="relative flex items-center gap-3">
+        <div className="rounded-lg bg-accent/15 p-2 text-accent">{icon}</div>
+        <span className="font-medium">{title}</span>
+      </div>
     </div>
   );
 }
