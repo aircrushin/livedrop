@@ -116,6 +116,8 @@
     "hide": "隐藏",
     "show": "显示",
     "confirmDeletePhoto": "确定要删除这张照片吗？",
+    "photoDeleted": "照片已删除",
+    "photoDeleteFailed": "删除照片失败",
     "downloadAll": "下载全部",
     "batchDownload": "批量下载",
     "totalPhotos": "共 {count} 张照片",

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from 'next-intl';
 import Image from "next/image";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Trash2, Loader2, Download } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -48,17 +49,34 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
 
     setLoading(photo.id);
 
-    // Delete from R2 storage
-    await deleteFromR2(photo.storage_path);
+    try {
+      // Delete from R2 storage
+      const r2Result = await deleteFromR2(photo.storage_path);
+      if (!r2Result.success) {
+        toast.error(t('photoDeleteFailed'));
+        setLoading(null);
+        return;
+      }
 
-    // Delete from database
-    await supabase
-      .from("photos")
-      .delete()
-      .eq("id", photo.id);
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from("photos")
+        .delete()
+        .eq("id", photo.id);
 
-    router.refresh();
-    setLoading(null);
+      if (dbError) {
+        toast.error(t('photoDeleteFailed'));
+        setLoading(null);
+        return;
+      }
+
+      toast.success(t('photoDeleted'));
+      router.refresh();
+    } catch {
+      toast.error(t('photoDeleteFailed'));
+    } finally {
+      setLoading(null);
+    }
   }
 
   if (photos.length === 0) {
