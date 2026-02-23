@@ -17,14 +17,16 @@ export function CameraView({ event }: CameraViewProps) {
   const {
     status,
     progress,
+    overallProgress,
     error,
-    previewUrl,
+    pendingFiles,
     isAuthenticated,
     flash,
     setFlash,
     handleFileSelect,
     handleUpload,
     handleCancel,
+    handleRemoveFile,
     clearError,
   } = useCameraView({ event });
 
@@ -47,6 +49,11 @@ export function CameraView({ event }: CameraViewProps) {
     );
   }
 
+  const hasPendingFiles = pendingFiles.length > 0;
+  const isSelecting = status === "selecting";
+  const isUploading = status === "uploading";
+  const isSuccess = status === "success";
+
   return (
     <div className="fixed inset-0 bg-black flex flex-col">
       <CameraHeader
@@ -56,11 +63,13 @@ export function CameraView({ event }: CameraViewProps) {
         onToggleFlash={() => setFlash(!flash)}
       />
 
-      <div className="flex-1 flex items-center justify-center relative">
+      <div className="flex-1 flex items-center justify-center relative overflow-hidden">
         <PreviewArea
-          previewUrl={previewUrl}
+          pendingFiles={pendingFiles}
           status={status}
           progress={progress}
+          overallProgress={overallProgress}
+          onRemoveFile={handleRemoveFile}
         />
       </div>
 
@@ -77,8 +86,11 @@ export function CameraView({ event }: CameraViewProps) {
       {/* Bottom Controls */}
       <div className="p-6 pb-8 bg-black/50 backdrop-blur flex items-center justify-center gap-6">
         <CameraControls
-          previewUrl={previewUrl}
-          status={status}
+          hasPendingFiles={hasPendingFiles}
+          isSelecting={isSelecting}
+          isUploading={isUploading}
+          isSuccess={isSuccess}
+          fileCount={pendingFiles.length}
           onCancel={handleCancel}
           onUpload={handleUpload}
           onCameraClick={triggerCamera}
@@ -92,6 +104,7 @@ export function CameraView({ event }: CameraViewProps) {
         type="file"
         accept="image/*"
         capture="environment"
+        multiple
         onChange={handleFileSelect}
         className="hidden"
       />
@@ -101,6 +114,7 @@ export function CameraView({ event }: CameraViewProps) {
         ref={galleryInputRef}
         type="file"
         accept="image/*"
+        multiple
         onChange={handleFileSelect}
         className="hidden"
       />

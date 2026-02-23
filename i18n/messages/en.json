@@ -140,11 +140,20 @@
     "uploading": "Uploading...",
     "uploadSuccess": "Photo uploaded!",
     "uploadError": "Failed to upload photo",
-    "prompt": "Take a photo or choose from gallery",
+    "prompt": "Take photos or choose from gallery",
     "upload": "Upload",
+    "uploadBatch": "Upload {count} Photos",
     "connectError": "Could not connect. Please refresh the page.",
     "invalidFileType": "Please select an image file (JPEG, PNG, GIF, WebP, or HEIC)",
-    "fileTooLarge": "Image is too large. Maximum size is 10MB."
+    "fileTooLarge": "Image is too large. Maximum size is 10MB.",
+    "tooManyFiles": "Too many files selected. Maximum is {max} files.",
+    "invalidFilesInBatch": "Some files were skipped. Only image files under 10MB are allowed.",
+    "uploadFailed": "Upload failed",
+    "partialUpload": "{success} of {total} photos uploaded successfully",
+    "allUploadFailed": "Failed to upload all photos",
+    "uploadingCount": "Uploading {current} / {total}",
+    "batchUploadSuccess": "{count} photos uploaded!",
+    "selectedCount": "{count} photos selected"
   },
   "join": {
     "title": "Join an Event",

@@ -1,14 +1,15 @@
 "use client";
 
-import { X, Upload, ImagePlus } from "lucide-react";
+import { X, Upload, ImagePlus, Camera } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 
-type UploadStatus = "idle" | "uploading" | "success" | "error";
-
 interface CameraControlsProps {
-  previewUrl: string | null;
-  status: UploadStatus;
+  hasPendingFiles: boolean;
+  isSelecting: boolean;
+  isUploading: boolean;
+  isSuccess: boolean;
+  fileCount: number;
   onCancel: () => void;
   onUpload: () => void;
   onCameraClick: () => void;
@@ -16,8 +17,11 @@ interface CameraControlsProps {
 }
 
 export function CameraControls({
-  previewUrl,
-  status,
+  hasPendingFiles,
+  isSelecting,
+  isUploading,
+  isSuccess,
+  fileCount,
   onCancel,
   onUpload,
   onCameraClick,
@@ -26,9 +30,10 @@ export function CameraControls({
   const t = useTranslations('camera');
   const tCommon = useTranslations('common');
 
-  const isIdle = status === "idle";
+  const isIdle = !hasPendingFiles && !isUploading && !isSuccess;
+  const showActions = isSelecting && hasPendingFiles;
 
-  if (previewUrl && isIdle) {
+  if (showActions) {
     return (
       <>
         <Button
@@ -46,10 +51,22 @@ export function CameraControls({
           className="bg-accent text-accent-foreground hover:bg-accent/90"
         >
           <Upload className="h-6 w-6 mr-2" />
-          {t('upload')}
+          {fileCount > 1 ? t('uploadBatch', { count: fileCount }) : t('upload')}
         </Button>
       </>
     );
+  }
+
+  if (isUploading) {
+    return (
+      <div className="text-white/60 text-sm">
+        {t('uploading')}
+      </div>
+    );
+  }
+
+  if (isSuccess) {
+    return null; // Success state is handled in PreviewArea
   }
 
   return (
@@ -70,7 +87,15 @@ export function CameraControls({
         <div className="h-14 w-14 rounded-full bg-white" />
       </button>
 
-      <div className="w-14" />
+      <button
+        onClick={onGalleryClick}
+        disabled={!isIdle}
+        className="h-14 w-14 rounded-full border-2 border-white/60 flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all disabled:opacity-50 md:hidden"
+      >
+        <Camera className="h-6 w-6 text-white" />
+      </button>
+
+      <div className="w-14 hidden md:block" />
     </>
   );
 }

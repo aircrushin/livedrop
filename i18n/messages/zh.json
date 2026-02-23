@@ -142,9 +142,18 @@
     "uploadError": "上传照片失败",
     "prompt": "拍摄照片或从相册中选择",
     "upload": "上传",
+    "uploadBatch": "上传 {count} 张照片",
     "connectError": "无法连接，请刷新页面。",
     "invalidFileType": "请选择图片文件（JPEG、PNG、GIF、WebP 或 HEIC）",
-    "fileTooLarge": "图片太大，最大不超过 10MB。"
+    "fileTooLarge": "图片太大，最大不超过 10MB。",
+    "tooManyFiles": "选择的文件过多，最多支持 {max} 个文件。",
+    "invalidFilesInBatch": "部分文件已跳过，仅支持 10MB 以内的图片文件。",
+    "uploadFailed": "上传失败",
+    "partialUpload": "已成功上传 {success} / {total} 张照片",
+    "allUploadFailed": "所有照片上传失败",
+    "uploadingCount": "正在上传 {current} / {total}",
+    "batchUploadSuccess": "{count} 张照片已上传！",
+    "selectedCount": "已选择 {count} 张照片"
   },
   "join": {
     "title": "加入活动",
