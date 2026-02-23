@@ -48,7 +48,8 @@
       "noAccount": "Don't have an account?",
       "signUp": "Sign up",
       "orContinueWith": "Or continue with",
-      "continueWithGoogle": "Continue with Google"
+      "continueWithGoogle": "Continue with Google",
+      "forgotPassword": "Forgot password?"
     },
     "signup": {
       "title": "Create your account",
@@ -62,6 +63,27 @@
       "orContinueWith": "Or continue with",
       "continueWithGoogle": "Continue with Google",
       "passwordsMismatch": "Passwords do not match"
+    },
+    "forgotPassword": {
+      "title": "Forgot password?",
+      "subtitle": "Enter your email and we'll send you a reset link",
+      "email": "Email",
+      "submit": "Send Reset Link",
+      "backToLogin": "Back to login",
+      "emailSent": "We've sent a password reset link to {email}",
+      "checkSpam": "Check your spam folder if you don't see it in your inbox"
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "subtitle": "Enter your new password below",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Reset Password",
+      "backToLogin": "Back to login",
+      "passwordsMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "invalidLink": "Invalid or expired reset link. Please request a new one.",
+      "requestNewLink": "Request a new link"
     }
   },
   "dashboard": {
