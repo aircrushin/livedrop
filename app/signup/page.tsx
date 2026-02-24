@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Camera, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SignUpPage() {
@@ -39,6 +40,11 @@ export default function SignUpPage() {
     e.preventDefault();
     setError("");
 
+    if (password.length < 8) {
+      setError(t('passwordMinLength'));
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError(t('passwordsMismatch'));
       return;
@@ -58,7 +64,8 @@ export default function SignUpPage() {
       return;
     }
 
-    router.push("/dashboard");
+    toast.success(t("checkEmail"));
+    router.push("/login");
     router.refresh();
   }
 
@@ -110,7 +117,7 @@ export default function SignUpPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  minLength={6}
+                  minLength={8}
                 />
               </div>
               <div className="space-y-2">
@@ -124,7 +131,7 @@ export default function SignUpPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  minLength={6}
+                  minLength={8}
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>

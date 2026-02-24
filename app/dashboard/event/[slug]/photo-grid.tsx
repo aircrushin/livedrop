@@ -6,7 +6,8 @@ import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, Trash2, Loader2, Download, CheckSquare, Square, X } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Eye, EyeOff, Trash2, Loader2, Download, CheckSquare, Square, X, AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getR2PublicUrl } from "@/lib/r2/utils";
 import { deleteFromR2, deleteMultipleFromR2 } from "@/lib/r2/actions";
@@ -27,8 +28,11 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [photoToDelete, setPhotoToDelete] = useState<Photo | null>(null);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const router = useRouter();
   const t = useTranslations('event');
+  const tCommon = useTranslations('common');
   const supabase = createClient();
 
   const getImageUrl = (storagePath: string) => {
@@ -77,10 +81,9 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
     setLoading(null);
   }
 
-  async function deletePhoto(photo: Photo) {
-    if (!confirm(t('confirmDeletePhoto'))) return;
-
+  async function doDeletePhoto(photo: Photo) {
     setLoading(photo.id);
+    setPhotoToDelete(null);
 
     try {
       const r2Result = await deleteFromR2(photo.storage_path);
@@ -110,10 +113,9 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
     }
   }
 
-  async function bulkDeleteSelected() {
+  async function doBulkDeleteSelected() {
     if (selectedIds.size === 0) return;
-    if (!confirm(t('confirmBulkDelete', { count: selectedIds.size }))) return;
-
+    setShowBulkDeleteModal(false);
     setIsBulkDeleting(true);
 
     try {
@@ -146,6 +148,11 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
     } finally {
       setIsBulkDeleting(false);
     }
+  }
+
+  function openBulkDeleteModal() {
+    if (selectedIds.size === 0) return;
+    setShowBulkDeleteModal(true);
   }
 
   if (photos.length === 0) {
@@ -181,7 +188,7 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
               variant="destructive"
               size="sm"
               disabled={noneSelected || isBulkDeleting}
-              onClick={bulkDeleteSelected}
+              onClick={openBulkDeleteModal}
               className="gap-1.5"
             >
               {isBulkDeleting ? (
@@ -294,7 +301,7 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
                       <Button
                         variant="destructive"
                         size="icon"
-                        onClick={() => deletePhoto(photo)}
+                        onClick={(e) => { e.stopPropagation(); setPhotoToDelete(photo); }}
                         title={t('delete')}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -316,6 +323,106 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
         isOpen={showDownloadDialog}
         onClose={() => setShowDownloadDialog(false)}
       />
+
+      {/* Single photo delete confirmation modal */}
+      {photoToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setPhotoToDelete(null)}
+          />
+          <Card className="relative w-full max-w-md animate-in border-destructive/50">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-destructive">
+                <AlertTriangle className="h-5 w-5" />
+                {t('delete')}
+              </CardTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setPhotoToDelete(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  {t('confirmDeletePhoto')}
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setPhotoToDelete(null)}
+                  >
+                    {tCommon('cancel')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="flex-1"
+                    onClick={() => photoToDelete && doDeletePhoto(photoToDelete)}
+                  >
+                    {t('delete')}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Bulk delete confirmation modal */}
+      {showBulkDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowBulkDeleteModal(false)}
+          />
+          <Card className="relative w-full max-w-md animate-in border-destructive/50">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-destructive">
+                <AlertTriangle className="h-5 w-5" />
+                {t('bulkDelete')}
+              </CardTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowBulkDeleteModal(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  {t('confirmBulkDelete', { count: selectedIds.size })}
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setShowBulkDeleteModal(false)}
+                  >
+                    {tCommon('cancel')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="flex-1"
+                    onClick={() => doBulkDeleteSelected()}
+                  >
+                    {t('bulkDelete')}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

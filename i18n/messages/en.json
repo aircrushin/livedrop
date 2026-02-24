@@ -62,7 +62,9 @@
       "signIn": "Sign in",
       "orContinueWith": "Or continue with",
       "continueWithGoogle": "Continue with Google",
-      "passwordsMismatch": "Passwords do not match"
+      "passwordsMismatch": "Passwords do not match",
+      "passwordMinLength": "Password must be at least 8 characters.",
+      "checkEmail": "Please check your email to confirm your account."
     },
     "forgotPassword": {
       "title": "Forgot password?",

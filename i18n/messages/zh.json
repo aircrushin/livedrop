@@ -62,7 +62,9 @@
       "signIn": "登录",
       "orContinueWith": "或通过以下方式继续",
       "continueWithGoogle": "使用 Google 继续",
-      "passwordsMismatch": "两次输入的密码不一致"
+      "passwordsMismatch": "两次输入的密码不一致",
+      "passwordMinLength": "密码至少需要 8 位。",
+      "checkEmail": "请查收邮件以确认您的账户。"
     },
     "forgotPassword": {
       "title": "忘记密码？",
