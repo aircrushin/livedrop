@@ -153,7 +153,16 @@
     "cancel": "Cancel",
     "downloading": "Downloading...",
     "downloadZip": "Download ZIP",
-    "downloadError": "Download failed, please try again"
+    "downloadError": "Download failed, please try again",
+    "selectPhotos": "Select",
+    "cancelSelection": "Cancel",
+    "selectedCount": "Selected {count} / {total}",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "bulkDelete": "Delete Selected",
+    "confirmBulkDelete": "Are you sure you want to delete {count} photo(s)? This cannot be undone.",
+    "bulkDeleteSuccess": "{count} photo(s) deleted",
+    "bulkDeleteFailed": "Failed to delete selected photos"
   },
   "camera": {
     "title": "Take a Photo",

@@ -153,7 +153,16 @@
     "cancel": "取消",
     "downloading": "下载中...",
     "downloadZip": "下载 ZIP",
-    "downloadError": "下载失败，请重试"
+    "downloadError": "下载失败，请重试",
+    "selectPhotos": "选择照片",
+    "selectedCount": "已选 {count} / {total}",
+    "selectAll": "全选",
+    "deselectAll": "取消全选",
+    "bulkDelete": "删除选中",
+    "cancelSelection": "取消",
+    "confirmBulkDelete": "确定要删除选中的 {count} 张照片吗？此操作无法撤销。",
+    "bulkDeleteFailed": "删除照片失败",
+    "bulkDeleteSuccess": "已删除 {count} 张照片"
   },
   "camera": {
     "title": "拍摄照片",
