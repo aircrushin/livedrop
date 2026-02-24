@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're Invited to LiveDrop</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #0a0a0a;
+      color: #fafafa;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+    
+    .card {
+      background-color: #141414;
+      border: 1px solid #262626;
+      border-radius: 16px;
+      padding: 40px 32px;
+      text-align: center;
+    }
+    
+    .logo {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #f5f5dc 0%, #d4af37 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 28px;
+    }
+    
+    .title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #fafafa;
+      margin-bottom: 12px;
+    }
+    
+    .subtitle {
+      font-size: 15px;
+      color: #a3a3a3;
+      margin-bottom: 32px;
+    }
+    
+    .divider {
+      width: 40px;
+      height: 2px;
+      background: linear-gradient(90deg, #f5f5dc, #d4af37);
+      margin: 0 auto 32px;
+      border-radius: 1px;
+    }
+    
+    .message {
+      font-size: 15px;
+      color: #a3a3a3;
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+    
+    .button {
+      display: inline-block;
+      background: linear-gradient(135deg, #f5f5dc 0%, #e8e4c9 100%);
+      color: #0a0a0a;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 14px 32px;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 20px rgba(212, 175, 55, 0.15);
+    }
+    
+    .button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(212, 175, 55, 0.25);
+    }
+    
+    .footer {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #262626;
+    }
+    
+    .footer-text {
+      font-size: 13px;
+      color: #737373;
+    }
+    
+    .url-fallback {
+      margin-top: 24px;
+      padding: 16px;
+      background-color: #1a1a1a;
+      border-radius: 8px;
+      word-break: break-all;
+    }
+    
+    .url-fallback a {
+      color: #d4af37;
+      font-size: 13px;
+      text-decoration: none;
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        padding: 24px 16px;
+      }
+      
+      .card {
+        padding: 32px 24px;
+      }
+      
+      .title {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="logo">📸</div>
+      <h1 class="title">You're Invited</h1>
+      <p class="subtitle">Join LiveDrop and start sharing moments</p>
+      <div class="divider"></div>
+      <p class="message">
+        You've been invited to create an account on <strong style="color: #f5f5dc;">{{ .SiteURL }}</strong>. 
+        Click the button below to accept your invitation and get started.
+      </p>
+      <a href="{{ .ConfirmationURL }}" class="button">Accept Invitation</a>
+      <div class="footer">
+        <p class="footer-text">
+          If the button doesn't work, copy and paste this link into your browser:
+        </p>
+        <div class="url-fallback">
+          <a href="{{ .ConfirmationURL }}">{{ .ConfirmationURL }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

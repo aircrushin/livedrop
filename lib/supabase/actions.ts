@@ -95,3 +95,21 @@ export async function updatePassword(formData: FormData) {
   revalidatePath("/", "layout");
   redirect("/dashboard");
 }
+
+export async function signInWithMagicLink(formData: FormData) {
+  const supabase = await createClient();
+  const email = formData.get("email") as string;
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+    },
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: true };
+}

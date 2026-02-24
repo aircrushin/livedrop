@@ -49,7 +49,19 @@
       "signUp": "Sign up",
       "orContinueWith": "Or continue with",
       "continueWithGoogle": "Continue with Google",
-      "forgotPassword": "Forgot password?"
+      "continueWithMagicLink": "Magic Link (Passwordless)",
+      "forgotPassword": "Forgot password?",
+      "or": "or"
+    },
+    "magicLink": {
+      "title": "Magic Link Sign In",
+      "subtitle": "Enter your email and we'll send you a login link",
+      "email": "Email",
+      "submit": "Send Magic Link",
+      "backToLogin": "Back to login",
+      "checkEmail": "Check your email",
+      "emailSent": "We've sent a magic link to {email}",
+      "checkSpam": "Check your spam folder if you don't see it in your inbox. The link will expire in 1 hour."
     },
     "signup": {
       "title": "Create your account",

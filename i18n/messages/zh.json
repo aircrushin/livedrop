@@ -49,7 +49,19 @@
       "signUp": "注册",
       "orContinueWith": "或通过以下方式继续",
       "continueWithGoogle": "使用 Google 继续",
-      "forgotPassword": "忘记密码？"
+      "continueWithMagicLink": "魔法链接登录（免密码）",
+      "forgotPassword": "忘记密码？",
+      "or": "或"
+    },
+    "magicLink": {
+      "title": "魔法链接登录",
+      "subtitle": "输入您的邮箱，我们将发送登录链接",
+      "email": "邮箱",
+      "submit": "发送魔法链接",
+      "backToLogin": "返回登录",
+      "checkEmail": "请查收邮件",
+      "emailSent": "我们已向 {email} 发送了魔法链接",
+      "checkSpam": "如果在收件箱中没有看到，请检查垃圾邮件文件夹。链接将在 1 小时后过期。"
     },
     "signup": {
       "title": "创建账户",
