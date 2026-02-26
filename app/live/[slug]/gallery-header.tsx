@@ -6,14 +6,12 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { CheckSquare, Clock, Loader2, TrendingUp, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { PhotoWithLikes } from "./page";
-import type { SortMode, ViewMode } from "./use-live-gallery";
+import type { SortMode } from "./use-live-gallery";
 
 interface GalleryHeaderProps {
   eventName: string;
   photos: PhotoWithLikes[];
   isConnected: boolean;
-  viewMode: ViewMode;
-  setViewMode: (mode: ViewMode) => void;
   sortMode: SortMode;
   setSortMode: (mode: SortMode) => void;
   isSelectMode: boolean;
@@ -66,6 +64,13 @@ export function GalleryHeader({
           <div>
             <p className="text-xs text-muted-foreground uppercase tracking-wide">LiveDrop</p>
             <p className="font-bold text-lg">{eventName}</p>
+          </div>
+          {/* Photo Count Badge */}
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>{photos.length} {t('photos')}</span>
           </div>
         </div>
 

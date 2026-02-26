@@ -24,8 +24,6 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
   const {
     photos,
     isConnected,
-    viewMode,
-    setViewMode,
     sortMode,
     setSortMode,
     currentUserId,
@@ -96,8 +94,6 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
         eventName={event.name}
         photos={photos}
         isConnected={isConnected}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
         sortMode={sortMode}
         setSortMode={setSortMode}
         isSelectMode={isSelectMode}
@@ -109,10 +105,9 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
         deselectAll={deselectAll}
       />
 
-      {viewMode === "timeline" ? (
+      {sortMode === "newest" ? (
         <TimelineView
           photos={sortedPhotos}
-          viewMode={viewMode}
           isSelectMode={isSelectMode}
           selectedPhotos={selectedPhotos}
           likedPhotos={likedPhotos}
@@ -124,7 +119,6 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
       ) : (
         <PhotoGrid
           photos={sortedPhotos}
-          viewMode={viewMode}
           isSelectMode={isSelectMode}
           selectedPhotos={selectedPhotos}
           likedPhotos={likedPhotos}

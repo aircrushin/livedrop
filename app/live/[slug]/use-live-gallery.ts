@@ -27,7 +27,6 @@ import { CommentSection, CommentButtonCompact } from "@/components/comment-secti
 import type { Event } from "@/lib/supabase/types";
 import type { PhotoWithLikes } from "./page";
 
-export type ViewMode = "timeline" | "grid";
 export type SortMode = "newest" | "popular";
 
 export interface UseLiveGalleryProps {
@@ -39,8 +38,6 @@ export interface UseLiveGalleryReturn {
   photos: PhotoWithLikes[];
   setPhotos: React.Dispatch<React.SetStateAction<PhotoWithLikes[]>>;
   isConnected: boolean;
-  viewMode: ViewMode;
-  setViewMode: (mode: ViewMode) => void;
   sortMode: SortMode;
   setSortMode: (mode: SortMode) => void;
   currentUserId: string | null;
@@ -61,7 +58,6 @@ export interface UseLiveGalleryReturn {
 export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): UseLiveGalleryReturn {
   const [photos, setPhotos] = useState<PhotoWithLikes[]>(initialPhotos);
   const [isConnected, setIsConnected] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>("timeline");
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [likedPhotos, setLikedPhotos] = useState<Set<string>>(new Set());
@@ -90,23 +86,15 @@ export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): U
     getUser();
   }, [supabase]);
 
-  // Load view mode and sort mode from localStorage
+  // Load sort mode from localStorage
   useEffect(() => {
-    const savedView = localStorage.getItem(`livedrop-view-mode-${window.location.pathname}`);
     const savedSort = localStorage.getItem(`livedrop-sort-mode-${window.location.pathname}`);
-    if (savedView === "timeline" || savedView === "grid") {
-      setViewMode(savedView);
-    }
     if (savedSort === "newest" || savedSort === "popular") {
       setSortMode(savedSort);
     }
   }, []);
 
   // Save preferences to localStorage
-  useEffect(() => {
-    localStorage.setItem(`livedrop-view-mode-${window.location.pathname}`, viewMode);
-  }, [viewMode]);
-
   useEffect(() => {
     localStorage.setItem(`livedrop-sort-mode-${window.location.pathname}`, sortMode);
   }, [sortMode]);
@@ -303,8 +291,6 @@ export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): U
     photos,
     setPhotos,
     isConnected,
-    viewMode,
-    setViewMode,
     sortMode,
     setSortMode,
     currentUserId,

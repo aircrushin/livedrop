@@ -208,8 +208,31 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
 
   if (photos.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
+      <div className="text-center py-12 text-muted-foreground space-y-4">
         <p>{t('noPhotosMessage')}</p>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => uploadInputRef.current?.click()}
+          disabled={isUploading}
+          className="gap-2"
+        >
+          {isUploading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Upload className="h-4 w-4" />
+          )}
+          {isUploading ? t('uploading') : t('uploadPhotos')}
+        </Button>
+        <input
+          ref={uploadInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          aria-label={t('uploadPhotos')}
+          onChange={handleUploadFiles}
+          className="hidden"
+        />
       </div>
     );
   }
@@ -275,6 +298,20 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
           >
             <CheckSquare className="h-4 w-4" />
             {t('selectPhotos')}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => uploadInputRef.current?.click()}
+            disabled={isUploading}
+            className="gap-2 min-w-[7.5rem]"
+          >
+            {isUploading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Upload className="h-4 w-4" />
+            )}
+            {isUploading ? t('uploading') : t('uploadPhotos')}
           </Button>
           <Button
             variant="outline"
@@ -365,6 +402,17 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
           );
         })}
       </div>
+
+      {/* Hidden file input for upload */}
+      <input
+        ref={uploadInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        aria-label={t('uploadPhotos')}
+        onChange={handleUploadFiles}
+        className="hidden"
+      />
 
       {/* Batch Download Dialog */}
       <BatchDownloadDialog

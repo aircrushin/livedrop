@@ -9,11 +9,9 @@ import { CommentButtonCompact } from "@/components/comment-section";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import type { PhotoWithLikes } from "./page";
-import type { ViewMode } from "./use-live-gallery";
 
 interface TimelineViewProps {
   photos: PhotoWithLikes[];
-  viewMode: ViewMode;
   isSelectMode: boolean;
   selectedPhotos: Set<string>;
   likedPhotos: Set<string>;
@@ -259,7 +257,7 @@ export function TimelineView({
           <div key={group.date}>
             <DateDivider date={group.displayDate} isFirst={groupIndex === 0} />
 
-            {/* Photos grid for this day */}
+            {/* Photos masonry layout for this day */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
