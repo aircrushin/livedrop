@@ -54,14 +54,18 @@
       "or": "or"
     },
     "magicLink": {
-      "title": "Magic Link Sign In",
-      "subtitle": "Enter your email and we'll send you a login link",
+      "title": "Sign in with Email",
+      "subtitle": "Enter your email and we'll send you a one-time code",
       "email": "Email",
-      "submit": "Send Magic Link",
+      "submit": "Send Code",
       "backToLogin": "Back to login",
-      "checkEmail": "Check your email",
-      "emailSent": "We've sent a magic link to {email}",
-      "checkSpam": "Check your spam folder if you don't see it in your inbox. The link will expire in 1 hour."
+      "otpTitle": "Enter verification code",
+      "otpSubtitle": "We sent a 6-digit code to {email}",
+      "verify": "Verify & Sign In",
+      "didntReceive": "Didn't receive the code?",
+      "resend": "Change email or resend",
+      "invalidCode": "Please enter the complete 6-digit code.",
+      "checkSpam": "Check your spam folder if you don't see it in your inbox. The code will expire in 1 hour."
     },
     "signup": {
       "title": "Create your account",

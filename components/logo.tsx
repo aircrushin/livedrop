@@ -34,7 +34,7 @@ export function Logo({
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 512 512"
+        viewBox="0 0 104 76"
         width={width}
         height={height}
         className={cn("shrink-0", className)}
@@ -42,61 +42,79 @@ export function Logo({
         aria-label="LiveDrop logo"
       >
         <defs>
-          <linearGradient id="ld-drop" x1="0.25" y1="0" x2="0.75" y2="1">
+          <linearGradient id="ld-icon-mark" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#f7e27a" />
-            <stop offset="45%" stopColor="#d4af37" />
+            <stop offset="50%" stopColor="#d4af37" />
             <stop offset="100%" stopColor="#a8861e" />
           </linearGradient>
         </defs>
-        <rect width="512" height="512" rx="112" fill="#0a0a0a" />
-        <path
-          d="M256 62 C256 62 416 242 416 338 C416 422 344 482 256 482 C168 482 96 422 96 338 C96 242 256 62 256 62Z"
-          fill="url(#ld-drop)"
-        />
-        <circle cx="256" cy="340" r="80" fill="rgba(10,10,10,0.2)" />
-        <circle
-          cx="256"
-          cy="340"
-          r="56"
+        {/* Camera body */}
+        <rect
+          x="0"
+          y="8"
+          width="104"
+          height="68"
+          rx="18"
           fill="none"
-          stroke="rgba(10,10,10,0.12)"
-          strokeWidth="7"
+          stroke="rgba(250,250,248,0.08)"
+          strokeWidth="1.5"
         />
-        <circle cx="256" cy="340" r="28" fill="rgba(10,10,10,0.22)" />
+        {/* Gradient lens ring */}
+        <circle
+          cx="52"
+          cy="42"
+          r="22"
+          fill="none"
+          stroke="url(#ld-icon-mark)"
+          strokeWidth="6"
+        />
+        {/* Inner lens */}
+        <circle cx="52" cy="42" r="12" fill="rgba(15,23,42,0.9)" />
+        {/* Lens highlight */}
         <ellipse
-          cx="220"
-          cy="278"
-          rx="30"
-          ry="16"
-          fill="white"
-          opacity="0.2"
-          transform="rotate(-32 220 278)"
+          cx="46"
+          cy="36"
+          rx="6"
+          ry="4"
+          fill="#fefce8"
+          opacity="0.32"
+          transform="rotate(-25 46 36)"
         />
-        <circle cx="398" cy="102" r="26" fill="#dc2626" />
+        {/* Top bar */}
+        <rect
+          x="14"
+          y="2"
+          width="38"
+          height="10"
+          rx="4"
+          fill="rgba(248,250,252,0.12)"
+        />
+        {/* Live red dot */}
+        <circle cx="92" cy="16" r="6.5" fill="#dc2626" />
         {animated && (
           <circle
-            cx="398"
-            cy="102"
-            r="26"
+            cx="92"
+            cy="16"
+            r="6.5"
             fill="none"
             stroke="#dc2626"
-            strokeWidth="3.5"
+            strokeWidth="1.5"
           >
             <animate
               attributeName="r"
-              values="26;46"
+              values="6.5;11"
               dur="1.6s"
               repeatCount="indefinite"
             />
             <animate
               attributeName="opacity"
-              values="0.6;0"
+              values="0.7;0"
               dur="1.6s"
               repeatCount="indefinite"
             />
           </circle>
         )}
-        <circle cx="398" cy="102" r="9" fill="white" opacity="0.92" />
+        <circle cx="92" cy="16" r="2.3" fill="#fee2e2" opacity="0.9" />
       </svg>
     );
   }
@@ -201,11 +219,11 @@ export function Logo({
     );
   }
 
-  // full-dark variant
+  // full-dark variant - updated to match logo-dark.svg style without background
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 600 160"
+      viewBox="0 0 520 120"
       width={width}
       height={height}
       className={cn("shrink-0", className)}
@@ -213,9 +231,9 @@ export function Logo({
       aria-label="LiveDrop logo"
     >
       <defs>
-        <linearGradient id="ld-markD" x1="0.25" y1="0" x2="0.75" y2="1">
+        <linearGradient id="ld-markD" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#f7e27a" />
-          <stop offset="45%" stopColor="#d4af37" />
+          <stop offset="50%" stopColor="#d4af37" />
           <stop offset="100%" stopColor="#a8861e" />
         </linearGradient>
         <linearGradient id="ld-textD" x1="0" y1="0" x2="1" y2="1">
@@ -227,98 +245,125 @@ export function Logo({
           <stop offset="100%" stopColor="#d4af37" />
         </linearGradient>
       </defs>
-      <rect width="600" height="160" rx="24" fill="#0a0a0a" />
-      <path
-        d="M68 22 C68 22 118 68 118 94 C118 118 96 138 68 138 C40 138 18 118 18 94 C18 68 68 22 68 22Z"
-        fill="url(#ld-markD)"
-      />
-      <circle cx="68" cy="96" r="22" fill="rgba(10,10,10,0.2)" />
-      <circle
-        cx="68"
-        cy="96"
-        r="15"
-        fill="none"
-        stroke="rgba(10,10,10,0.12)"
-        strokeWidth="2.5"
-      />
-      <circle cx="68" cy="96" r="8" fill="rgba(10,10,10,0.22)" />
-      <ellipse
-        cx="56"
-        cy="76"
-        rx="8"
-        ry="5"
-        fill="white"
-        opacity="0.2"
-        transform="rotate(-32 56 76)"
-      />
-      <circle cx="106" cy="34" r="8.5" fill="#dc2626" />
-      {animated && (
-        <circle
-          cx="106"
-          cy="34"
-          r="8.5"
+
+      {/* Mark: Rounded camera with live dot */}
+      <g transform="translate(32 22)">
+        {/* Camera body */}
+        <rect
+          x="0"
+          y="8"
+          width="104"
+          height="68"
+          rx="18"
           fill="none"
-          stroke="#dc2626"
-          strokeWidth="2"
+          stroke="rgba(250,250,248,0.08)"
+          strokeWidth="1.5"
+        />
+        {/* Gradient lens ring */}
+        <circle
+          cx="52"
+          cy="42"
+          r="22"
+          fill="none"
+          stroke="url(#ld-markD)"
+          strokeWidth="6"
+        />
+        {/* Inner lens */}
+        <circle cx="52" cy="42" r="12" fill="rgba(15,23,42,0.9)" />
+        {/* Lens highlight */}
+        <ellipse
+          cx="46"
+          cy="36"
+          rx="6"
+          ry="4"
+          fill="#fefce8"
+          opacity="0.32"
+          transform="rotate(-25 46 36)"
+        />
+        {/* Top bar */}
+        <rect
+          x="14"
+          y="2"
+          width="38"
+          height="10"
+          rx="4"
+          fill="rgba(248,250,252,0.12)"
+        />
+        {/* Live red dot */}
+        <circle cx="92" cy="16" r="6.5" fill="#dc2626" />
+        {animated && (
+          <circle
+            cx="92"
+            cy="16"
+            r="6.5"
+            fill="none"
+            stroke="#dc2626"
+            strokeWidth="1.5"
+          >
+            <animate
+              attributeName="r"
+              values="6.5;11"
+              dur="1.6s"
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="opacity"
+              values="0.7;0"
+              dur="1.6s"
+              repeatCount="indefinite"
+            />
+          </circle>
+        )}
+        <circle cx="92" cy="16" r="2.3" fill="#fee2e2" opacity="0.9" />
+      </g>
+
+      {/* Wordmark */}
+      <g transform="translate(156 0)">
+        {/* Main text */}
+        <text
+          x="0"
+          y="70"
+          fontFamily="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
+          fontSize="50"
+          fontWeight="300"
+          fill="url(#ld-textD)"
+          letterSpacing="-1.2"
         >
-          <animate
-            attributeName="r"
-            values="8.5;16"
-            dur="1.6s"
-            repeatCount="indefinite"
-          />
-          <animate
-            attributeName="opacity"
-            values="0.6;0"
-            dur="1.6s"
-            repeatCount="indefinite"
-          />
-        </circle>
-      )}
-      <circle cx="106" cy="34" r="3" fill="white" opacity="0.9" />
-      <line
-        x1="140"
-        y1="40"
-        x2="140"
-        y2="120"
-        stroke="#262626"
-        strokeWidth="1.5"
-        opacity="0.5"
-      />
-      <text
-        x="164"
-        y="102"
-        fontFamily="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
-        fontSize="58"
-        fontWeight="300"
-        fill="url(#ld-textD)"
-        letterSpacing="-1.5"
-      >
-        Live
-      </text>
-      <text
-        x="304"
-        y="102"
-        fontFamily="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
-        fontSize="58"
-        fontWeight="700"
-        fill="url(#ld-accentD)"
-        letterSpacing="-1.5"
-      >
-        Drop
-      </text>
-      <text
-        x="164"
-        y="128"
-        fontFamily="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
-        fontSize="13"
-        fontWeight="400"
-        fill="#a3a3a3"
-        letterSpacing="3"
-        opacity="0.7"
-      >
-        REAL-TIME EVENT PHOTOS
-      </text>
+          <tspan fontWeight="300">Live</tspan>
+          <tspan fontWeight="700" fill="url(#ld-accentD)">
+            Drop
+          </tspan>
+        </text>
+        {/* Underline accent */}
+        <rect
+          x="2"
+          y="80"
+          width="148"
+          height="3"
+          rx="1.5"
+          fill="rgba(148,163,184,0.35)"
+        />
+        <rect
+          x="2"
+          y="80"
+          width="82"
+          height="3"
+          rx="1.5"
+          fill="url(#ld-accentD)"
+        />
+        {/* Tagline */}
+        <text
+          x="2"
+          y="102"
+          fontFamily="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
+          fontSize="11"
+          fontWeight="400"
+          fill="#a1a1aa"
+          letterSpacing="3"
+        >
+          REAL-TIME EVENT PHOTOS
+        </text>
+      </g>
     </svg>
   );
 }

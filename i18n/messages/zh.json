@@ -54,14 +54,18 @@
       "or": "或"
     },
     "magicLink": {
-      "title": "魔法链接登录",
-      "subtitle": "输入您的邮箱，我们将发送登录链接",
+      "title": "邮箱验证码登录",
+      "subtitle": "输入您的邮箱，我们将发送一次性验证码",
       "email": "邮箱",
-      "submit": "发送魔法链接",
+      "submit": "发送验证码",
       "backToLogin": "返回登录",
-      "checkEmail": "请查收邮件",
-      "emailSent": "我们已向 {email} 发送了魔法链接",
-      "checkSpam": "如果在收件箱中没有看到，请检查垃圾邮件文件夹。链接将在 1 小时后过期。"
+      "otpTitle": "输入验证码",
+      "otpSubtitle": "已向 {email} 发送 6 位验证码",
+      "verify": "验证并登录",
+      "didntReceive": "没有收到验证码？",
+      "resend": "更换邮箱或重新发送",
+      "invalidCode": "请输入完整的 6 位验证码。",
+      "checkSpam": "如果在收件箱中没有看到，请检查垃圾邮件文件夹。验证码将在 1 小时后过期。"
     },
     "signup": {
       "title": "创建账户",
