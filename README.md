@@ -14,7 +14,7 @@ Real-time event photo sharing platform. Create a live photo wall for your event 
 
 - **Framework**: Next.js 16 (App Router)
 - **Database**: Supabase (PostgreSQL)
-- **Storage**: Supabase Storage
+- **Storage**: Cloudflare R2 (S3-compatible)
 - **Real-time**: Supabase Realtime
 - **Auth**: Supabase Auth (Email + Anonymous)
 - **PWA**: Serwist (Service Workers)
@@ -49,18 +49,22 @@ npm install
 
 ### 3. Configure Environment
 
-Copy the example env file and fill in your Supabase credentials:
-
-```bash
-cp .env.local.example .env.local
-```
-
-Edit `.env.local`:
+Create an `.env` (or `.env.local` for Next.js) file in the project root and add the following variables:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+# Cloudflare R2 configuration
+R2_ACCESS_KEY_ID=your-r2-access-key-id
+R2_SECRET_ACCESS_KEY=your-r2-secret-access-key
+NEXT_PUBLIC_R2_PUBLIC_URL=https://your-account.r2.dev
+R2_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
+R2_BUCKET=event-photos
+
+# App configuration
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Supabase configuration
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
 
 ### 4. Run Development Server

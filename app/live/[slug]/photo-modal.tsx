@@ -151,7 +151,7 @@ export function PhotoModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          className="fixed inset-0 z-50 bg-background/95 flex items-center justify-center"
           onClick={onClose}
         >
           <motion.div
@@ -162,7 +162,7 @@ export function PhotoModal({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
+            <div className="flex items-center justify-between p-4 bg-gradient-to-b from-background/80 to-transparent">
               <div className="flex items-center gap-2">
                 <span className="text-white/60 text-sm">
                   {currentIndex + 1} / {photos.length}
@@ -171,16 +171,16 @@ export function PhotoModal({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => onDownload(currentPhoto)}
-                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                  className="p-2 rounded-full bg-secondary/50 hover:bg-secondary transition-colors"
                   title={t('download')}
                 >
-                  <Download className="h-5 w-5 text-white" />
+                  <Download className="h-5 w-5 text-foreground" />
                 </button>
                 <button
                   onClick={onClose}
-                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                  className="p-2 rounded-full bg-secondary/50 hover:bg-secondary transition-colors"
                 >
-                  <X className="h-5 w-5 text-white" />
+                  <X className="h-5 w-5 text-foreground" />
                 </button>
               </div>
             </div>
@@ -200,7 +200,7 @@ export function PhotoModal({
 
             {/* Interaction Bar */}
             {currentUserId && (
-              <div className="px-4 py-3 border-t border-white/10 bg-gradient-to-t from-black/80 to-transparent">
+              <div className="px-4 py-3 border-t border-border/50 bg-gradient-to-t from-background/80 to-transparent">
                 <div className="max-w-md mx-auto flex flex-col gap-3">
                   <div className="flex items-center justify-center gap-4">
                     <LikeButton
@@ -210,9 +210,9 @@ export function PhotoModal({
                       initialCount={currentPhoto.likes_count}
                       onLikeChange={(liked) => onLikeChange(currentPhoto.id, liked)}
                     />
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-full">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-secondary/50 rounded-full">
                       <MessageCircle className="h-4 w-4 text-blue-400" />
-                      <span className="text-sm text-white/70">
+                      <span className="text-sm text-muted-foreground">
                         {currentPhoto.comments_count} {t('comments')}
                       </span>
                     </div>
@@ -233,48 +233,48 @@ export function PhotoModal({
                 {/* Navigation */}
                 <button
                   onClick={handlePrevious}
-                  className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-3 rounded-full bg-secondary/50 hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   disabled={photos.length <= 1}
                 >
-                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-6 w-6 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
 
                 {/* Zoom Controls */}
-                <div className="flex items-center gap-2 bg-white/10 rounded-full px-2 py-1">
+                <div className="flex items-center gap-2 bg-secondary/50 rounded-full px-2 py-1">
                   <button
                     onClick={handleZoomOut}
-                    className="p-2 rounded-full hover:bg-white/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="p-2 rounded-full hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     disabled={scale <= 0.5}
                   >
-                    <ZoomOut className="h-4 w-4 text-white" />
+                    <ZoomOut className="h-4 w-4 text-foreground" />
                   </button>
-                  <span className="text-white text-sm min-w-[3rem] text-center">
+                  <span className="text-foreground text-sm min-w-[3rem] text-center">
                     {Math.round(scale * 100)}%
                   </span>
                   <button
                     onClick={handleZoomIn}
-                    className="p-2 rounded-full hover:bg-white/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="p-2 rounded-full hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     disabled={scale >= 3}
                   >
-                    <ZoomIn className="h-4 w-4 text-white" />
+                    <ZoomIn className="h-4 w-4 text-foreground" />
                   </button>
                 </div>
 
                 <button
                   onClick={handleNext}
-                  className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-3 rounded-full bg-secondary/50 hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   disabled={photos.length <= 1}
                 >
-                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-6 w-6 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
               </div>
 
               {/* Keyboard shortcuts hint */}
-              <p className="text-center text-white/40 text-xs mt-3">
+              <p className="text-center text-muted-foreground/60 text-xs mt-3">
                 {t('keyboardHints')}
               </p>
             </div>

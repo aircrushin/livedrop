@@ -1,7 +1,8 @@
 "use client";
 
 import { Logo } from "@/components/logo";
-import { CheckSquare, Clock, Loader2, Square, TrendingUp, X } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { CheckSquare, Clock, Loader2, TrendingUp, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { PhotoWithLikes } from "./page";
 import type { SortMode, ViewMode } from "./use-live-gallery";
@@ -47,13 +48,13 @@ export function GalleryHeader({
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-10 p-4 bg-gradient-to-b from-black/80 to-transparent">
+    <div className="fixed top-0 left-0 right-0 z-10 p-4 bg-gradient-to-b from-background/80 to-transparent">
       <div className="flex items-center justify-between max-w-screen-2xl mx-auto">
         {/* Event Info */}
         <div className="flex items-center gap-3">
           <Logo variant="icon" size="sm" className="h-10 w-10" animated={false} />
           <div>
-            <p className="text-xs text-white/60 uppercase tracking-wide">LiveDrop</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wide">LiveDrop</p>
             <p className="font-bold text-lg">{eventName}</p>
           </div>
         </div>
@@ -67,7 +68,7 @@ export function GalleryHeader({
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
                 isSelectMode
                   ? "bg-primary text-primary-foreground"
-                  : "bg-white/10 text-white/80 hover:bg-white/20"
+                  : "bg-secondary/50 text-secondary-foreground hover:bg-secondary"
               }`}
             >
               {isSelectMode ? (
@@ -86,13 +87,13 @@ export function GalleryHeader({
 
           {/* Sort Mode Toggle */}
           {!isSelectMode && (
-            <div className="flex items-center bg-white/10 rounded-full p-1">
+            <div className="flex items-center bg-secondary/50 rounded-full p-1">
               <button
                 onClick={() => setSortMode("newest")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
                   sortMode === "newest"
-                    ? "bg-white/20 text-white shadow-sm"
-                    : "text-white/60 hover:text-white/80"
+                    ? "bg-secondary text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
                 title={t('newest')}
               >
@@ -103,8 +104,8 @@ export function GalleryHeader({
                 onClick={() => setSortMode("popular")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
                   sortMode === "popular"
-                    ? "bg-white/20 text-white shadow-sm"
-                    : "text-white/60 hover:text-white/80"
+                    ? "bg-secondary text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
                 title={t('popular')}
               >
@@ -121,31 +122,34 @@ export function GalleryHeader({
                 isConnected ? "bg-green-500" : "bg-yellow-500"
               }`}
             />
-            <span className="text-sm text-white/60">
+            <span className="text-sm text-muted-foreground">
               {isConnected ? t('live') : t('connecting')}
             </span>
           </div>
+
+          {/* Theme Toggle */}
+          <ThemeToggle className="text-foreground hover:bg-secondary/50" />
         </div>
       </div>
 
       {/* Selection Toolbar */}
       {isSelectMode && (
-        <div className="max-w-screen-2xl mx-auto mt-3 flex items-center justify-between bg-white/10 backdrop-blur rounded-lg px-4 py-2 animate-in slide-in-from-top-2">
+        <div className="max-w-screen-2xl mx-auto mt-3 flex items-center justify-between bg-secondary/50 backdrop-blur rounded-lg px-4 py-2 animate-in slide-in-from-top-2">
           <div className="flex items-center gap-4">
-            <span className="text-sm text-white/80">
+            <span className="text-sm text-foreground/80">
               {t('selectedCount', { count: selectedPhotos.size, total: photos.length })}
             </span>
             <div className="flex gap-2">
               <button
                 onClick={selectAll}
-                className="text-xs text-white/60 hover:text-white transition-colors"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 {t('selectAll')}
               </button>
-              <span className="text-white/30">|</span>
+              <span className="text-border">|</span>
               <button
                 onClick={deselectAll}
-                className="text-xs text-white/60 hover:text-white transition-colors"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 {t('deselectAll')}
               </button>

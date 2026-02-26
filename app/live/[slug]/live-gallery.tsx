@@ -90,7 +90,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <GalleryHeader
         eventName={event.name}
         photos={photos}
