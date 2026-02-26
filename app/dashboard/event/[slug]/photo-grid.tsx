@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from 'next-intl';
 import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Eye, EyeOff, Trash2, Loader2, Download, CheckSquare, Square, X, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, Trash2, Loader2, Download, CheckSquare, Square, X, AlertTriangle, Upload } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getR2PublicUrl } from "@/lib/r2/utils";
-import { deleteFromR2, deleteMultipleFromR2 } from "@/lib/r2/actions";
+import { deleteFromR2, deleteMultipleFromR2, uploadToR2 } from "@/lib/r2/actions";
+import { compressImage } from "@/lib/utils/image-compression";
 import { BatchDownloadDialog } from "@/components/batch-download-dialog";
 import type { Photo } from "@/lib/supabase/types";
 
@@ -30,6 +31,8 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [photoToDelete, setPhotoToDelete] = useState<Photo | null>(null);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const uploadInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const t = useTranslations('event');
   const tCommon = useTranslations('common');
@@ -38,6 +41,54 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
   const getImageUrl = (storagePath: string) => {
     return getR2PublicUrl(storagePath);
   };
+
+  async function handleUploadFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    e.target.value = "";
+
+    setIsUploading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      let successCount = 0;
+      for (const file of files) {
+        try {
+          const compressedBlob = await compressImage(file, 1920, 1920, 0.85);
+          const timestamp = Date.now();
+          const randomStr = Math.random().toString(36).substr(2, 6);
+          const fileName = `${eventSlug}/${user.id}-${timestamp}-${randomStr}.jpg`;
+          const arrayBuffer = await compressedBlob.arrayBuffer();
+          const uint8Array = new Uint8Array(arrayBuffer);
+
+          const uploadResult = await uploadToR2(fileName, uint8Array, "image/jpeg");
+          if (!uploadResult.success) continue;
+
+          const { error: insertError } = await supabase.from("photos").insert({
+            event_id: eventId,
+            user_id: user.id,
+            storage_path: fileName,
+          });
+
+          if (!insertError) successCount++;
+        } catch {
+          // continue with next file
+        }
+      }
+
+      if (successCount > 0) {
+        toast.success(t('uploadSuccess', { count: successCount }));
+        router.refresh();
+      } else {
+        toast.error(t('uploadFailed'));
+      }
+    } catch {
+      toast.error(t('uploadFailed'));
+    } finally {
+      setIsUploading(false);
+    }
+  }
 
   function enterSelectMode() {
     setIsSelectMode(true);

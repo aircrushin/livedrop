@@ -1,6 +1,7 @@
 "use client";
 
-import { Logo } from "@/components/logo";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CheckSquare, Clock, Loader2, TrendingUp, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -39,6 +40,8 @@ export function GalleryHeader({
   deselectAll,
 }: GalleryHeaderProps) {
   const t = useTranslations('live');
+  const { theme } = useTheme();
+  const logoSrc = theme === "light" ? "/icons/icon.svg" : "/icons/icon-dark.svg";
 
   const toggleSelectMode = () => {
     setIsSelectMode(!isSelectMode);
@@ -52,7 +55,14 @@ export function GalleryHeader({
       <div className="flex items-center justify-between max-w-screen-2xl mx-auto">
         {/* Event Info */}
         <div className="flex items-center gap-3">
-          <Logo variant="icon" size="sm" className="h-10 w-10" animated={false} />
+          <Image
+            src={logoSrc}
+            alt="LiveDrop icon"
+            width={40}
+            height={40}
+            className="h-10 w-10 rounded-2xl"
+            priority
+          />
           <div>
             <p className="text-xs text-muted-foreground uppercase tracking-wide">LiveDrop</p>
             <p className="font-bold text-lg">{eventName}</p>

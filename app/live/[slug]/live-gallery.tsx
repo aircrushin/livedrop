@@ -6,6 +6,7 @@ import { useBatchDownload } from "@/lib/hooks/use-batch-download";
 import { useLiveGallery } from "./use-live-gallery";
 import { GalleryHeader } from "./gallery-header";
 import { PhotoGrid } from "./photo-grid";
+import { TimelineView } from "./timeline-view";
 import { PhotoModal } from "./photo-modal";
 import { ConnectionIndicator } from "./connection-indicator";
 import type { Event } from "@/lib/supabase/types";
@@ -108,17 +109,31 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
         deselectAll={deselectAll}
       />
 
-      <PhotoGrid
-        photos={sortedPhotos}
-        viewMode={viewMode}
-        isSelectMode={isSelectMode}
-        selectedPhotos={selectedPhotos}
-        likedPhotos={likedPhotos}
-        currentUserId={currentUserId}
-        onPhotoClick={handlePhotoClick}
-        onToggleSelection={togglePhotoSelection}
-        onLikeChange={handleLikeChange}
-      />
+      {viewMode === "timeline" ? (
+        <TimelineView
+          photos={sortedPhotos}
+          viewMode={viewMode}
+          isSelectMode={isSelectMode}
+          selectedPhotos={selectedPhotos}
+          likedPhotos={likedPhotos}
+          currentUserId={currentUserId}
+          onPhotoClick={handlePhotoClick}
+          onToggleSelection={togglePhotoSelection}
+          onLikeChange={handleLikeChange}
+        />
+      ) : (
+        <PhotoGrid
+          photos={sortedPhotos}
+          viewMode={viewMode}
+          isSelectMode={isSelectMode}
+          selectedPhotos={selectedPhotos}
+          likedPhotos={likedPhotos}
+          currentUserId={currentUserId}
+          onPhotoClick={handlePhotoClick}
+          onToggleSelection={togglePhotoSelection}
+          onLikeChange={handleLikeChange}
+        />
+      )}
 
       <PhotoModal
         photo={selectedPhoto}

@@ -176,7 +176,11 @@
     "bulkDelete": "Delete Selected",
     "confirmBulkDelete": "Are you sure you want to delete {count} photo(s)? This cannot be undone.",
     "bulkDeleteSuccess": "{count} photo(s) deleted",
-    "bulkDeleteFailed": "Failed to delete selected photos"
+    "bulkDeleteFailed": "Failed to delete selected photos",
+    "uploadPhotos": "Upload",
+    "uploadSuccess": "{count} photo(s) uploaded",
+    "uploadFailed": "Upload failed",
+    "uploading": "Uploading..."
   },
   "camera": {
     "title": "Take a Photo",

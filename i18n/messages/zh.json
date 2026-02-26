@@ -176,7 +176,11 @@
     "cancelSelection": "取消",
     "confirmBulkDelete": "确定要删除选中的 {count} 张照片吗？此操作无法撤销。",
     "bulkDeleteFailed": "删除照片失败",
-    "bulkDeleteSuccess": "已删除 {count} 张照片"
+    "bulkDeleteSuccess": "已删除 {count} 张照片",
+    "uploadPhotos": "上传",
+    "uploadSuccess": "已上传 {count} 张照片",
+    "uploadFailed": "上传失败",
+    "uploading": "上传中..."
   },
   "camera": {
     "title": "拍摄照片",
