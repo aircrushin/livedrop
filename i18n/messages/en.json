@@ -236,6 +236,8 @@
     "batchDownloadError": "Batch download failed, please try again",
     "newest": "Newest",
     "popular": "Popular",
+    "gallery": "Gallery",
+    "galleryView": "Gallery View",
     "comments": "Comments",
     "writeComment": "Write a comment...",
     "noCommentsYet": "No comments yet. Be the first!",

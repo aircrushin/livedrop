@@ -7,10 +7,13 @@ import { useLiveGallery } from "./use-live-gallery";
 import { GalleryHeader } from "./gallery-header";
 import { PhotoGrid } from "./photo-grid";
 import { TimelineView } from "./timeline-view";
+import { GalleryView } from "./gallery-view";
 import { PhotoModal } from "./photo-modal";
 import { ConnectionIndicator } from "./connection-indicator";
 import type { Event } from "@/lib/supabase/types";
 import type { PhotoWithLikes } from "./page";
+
+export type ViewMode = "default" | "gallery";
 
 interface LiveGalleryProps {
   event: Pick<Event, "id" | "name" | "slug">;
@@ -20,6 +23,7 @@ interface LiveGalleryProps {
 export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
   const t = useTranslations('live');
   const [selectedPhoto, setSelectedPhoto] = useState<PhotoWithLikes | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("default");
   
   const {
     photos,
@@ -96,6 +100,8 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
         isConnected={isConnected}
         sortMode={sortMode}
         setSortMode={setSortMode}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
         isSelectMode={isSelectMode}
         setIsSelectMode={setIsSelectMode}
         selectedPhotos={selectedPhotos}
@@ -105,7 +111,18 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
         deselectAll={deselectAll}
       />
 
-      {sortMode === "newest" ? (
+      {viewMode === "gallery" ? (
+        <GalleryView
+          photos={sortedPhotos}
+          likedPhotos={likedPhotos}
+          currentUserId={currentUserId}
+          isSelectMode={isSelectMode}
+          selectedPhotos={selectedPhotos}
+          onLikeChange={handleLikeChange}
+          onToggleSelection={togglePhotoSelection}
+          onPhotoClick={handlePhotoClick}
+        />
+      ) : sortMode === "newest" ? (
         <TimelineView
           photos={sortedPhotos}
           isSelectMode={isSelectMode}
@@ -129,16 +146,18 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
         />
       )}
 
-      <PhotoModal
-        photo={selectedPhoto}
-        photos={sortedPhotos}
-        currentUserId={currentUserId}
-        likedPhotos={likedPhotos}
-        onClose={() => setSelectedPhoto(null)}
-        onLikeChange={handleLikeChange}
-        onCommentChange={handleCommentChange}
-        onDownload={handleDownload}
-      />
+      {viewMode !== "gallery" && (
+        <PhotoModal
+          photo={selectedPhoto}
+          photos={sortedPhotos}
+          currentUserId={currentUserId}
+          likedPhotos={likedPhotos}
+          onClose={() => setSelectedPhoto(null)}
+          onLikeChange={handleLikeChange}
+          onCommentChange={handleCommentChange}
+          onDownload={handleDownload}
+        />
+      )}
 
       <ConnectionIndicator
         isConnected={isConnected}

@@ -236,6 +236,8 @@
     "batchDownloadError": "批量下载失败，请重试",
     "newest": "最新",
     "popular": "热门",
+    "gallery": "画廊",
+    "galleryView": "画廊视图",
     "comments": "评论",
     "writeComment": "写下评论...",
     "noCommentsYet": "暂无评论，来抢沙发吧！",

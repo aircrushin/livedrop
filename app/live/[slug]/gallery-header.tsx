@@ -3,10 +3,11 @@
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { CheckSquare, Clock, Loader2, TrendingUp, X } from "lucide-react";
+import { CheckSquare, Clock, GalleryHorizontal, Loader2, TrendingUp, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { PhotoWithLikes } from "./page";
 import type { SortMode } from "./use-live-gallery";
+import type { ViewMode } from "./live-gallery";
 
 interface GalleryHeaderProps {
   eventName: string;
@@ -14,6 +15,8 @@ interface GalleryHeaderProps {
   isConnected: boolean;
   sortMode: SortMode;
   setSortMode: (mode: SortMode) => void;
+  viewMode: ViewMode;
+  setViewMode: (mode: ViewMode) => void;
   isSelectMode: boolean;
   setIsSelectMode: (value: boolean) => void;
   selectedPhotos: Set<string>;
@@ -29,6 +32,8 @@ export function GalleryHeader({
   isConnected,
   sortMode,
   setSortMode,
+  viewMode,
+  setViewMode,
   isSelectMode,
   setIsSelectMode,
   selectedPhotos,
@@ -100,8 +105,24 @@ export function GalleryHeader({
             </button>
           )}
 
+          {/* Gallery View Toggle */}
+          {!isSelectMode && photos.length > 0 && (
+            <button
+              onClick={() => setViewMode(viewMode === "gallery" ? "default" : "gallery")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                viewMode === "gallery"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary"
+              }`}
+              title={t('galleryView')}
+            >
+              <GalleryHorizontal className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('gallery')}</span>
+            </button>
+          )}
+
           {/* Sort Mode Toggle */}
-          {!isSelectMode && (
+          {!isSelectMode && viewMode !== "gallery" && (
             <div className="flex items-center bg-secondary/50 rounded-full p-1">
               <button
                 onClick={() => setSortMode("newest")}
