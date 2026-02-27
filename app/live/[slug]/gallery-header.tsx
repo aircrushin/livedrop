@@ -1,10 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { CheckSquare, Clock, GalleryHorizontal, Loader2, TrendingUp, X } from "lucide-react";
+import { CheckSquare, Clock, GalleryHorizontal, Loader2, Menu, TrendingUp, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import * as Dialog from "@radix-ui/react-dialog";
+import { cn } from "@/lib/utils";
 import type { PhotoWithLikes } from "./page";
 import type { SortMode } from "./use-live-gallery";
 import type { ViewMode } from "./live-gallery";
@@ -45,6 +48,7 @@ export function GalleryHeader({
   const t = useTranslations('live');
   const { theme } = useTheme();
   const logoSrc = theme === "light" ? "/icons/icon.svg" : "/icons/icon-dark.svg";
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const toggleSelectMode = () => {
     setIsSelectMode(!isSelectMode);
@@ -79,8 +83,8 @@ export function GalleryHeader({
           </div>
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center gap-4">
+        {/* Controls - Desktop */}
+        <div className="hidden md:flex items-center gap-4">
           {/* Batch Selection Toggle */}
           {photos.length > 0 && (
             <button
@@ -94,12 +98,12 @@ export function GalleryHeader({
               {isSelectMode ? (
                 <>
                   <X className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('cancelSelection')}</span>
+                  <span>{t('cancelSelection')}</span>
                 </>
               ) : (
                 <>
                   <CheckSquare className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('selectPhotos')}</span>
+                  <span>{t('selectPhotos')}</span>
                 </>
               )}
             </button>
@@ -117,7 +121,7 @@ export function GalleryHeader({
               title={t('galleryView')}
             >
               <GalleryHorizontal className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('gallery')}</span>
+              <span>{t('gallery')}</span>
             </button>
           )}
 
@@ -134,7 +138,7 @@ export function GalleryHeader({
                 title={t('newest')}
               >
                 <Clock className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('newest')}</span>
+                <span>{t('newest')}</span>
               </button>
               <button
                 onClick={() => setSortMode("popular")}
@@ -146,7 +150,7 @@ export function GalleryHeader({
                 title={t('popular')}
               >
                 <TrendingUp className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('popular')}</span>
+                <span>{t('popular')}</span>
               </button>
             </div>
           )}
@@ -165,6 +169,151 @@ export function GalleryHeader({
 
           {/* Theme Toggle */}
           <ThemeToggle className="text-foreground hover:bg-secondary/50" />
+        </div>
+
+        {/* Controls - Mobile */}
+        <div className="flex md:hidden items-center gap-2">
+          {/* Connection Status - Mobile */}
+          <div className="flex items-center gap-1.5">
+            <div
+              className={`h-2 w-2 rounded-full ${
+                isConnected ? "bg-green-500" : "bg-yellow-500"
+              }`}
+            />
+            <span className="text-xs text-muted-foreground">
+              {isConnected ? t('live') : t('connecting')}
+            </span>
+          </div>
+
+          {/* Theme Toggle - Mobile (always visible) */}
+          <ThemeToggle className="h-9 w-9 text-foreground hover:bg-secondary/50" />
+
+          {/* Batch Selection Toggle - Mobile (always visible) */}
+          {photos.length > 0 && (
+            <button
+              onClick={toggleSelectMode}
+              className={`flex items-center justify-center h-9 w-9 rounded-full transition-all duration-200 ${
+                isSelectMode
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary/50 text-secondary-foreground hover:bg-secondary"
+              }`}
+              title={isSelectMode ? t('cancelSelection') : t('selectPhotos')}
+            >
+              {isSelectMode ? <X className="h-4 w-4" /> : <CheckSquare className="h-4 w-4" />}
+            </button>
+          )}
+
+          {/* Drawer Trigger */}
+          <Dialog.Root open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+            <Dialog.Trigger asChild>
+              <button
+                className="flex items-center justify-center h-9 w-9 rounded-full bg-secondary/50 text-foreground hover:bg-secondary transition-colors"
+                aria-label="Open menu"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+            </Dialog.Trigger>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+              <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto max-h-[80vh] flex-col rounded-t-2xl bg-background border border-border shadow-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom">
+                {/* Drawer Handle */}
+                <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-muted-foreground/20" />
+                
+                {/* Drawer Header */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                  <Dialog.Title className="text-base font-semibold">
+                    {t('settings') || 'Settings'}
+                  </Dialog.Title>
+                  <Dialog.Close asChild>
+                    <button className="flex items-center justify-center h-8 w-8 rounded-full hover:bg-secondary transition-colors">
+                      <X className="h-4 w-4" />
+                    </button>
+                  </Dialog.Close>
+                </div>
+
+                {/* Drawer Content */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {/* View Mode */}
+                  {photos.length > 0 && (
+                    <div className="space-y-2">
+                      <span className="text-sm text-muted-foreground">{t('view') || 'View'}</span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => {
+                            setViewMode("default");
+                            setIsDrawerOpen(false);
+                          }}
+                          className={cn(
+                            "flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
+                            viewMode === "default"
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-secondary/50 text-secondary-foreground hover:bg-secondary"
+                          )}
+                        >
+                          <Clock className="h-4 w-4" />
+                          {t('timeline')}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setViewMode("gallery");
+                            setIsDrawerOpen(false);
+                          }}
+                          className={cn(
+                            "flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
+                            viewMode === "gallery"
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-secondary/50 text-secondary-foreground hover:bg-secondary"
+                          )}
+                        >
+                          <GalleryHorizontal className="h-4 w-4" />
+                          {t('gallery')}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sort Mode */}
+                  {viewMode !== "gallery" && (
+                    <div className="space-y-2">
+                      <span className="text-sm text-muted-foreground">{t('sortBy') || 'Sort by'}</span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => {
+                            setSortMode("newest");
+                            setIsDrawerOpen(false);
+                          }}
+                          className={cn(
+                            "flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
+                            sortMode === "newest"
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-secondary/50 text-secondary-foreground hover:bg-secondary"
+                          )}
+                        >
+                          <Clock className="h-4 w-4" />
+                          {t('newest')}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSortMode("popular");
+                            setIsDrawerOpen(false);
+                          }}
+                          className={cn(
+                            "flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
+                            sortMode === "popular"
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-secondary/50 text-secondary-foreground hover:bg-secondary"
+                          )}
+                        >
+                          <TrendingUp className="h-4 w-4" />
+                          {t('popular')}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
         </div>
       </div>
 

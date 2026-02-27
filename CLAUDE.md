@@ -6,10 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Running the Application
 ```bash
-npm run dev          # Start development server (http://localhost:3000)
-npm run build        # Build for production (must use webpack flag, not turbopack)
-npm start            # Start production server
-npm run lint         # Run ESLint
+pnpm run dev          # Start development server (http://localhost:3000)
+pnpm run build        # Build for production (must use webpack flag, not turbopack)
+pnpm start            # Start production server
+pnpm run lint         # Run ESLint
 ```
 
 ### Production Build

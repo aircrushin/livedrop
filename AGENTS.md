@@ -6,14 +6,14 @@ This file provides guidance to AI agents working in this codebase.
 
 ```bash
 # Development
-npm run dev                    # Start development server (http://localhost:3000)
+pnpm run dev                    # Start development server (http://localhost:3000)
 
 # Production build (MUST use webpack flag - Serwist PWA doesn't support Turbopack)
-npm run build -- --webpack
-npm start                      # Start production server
+pnpm run build -- --webpack
+pnpm start                      # Start production server
 
 # Linting
-npm run lint                   # Run ESLint (uses eslint-config-next)
+pnpm run lint                   # Run ESLint (uses eslint-config-next)
 ```
 
 **Note:** No test framework is configured in this project.

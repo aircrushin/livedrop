@@ -57,13 +57,13 @@ export interface UseLiveGalleryReturn {
 
 export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): UseLiveGalleryReturn {
   const [photos, setPhotos] = useState<PhotoWithLikes[]>(initialPhotos);
-  const [isConnected, setIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(initialPhotos.length > 0);
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [likedPhotos, setLikedPhotos] = useState<Set<string>>(new Set());
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
-  
+
   const supabase = createClient();
 
   useViewerTracking(event.id);
@@ -158,12 +158,26 @@ export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): U
           comments_count: (photo as unknown as { comments_count: [{ count: number }] }).comments_count?.[0]?.count || 0,
         })) as PhotoWithLikes[];
         setPhotos(photosWithCounts);
+        // Mark as connected once we have photos loaded
+        if (photosWithCounts.length > 0) {
+          setIsConnected(true);
+        }
       }
     };
 
     const interval = setInterval(fetchPhotos, 5000);
     return () => clearInterval(interval);
   }, [event.id, supabase]);
+
+  // Fallback: mark as connected after 3 seconds if we have initial photos
+  useEffect(() => {
+    if (initialPhotos.length > 0 && !isConnected) {
+      const timeout = setTimeout(() => {
+        setIsConnected(true);
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [initialPhotos.length, isConnected]);
 
   // Real-time subscriptions
   useEffect(() => {
