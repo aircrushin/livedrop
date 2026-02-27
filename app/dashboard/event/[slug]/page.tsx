@@ -121,6 +121,7 @@ export default async function EventManagePage({ params }: Props) {
                       branding={{
                         logoUrl: branding.logoUrl,
                         bannerUrl: branding.bannerUrl,
+                        logoPosition: (branding.logoPosition as "center" | "top-left" | "top-right" | "bottom-left" | "bottom-right") || "top-left",
                         primaryColor: branding.primaryColor,
                         backgroundColor: branding.backgroundColor,
                       }}

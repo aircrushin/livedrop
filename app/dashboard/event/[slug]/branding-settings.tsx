@@ -36,7 +36,6 @@ const defaultBranding: BrandingConfig = {
 };
 
 const logoPositions = [
-  { value: "center", label: "居中", className: "items-center justify-center" },
   { value: "top-left", label: "左上", className: "items-start justify-start" },
   { value: "top-right", label: "右上", className: "items-start justify-end" },
   { value: "bottom-left", label: "左下", className: "items-end justify-start" },
@@ -56,10 +55,12 @@ export function BrandingSettings({ eventId, initialBranding }: BrandingSettingsP
     ...initialBranding,
   });
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
+   const uploadIntervalRef = useRef<number | null>(null);
 
   const handleImageUpload = useCallback(
     async (file: File, type: "logo" | "banner") => {
@@ -73,6 +74,17 @@ export function BrandingSettings({ eventId, initialBranding }: BrandingSettingsP
       }
 
       setIsUploading(true);
+      setUploadProgress(0);
+      if (uploadIntervalRef.current !== null) {
+        window.clearInterval(uploadIntervalRef.current);
+      }
+      uploadIntervalRef.current = window.setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev === null) return 0;
+          if (prev >= 90) return prev;
+          return prev + 10;
+        });
+      }, 200);
       setSaveMessage(null);
 
       try {
@@ -95,6 +107,12 @@ export function BrandingSettings({ eventId, initialBranding }: BrandingSettingsP
       } catch {
         setSaveMessage(t("uploadFailed"));
       } finally {
+        if (uploadIntervalRef.current !== null) {
+          window.clearInterval(uploadIntervalRef.current);
+          uploadIntervalRef.current = null;
+        }
+        setUploadProgress(100);
+        setTimeout(() => setUploadProgress(null), 500);
         setIsUploading(false);
       }
     },
@@ -209,6 +227,14 @@ export function BrandingSettings({ eventId, initialBranding }: BrandingSettingsP
                   <p className="text-xs text-muted-foreground mt-2">
                     {t("logoHint")}
                   </p>
+                  {isUploading && uploadProgress !== null && (
+                    <div className="mt-2 h-1 w-full rounded-full bg-muted/40">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -216,7 +242,7 @@ export function BrandingSettings({ eventId, initialBranding }: BrandingSettingsP
             {branding.logoUrl && (
               <div className="space-y-2">
                 <Label>{t("logoPosition")}</Label>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-4 gap-2">
                   {logoPositions.map((pos) => (
                     <button
                       key={pos.value}
@@ -298,6 +324,14 @@ export function BrandingSettings({ eventId, initialBranding }: BrandingSettingsP
                   {isUploading ? t("uploading") : t("uploadBanner")}
                 </Button>
               </div>
+              {isUploading && uploadProgress !== null && (
+                <div className="mt-2 h-1 w-full rounded-full bg-muted/40">
+                  <div
+                    className="h-full rounded-full bg-primary transition-all"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              )}
               <p className="text-xs text-muted-foreground">{t("bannerHint")}</p>
             </div>
           </TabsContent>

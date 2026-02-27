@@ -4,11 +4,11 @@ import { useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import QRCode from "react-qr-code";
-import { cn } from "@/lib/utils";
 
 interface BrandingConfig {
   logoUrl?: string | null;
   bannerUrl?: string | null;
+  logoPosition?: "center" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
   primaryColor?: string;
   backgroundColor?: string;
 }
@@ -20,210 +20,277 @@ interface DownloadQRButtonProps {
   branding?: BrandingConfig;
 }
 
+const loadImage = (src: string): Promise<HTMLImageElement> =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number
+) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
 export function DownloadQRButton({ url, eventName, slug, branding }: DownloadQRButtonProps) {
   const qrCodeRef = useRef<HTMLDivElement>(null);
 
   const handleDownload = useCallback(async () => {
     if (!qrCodeRef.current) return;
-
     const svg = qrCodeRef.current.querySelector("svg");
     if (!svg) return;
 
-    // Load images if branding is provided
-    const loadImage = (src: string): Promise<HTMLImageElement> => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = src;
-      });
-    };
+    const primary = branding?.primaryColor || "#3b82f6";
+    const hasBanner = !!branding?.bannerUrl;
+    const hasLogo = !!branding?.logoUrl;
+    const logoPos = branding?.logoPosition ?? "top-left";
 
-    // Convert SVG to PNG
+    // ── Canvas dimensions ──────────────────────────────────────────────
+    const W = 640;
+    const PADDING = 48;
+    const BANNER_H = hasBanner ? 200 : 0;
+    const BANNER_RADIUS = 24;
+    const QR_SIZE = 340;
+    const QR_FRAME = 28;         // padding inside white QR card
+    const LOGO_BADGE = 72;       // logo overlay size (center mode)
+    const LOGO_CORNER = 56;      // logo size for corner positions
+    const SECTION_GAP = 32;      // vertical gap between major sections
+    const H =
+      BANNER_H +
+      (hasBanner ? 0 : SECTION_GAP) +
+      SECTION_GAP +              // top breathing room after banner
+      (hasLogo && (logoPos === "top-left" || logoPos === "top-right") ? LOGO_CORNER + 16 : 0) +
+      52 +                       // event name
+      SECTION_GAP +
+      QR_SIZE + QR_FRAME * 2 +   // QR card
+      SECTION_GAP +
+      (hasLogo && (logoPos === "bottom-left" || logoPos === "bottom-right") ? LOGO_CORNER + 16 : 0) +
+      40 +                       // "活动码" label
+      56 +                       // slug code
+      SECTION_GAP +
+      36 +                       // scan instruction
+      PADDING;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // ── Card background ────────────────────────────────────────────────
+    ctx.fillStyle = "#f8fafc";
+    roundRect(ctx, 0, 0, W, H, BANNER_RADIUS);
+    ctx.fill();
+
+    // ── Banner ─────────────────────────────────────────────────────────
+    if (hasBanner && branding?.bannerUrl) {
+      try {
+        const bannerImg = await loadImage(branding.bannerUrl);
+        ctx.save();
+        roundRect(ctx, 0, 0, W, BANNER_H, BANNER_RADIUS);
+        ctx.clip();
+        // cover-fit the banner
+        const bRatio = bannerImg.width / bannerImg.height;
+        const cRatio = W / BANNER_H;
+        let bx = 0, by = 0, bw = W, bh = BANNER_H;
+        if (bRatio > cRatio) {
+          bw = BANNER_H * bRatio;
+          bx = -(bw - W) / 2;
+        } else {
+          bh = W / bRatio;
+          by = -(bh - BANNER_H) / 2;
+        }
+        ctx.drawImage(bannerImg, bx, by, bw, bh);
+        // subtle darkening overlay at bottom for readability
+        const grad = ctx.createLinearGradient(0, BANNER_H * 0.4, 0, BANNER_H);
+        grad.addColorStop(0, "rgba(0,0,0,0)");
+        grad.addColorStop(1, "rgba(0,0,0,0.35)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, BANNER_H);
+        ctx.restore();
+
+        // soft bottom fade into card bg
+        const fade = ctx.createLinearGradient(0, BANNER_H - 30, 0, BANNER_H + 20);
+        fade.addColorStop(0, "rgba(248,250,252,0)");
+        fade.addColorStop(1, "rgba(248,250,252,1)");
+        ctx.fillStyle = fade;
+        ctx.fillRect(0, BANNER_H - 30, W, 50);
+      } catch {
+        // fallback colored banner
+        const grad = ctx.createLinearGradient(0, 0, W, BANNER_H);
+        grad.addColorStop(0, primary);
+        grad.addColorStop(1, primary + "cc");
+        ctx.save();
+        roundRect(ctx, 0, 0, W, BANNER_H, BANNER_RADIUS);
+        ctx.clip();
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, BANNER_H);
+        ctx.restore();
+      }
+    }
+
+    let cursorY = BANNER_H + SECTION_GAP;
+    if (!hasBanner) cursorY += SECTION_GAP;
+
+    // ── Corner logo (top) ─────────────────────────────────────────────
+    let topLogoDrawn = false;
+    if (hasLogo && branding?.logoUrl && (logoPos === "top-left" || logoPos === "top-right")) {
+      try {
+        const logoImg = await loadImage(branding.logoUrl);
+        const lx = logoPos === "top-left" ? PADDING : W - PADDING - LOGO_CORNER;
+        // White pill background
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowColor = "rgba(0,0,0,0.10)";
+        ctx.shadowBlur = 10;
+        roundRect(ctx, lx - 8, cursorY - 8, LOGO_CORNER + 16, LOGO_CORNER + 16, 12);
+        ctx.fill();
+        ctx.shadowColor = "transparent"; ctx.shadowBlur = 0;
+        ctx.drawImage(logoImg, lx, cursorY, LOGO_CORNER, LOGO_CORNER);
+        cursorY += LOGO_CORNER + 16;
+        topLogoDrawn = true;
+      } catch { /* skip */ }
+    }
+    if (!topLogoDrawn && (logoPos === "top-left" || logoPos === "top-right")) {
+      cursorY += 0; // no extra gap if logo failed to load
+    }
+
+    // ── Event name ─────────────────────────────────────────────────────
+    let displayName = eventName.length > 22 ? eventName.slice(0, 19) + "…" : eventName;
+    ctx.fillStyle = "#0f172a";
+    ctx.font = `bold 38px -apple-system, "PingFang SC", "Helvetica Neue", sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillText(displayName, W / 2, cursorY + 40);
+    cursorY += 52 + SECTION_GAP;
+
+    // ── QR code card ───────────────────────────────────────────────────
+    const qrCardW = QR_SIZE + QR_FRAME * 2;
+    const qrCardH = QR_SIZE + QR_FRAME * 2;
+    const qrCardX = (W - qrCardW) / 2;
+    const qrCardY = cursorY;
+
+    // Shadow
+    ctx.shadowColor = "rgba(0,0,0,0.10)";
+    ctx.shadowBlur = 32;
+    ctx.shadowOffsetY = 8;
+    ctx.fillStyle = "#ffffff";
+    roundRect(ctx, qrCardX, qrCardY, qrCardW, qrCardH, 20);
+    ctx.fill();
+    ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+    // QR image
     const svgData = new XMLSerializer().serializeToString(svg);
     const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const svgUrl = URL.createObjectURL(svgBlob);
+    const qrImage = await new Promise<HTMLImageElement>((res, rej) => {
+      const i = new Image();
+      i.onload = () => res(i);
+      i.onerror = rej;
+      i.src = svgUrl;
+    });
+    ctx.drawImage(qrImage, qrCardX + QR_FRAME, qrCardY + QR_FRAME, QR_SIZE, QR_SIZE);
+    URL.revokeObjectURL(svgUrl);
 
-    const qrImage = new Image();
-    
-    qrImage.onload = async () => {
-      // Card dimensions
-      const cardWidth = 600;
-      const cardHeight = 800;
-      const hasBanner = !!branding?.bannerUrl;
-      const bannerHeight = hasBanner ? 120 : 0;
-      
-      // Create main canvas
-      const canvas = document.createElement("canvas");
-      canvas.width = cardWidth;
-      canvas.height = cardHeight;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+    // ── Center logo overlay ────────────────────────────────────────────
+    if (hasLogo && branding?.logoUrl && logoPos === "center") {
+      try {
+        const logoImg = await loadImage(branding.logoUrl);
+        const lx = qrCardX + QR_FRAME + (QR_SIZE - LOGO_BADGE) / 2;
+        const ly = qrCardY + QR_FRAME + (QR_SIZE - LOGO_BADGE) / 2;
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowColor = "rgba(0,0,0,0.12)";
+        ctx.shadowBlur = 8;
+        roundRect(ctx, lx - 6, ly - 6, LOGO_BADGE + 12, LOGO_BADGE + 12, 10);
+        ctx.fill();
+        ctx.shadowColor = "transparent"; ctx.shadowBlur = 0;
+        ctx.drawImage(logoImg, lx, ly, LOGO_BADGE, LOGO_BADGE);
+      } catch { /* skip */ }
+    }
 
-      const bgColor = branding?.backgroundColor || "#0f172a";
-      const primaryColor = branding?.primaryColor || "#3b82f6";
+    cursorY += qrCardH + SECTION_GAP;
 
-      // Fill card background
-      ctx.fillStyle = bgColor;
-      ctx.fillRect(0, 0, cardWidth, cardHeight);
+    // ── Corner logo (bottom) ───────────────────────────────────────────
+    if (hasLogo && branding?.logoUrl && (logoPos === "bottom-left" || logoPos === "bottom-right")) {
+      try {
+        const logoImg = await loadImage(branding.logoUrl);
+        const lx = logoPos === "bottom-left" ? PADDING : W - PADDING - LOGO_CORNER;
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowColor = "rgba(0,0,0,0.10)";
+        ctx.shadowBlur = 10;
+        roundRect(ctx, lx - 8, cursorY - 8, LOGO_CORNER + 16, LOGO_CORNER + 16, 12);
+        ctx.fill();
+        ctx.shadowColor = "transparent"; ctx.shadowBlur = 0;
+        ctx.drawImage(logoImg, lx, cursorY, LOGO_CORNER, LOGO_CORNER);
+        cursorY += LOGO_CORNER + 16;
+      } catch { /* skip */ }
+    }
 
-      // Draw banner if provided
-      if (hasBanner && branding?.bannerUrl) {
-        try {
-          const bannerImg = await loadImage(branding.bannerUrl);
-          ctx.drawImage(bannerImg, 0, 0, cardWidth, bannerHeight);
-          
-          // Add gradient overlay for better text readability
-          const gradient = ctx.createLinearGradient(0, 0, 0, bannerHeight);
-          gradient.addColorStop(0, "rgba(0,0,0,0.3)");
-          gradient.addColorStop(1, "rgba(0,0,0,0.1)");
-          ctx.fillStyle = gradient;
-          ctx.fillRect(0, 0, cardWidth, bannerHeight);
-        } catch {
-          // Fallback: draw a colored banner area
-          ctx.fillStyle = primaryColor;
-          ctx.fillRect(0, 0, cardWidth, bannerHeight);
-        }
-      }
+    // ── "活动码 / Event Code" label ────────────────────────────────────
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = `500 18px -apple-system, "PingFang SC", sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillText("活动码 / Event Code", W / 2, cursorY + 20);
+    cursorY += 40;
 
-      // Add subtle border
-      ctx.strokeStyle = "#334155";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(12, 12, cardWidth - 24, cardHeight - 24);
+    // ── Slug pill ─────────────────────────────────────────────────────
+    const slugText = slug.toUpperCase();
+    ctx.font = `bold 40px "SF Mono", "Fira Code", monospace`;
+    const slugW = ctx.measureText(slugText).width + 48;
+    const slugPillX = (W - slugW) / 2;
+    ctx.fillStyle = primary + "18";
+    roundRect(ctx, slugPillX, cursorY, slugW, 52, 12);
+    ctx.fill();
+    ctx.fillStyle = primary;
+    ctx.fillText(slugText, W / 2, cursorY + 38);
+    cursorY += 56 + SECTION_GAP;
 
-      // Draw decorative top bar
-      const topBarGradient = ctx.createLinearGradient(0, 0, cardWidth, 0);
-      topBarGradient.addColorStop(0, "#1a1a2e");
-      topBarGradient.addColorStop(0.3, "#16213e");
-      topBarGradient.addColorStop(0.7, "#0f3460");
-      topBarGradient.addColorStop(1, "#1a1a2e");
-      ctx.fillStyle = topBarGradient;
-      ctx.fillRect(0, bannerHeight, cardWidth, 6);
-      
-      // Add subtle glowing edge effect on top bar
-      ctx.shadowColor = "rgba(15, 52, 96, 0.5)";
-      ctx.shadowBlur = 8;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 2;
-      ctx.fillRect(0, bannerHeight, cardWidth, 6);
-      ctx.shadowColor = "transparent";
+    // ── Scan instruction ───────────────────────────────────────────────
+    ctx.fillStyle = "#cbd5e1";
+    ctx.font = `16px -apple-system, "PingFang SC", sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillText("扫描二维码参与活动 · Scan to join", W / 2, cursorY + 16);
+    cursorY += 36;
 
-      // Title text - Event Name
-      ctx.fillStyle = "#f1f5f9";
-      ctx.font = "bold 42px system-ui, -apple-system, sans-serif";
-      ctx.textAlign = "center";
-      
-      // Truncate event name if too long
-      let displayName = eventName;
-      if (displayName.length > 20) {
-        displayName = displayName.substring(0, 17) + "...";
-      }
-      
-      const titleY = hasBanner ? bannerHeight + 80 : 100;
-      
-      // Draw event name with glow effect
-      ctx.shadowColor = "rgba(99, 102, 241, 0.3)";
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 0;
-      ctx.fillText(displayName, cardWidth / 2, titleY);
-      
-      // Reset shadow
-      ctx.shadowColor = "transparent";
-      ctx.shadowBlur = 0;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 0;
+    // ── LiveDrop watermark ─────────────────────────────────────────────
+    ctx.fillStyle = "#e2e8f0";
+    ctx.font = `12px -apple-system, sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillText("Powered by LiveDrop", W / 2, cursorY + PADDING / 2);
 
-      // Draw QR code container
-      const qrSize = 380;
-      const qrX = (cardWidth - qrSize) / 2;
-      const qrY = hasBanner ? bannerHeight + 140 : 150;
-      
-      // QR code background
-      ctx.fillStyle = branding?.backgroundColor || "#ffffff";
-      ctx.beginPath();
-      ctx.roundRect(qrX - 20, qrY - 20, qrSize + 40, qrSize + 40, 16);
-      ctx.fill();
-      
-      // QR code shadow
-      ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
-      ctx.shadowBlur = 30;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 10;
-      ctx.fill();
-      ctx.shadowColor = "transparent";
-
-      // Draw QR code
-      ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
-
-      // Draw logo in center of QR code if provided
-      if (branding?.logoUrl) {
-        try {
-          const logoImg = await loadImage(branding.logoUrl);
-          const logoSize = 80;
-          const logoX = qrX + (qrSize - logoSize) / 2;
-          const logoY = qrY + (qrSize - logoSize) / 2;
-          
-          // Logo background
-          ctx.fillStyle = branding?.backgroundColor || "#ffffff";
-          ctx.beginPath();
-          ctx.roundRect(logoX - 5, logoY - 5, logoSize + 10, logoSize + 10, 8);
-          ctx.fill();
-          
-          ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
-        } catch {
-          // Logo failed to load, skip it
-        }
-      }
-
-      // Event code label
-      const infoY = qrY + qrSize + 60;
-      ctx.fillStyle = "#94a3b8";
-      ctx.font = "500 20px system-ui, -apple-system, sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("活动码 / Event Code", cardWidth / 2, infoY);
-
-      // Event code value
-      ctx.fillStyle = primaryColor;
-      ctx.font = "bold 48px monospace";
-      ctx.textAlign = "center";
-      ctx.fillText(slug.toUpperCase(), cardWidth / 2, infoY + 60);
-
-      // Bottom instruction
-      ctx.fillStyle = "#64748b";
-      ctx.font = "18px system-ui, -apple-system, sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("扫描二维码参与活动 / Scan to join", cardWidth / 2, cardHeight - 60);
-
-      // Draw logo/branding area
-      ctx.fillStyle = "#475569";
-      ctx.font = "16px system-ui, -apple-system, sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("LiveDrop", cardWidth / 2, cardHeight - 25);
-
-      // Cleanup and download
-      URL.revokeObjectURL(svgUrl);
-      
-      const link = document.createElement("a");
-      link.download = `event-qr-${slug}.png`;
-      link.href = canvas.toDataURL("image/png", 1.0);
-      link.click();
-    };
-
-    qrImage.src = svgUrl;
+    // ── Download ───────────────────────────────────────────────────────
+    const link = document.createElement("a");
+    link.download = `event-qr-${slug}.png`;
+    link.href = canvas.toDataURL("image/png", 1.0);
+    link.click();
   }, [eventName, slug, branding]);
 
   return (
     <>
       {/* Hidden QR code for rendering */}
       <div ref={qrCodeRef} className="hidden">
-        <QRCode 
-          value={url} 
-          size={380} 
-          level="H" 
+        <QRCode
+          value={url}
+          size={340}
+          level="H"
           fgColor={branding?.primaryColor || "#000000"}
-          bgColor={branding?.backgroundColor || "#ffffff"}
+          bgColor="#ffffff"
         />
       </div>
       <Button variant="outline" size="icon" onClick={handleDownload} title="下载活动二维码">
