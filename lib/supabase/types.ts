@@ -17,6 +17,10 @@ export interface Database {
           name: string;
           slug: string;
           qr_code_url: string | null;
+          theme: Json;
+          cover_image: string | null;
+          banner_image: string | null;
+          branding: Json;
         };
         Insert: {
           id?: string;
@@ -25,6 +29,10 @@ export interface Database {
           name: string;
           slug: string;
           qr_code_url?: string | null;
+          theme?: Json;
+          cover_image?: string | null;
+          banner_image?: string | null;
+          branding?: Json;
         };
         Update: {
           id?: string;
@@ -33,6 +41,10 @@ export interface Database {
           name?: string;
           slug?: string;
           qr_code_url?: string | null;
+          theme?: Json;
+          cover_image?: string | null;
+          banner_image?: string | null;
+          branding?: Json;
         };
         Relationships: [];
       };

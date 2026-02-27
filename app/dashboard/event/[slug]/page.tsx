@@ -11,6 +11,7 @@ import { PhotoGrid } from "./photo-grid";
 import { CopyButton } from "./copy-button";
 import { DownloadQRButton } from "./download-qr-button";
 import { StatisticsPanel } from "./statistics-panel";
+import { BrandingSettings } from "./branding-settings";
 import { getEventStatistics } from "@/lib/supabase/statistics";
 import type { Event, Photo } from "@/lib/supabase/types";
 
@@ -52,6 +53,16 @@ export default async function EventManagePage({ params }: Props) {
 
   const statistics = await getEventStatistics(event.id);
 
+  // Parse branding config
+  const branding = (event.branding as {
+    logoUrl?: string | null;
+    bannerUrl?: string | null;
+    logoPosition?: string;
+    qrStyle?: string;
+    primaryColor?: string;
+    backgroundColor?: string;
+  }) || {};
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const guestUrl = `${appUrl}/e/${event.slug}`;
   const liveUrl = `${appUrl}/live/${event.slug}`;
@@ -89,7 +100,13 @@ export default async function EventManagePage({ params }: Props) {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <QRCodeDisplay url={guestUrl} />
+                <QRCodeDisplay 
+                  url={guestUrl} 
+                  logoUrl={branding.logoUrl}
+                  logoPosition={branding.logoPosition as "center" | "top-left" | "top-right" | "bottom-left" | "bottom-right"}
+                  primaryColor={branding.primaryColor}
+                  backgroundColor={branding.backgroundColor}
+                />
                 <div className="space-y-2">
                   <label className="text-sm font-medium">{t('guestUrl')}</label>
                   <div className="flex items-center gap-2">
@@ -97,7 +114,17 @@ export default async function EventManagePage({ params }: Props) {
                       {guestUrl}
                     </code>
                     <CopyButton text={guestUrl} />
-                    <DownloadQRButton url={guestUrl} eventName={event.name} slug={event.slug} />
+                    <DownloadQRButton 
+                      url={guestUrl} 
+                      eventName={event.name} 
+                      slug={event.slug}
+                      branding={{
+                        logoUrl: branding.logoUrl,
+                        bannerUrl: branding.bannerUrl,
+                        primaryColor: branding.primaryColor,
+                        backgroundColor: branding.backgroundColor,
+                      }}
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -124,6 +151,18 @@ export default async function EventManagePage({ params }: Props) {
             </Card>
 
             <StatisticsPanel eventId={event.id} initialStats={statistics} />
+
+            <BrandingSettings 
+              eventId={event.id} 
+              initialBranding={{
+                logoUrl: branding.logoUrl || null,
+                bannerUrl: branding.bannerUrl || null,
+                logoPosition: (branding.logoPosition as "center" | "top-left" | "top-right" | "bottom-left" | "bottom-right") || "center",
+                qrStyle: (branding.qrStyle as "default" | "rounded" | "dots") || "default",
+                primaryColor: branding.primaryColor || "#3b82f6",
+                backgroundColor: branding.backgroundColor || "#ffffff",
+              }}
+            />
           </div>
 
           {/* Photos Grid */}
