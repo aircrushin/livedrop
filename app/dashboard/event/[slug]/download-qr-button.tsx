@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import QRCode from "react-qr-code";
@@ -20,13 +20,36 @@ interface DownloadQRButtonProps {
   branding?: BrandingConfig;
 }
 
+/**
+ * Convert an R2 public URL to the internal proxy path so the canvas
+ * loads images from the same origin (no CORS issues).
+ * e.g. https://pub-xxx.r2.dev/branding/abc/logo.png → /api/image/branding/abc/logo.png
+ */
+function toProxiedUrl(url: string): string {
+  const r2Base = process.env.NEXT_PUBLIC_R2_PUBLIC_URL ?? "";
+  if (r2Base && url.startsWith(r2Base)) {
+    const path = url.slice(r2Base.length).replace(/^\//, "");
+    return `/api/image/${path}`;
+  }
+  // Fallback: extract path from any r2.dev or r2.cloudflarestorage.com URL
+  try {
+    const { pathname } = new URL(url);
+    if (pathname && pathname.length > 1) {
+      return `/api/image${pathname}`;
+    }
+  } catch {
+    // not a valid URL, use as-is
+  }
+  return url;
+}
+
 const loadImage = (src: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
+    const proxied = toProxiedUrl(src);
     const img = new Image();
-    img.crossOrigin = "anonymous";
     img.onload = () => resolve(img);
     img.onerror = reject;
-    img.src = src;
+    img.src = proxied;
   });
 
 function roundRect(
@@ -50,8 +73,19 @@ function roundRect(
   ctx.closePath();
 }
 
-export function DownloadQRButton({ url, eventName, slug, branding }: DownloadQRButtonProps) {
+export function DownloadQRButton({ url, eventName, slug, branding: initialBranding }: DownloadQRButtonProps) {
   const qrCodeRef = useRef<HTMLDivElement>(null);
+
+  // Keep branding in sync with updates saved by BrandingSettings on the same page
+  const [branding, setBranding] = useState<BrandingConfig | undefined>(initialBranding);
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<BrandingConfig>).detail;
+      if (detail) setBranding(detail);
+    };
+    window.addEventListener("branding:updated", handler);
+    return () => window.removeEventListener("branding:updated", handler);
+  }, []);
 
   const handleDownload = useCallback(async () => {
     if (!qrCodeRef.current) return;

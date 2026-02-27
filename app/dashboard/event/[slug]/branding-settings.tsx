@@ -145,6 +145,7 @@ export function BrandingSettings({ eventId, initialBranding }: BrandingSettingsP
         setSaveMessage(result.error);
       } else {
         setSaveMessage(t("saveSuccess"));
+        window.dispatchEvent(new CustomEvent("branding:updated", { detail: branding }));
       }
     } catch {
       setSaveMessage(t("saveFailed"));
@@ -210,6 +211,8 @@ export function BrandingSettings({ eventId, initialBranding }: BrandingSettingsP
                     ref={logoInputRef}
                     type="file"
                     accept="image/*"
+                    aria-label={t("uploadLogo")}
+                    title={t("uploadLogo")}
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
@@ -246,6 +249,8 @@ export function BrandingSettings({ eventId, initialBranding }: BrandingSettingsP
                   {logoPositions.map((pos) => (
                     <button
                       key={pos.value}
+                      title={pos.label}
+                      aria-label={pos.label}
                       onClick={() =>
                         setBranding((prev) => ({
                           ...prev,
@@ -309,6 +314,8 @@ export function BrandingSettings({ eventId, initialBranding }: BrandingSettingsP
                   ref={bannerInputRef}
                   type="file"
                   accept="image/*"
+                  aria-label={t("uploadBanner")}
+                  title={t("uploadBanner")}
                   className="hidden"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
