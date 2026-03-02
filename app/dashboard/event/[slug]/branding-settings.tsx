@@ -31,7 +31,7 @@ const defaultBranding: BrandingConfig = {
   bannerUrl: null,
   logoPosition: "center",
   qrStyle: "default",
-  primaryColor: "#3b82f6",
+  primaryColor: "#000000",
   backgroundColor: "#ffffff",
 };
 

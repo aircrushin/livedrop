@@ -7,12 +7,14 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Eye, EyeOff, Trash2, Loader2, Download, CheckSquare, Square, X, AlertTriangle, Upload } from "lucide-react";
+import { Eye, EyeOff, Trash2, Loader2, Download, CheckSquare, Square, X, AlertTriangle, Upload, Sparkles, LayoutTemplate } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getR2PublicUrl } from "@/lib/r2/utils";
 import { deleteFromR2, deleteMultipleFromR2, uploadToR2 } from "@/lib/r2/actions";
 import { compressImage } from "@/lib/utils/image-compression";
 import { BatchDownloadDialog } from "@/components/batch-download-dialog";
+import { SmartAlbumGenerator } from "./smart-album-generator";
+import { PosterCollageGenerator } from "./poster-collage-generator";
 import type { Photo } from "@/lib/supabase/types";
 
 interface PhotoGridProps {
@@ -22,7 +24,6 @@ interface PhotoGridProps {
   eventCreatedAt: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoGridProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
@@ -32,6 +33,8 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
   const [photoToDelete, setPhotoToDelete] = useState<Photo | null>(null);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [showAlbumGenerator, setShowAlbumGenerator] = useState(false);
+  const [showPosterGenerator, setShowPosterGenerator] = useState(false);
   const uploadInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const t = useTranslations('event');
@@ -289,38 +292,66 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
           </div>
         </div>
       ) : (
-        <div className="flex justify-end gap-2">
+        <div className="flex flex-wrap justify-end gap-1.5 sm:gap-2">
+          {/* Primary Actions */}
           <Button
             variant="outline"
             size="sm"
             onClick={enterSelectMode}
-            className="gap-2 min-w-[7.5rem]"
+            className="h-8 sm:h-9 gap-1.5 px-2 sm:px-3 text-xs sm:text-sm"
           >
-            <CheckSquare className="h-4 w-4" />
-            {t('selectPhotos')}
+            <CheckSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">{t('selectPhotos')}</span>
+            <span className="sm:hidden">{t('select')}</span>
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => uploadInputRef.current?.click()}
             disabled={isUploading}
-            className="gap-2 min-w-[7.5rem]"
+            className="h-8 sm:h-9 gap-1.5 px-2 sm:px-3 text-xs sm:text-sm"
           >
             {isUploading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" />
             ) : (
-              <Upload className="h-4 w-4" />
+              <Upload className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             )}
-            {isUploading ? t('uploading') : t('uploadPhotos')}
+            <span className="hidden sm:inline">{isUploading ? t('uploading') : t('uploadPhotos')}</span>
+            <span className="sm:hidden">{t('upload')}</span>
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowDownloadDialog(true)}
-            className="gap-2 min-w-[7.5rem]"
+            className="h-8 sm:h-9 gap-1.5 px-2 sm:px-3 text-xs sm:text-sm"
           >
-            <Download className="h-4 w-4" />
-            {t('downloadAll')}
+            <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">{t('downloadAll')}</span>
+            <span className="sm:hidden">{t('download')}</span>
+          </Button>
+          
+          {/* Generator Actions */}
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setShowAlbumGenerator(true)}
+            disabled={photos.filter((p) => p.is_visible).length === 0}
+            className="h-8 sm:h-9 gap-1.5 px-2 sm:px-3 text-xs sm:text-sm"
+          >
+            <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">{t('smartAlbum')}</span>
+            <span className="sm:hidden">{t('album')}</span>
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setShowPosterGenerator(true)}
+            disabled={photos.filter((p) => p.is_visible).length === 0}
+            className="h-8 sm:h-9 gap-1.5 px-2 sm:px-3 text-xs sm:text-sm"
+          >
+            <LayoutTemplate className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">{t('posterCollage')}</span>
+            <span className="sm:hidden">{t('poster')}</span>
           </Button>
         </div>
       )}
@@ -421,6 +452,22 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
         eventCreatedAt={eventCreatedAt}
         isOpen={showDownloadDialog}
         onClose={() => setShowDownloadDialog(false)}
+      />
+
+      {/* Smart Album Generator */}
+      <SmartAlbumGenerator
+        photos={photos}
+        eventName={eventSlug}
+        isOpen={showAlbumGenerator}
+        onClose={() => setShowAlbumGenerator(false)}
+      />
+
+      {/* Poster Collage Generator */}
+      <PosterCollageGenerator
+        photos={photos}
+        eventName={eventSlug}
+        isOpen={showPosterGenerator}
+        onClose={() => setShowPosterGenerator(false)}
       />
 
       {/* Single photo delete confirmation modal */}
