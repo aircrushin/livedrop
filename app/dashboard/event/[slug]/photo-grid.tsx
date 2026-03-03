@@ -342,7 +342,7 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
             <span className="hidden sm:inline">{t('smartAlbum')}</span>
             <span className="sm:hidden">{t('album')}</span>
           </Button>
-          <Button
+          {/* <Button
             variant="secondary"
             size="sm"
             onClick={() => setShowPosterGenerator(true)}
@@ -352,7 +352,7 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
             <LayoutTemplate className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t('posterCollage')}</span>
             <span className="sm:hidden">{t('poster')}</span>
-          </Button>
+          </Button> */}
         </div>
       )}
 
@@ -462,13 +462,13 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
         onClose={() => setShowAlbumGenerator(false)}
       />
 
-      {/* Poster Collage Generator */}
+      {/* Poster Collage Generator
       <PosterCollageGenerator
         photos={photos}
         eventName={eventSlug}
         isOpen={showPosterGenerator}
         onClose={() => setShowPosterGenerator(false)}
-      />
+      /> */}
 
       {/* Single photo delete confirmation modal */}
       {photoToDelete && (

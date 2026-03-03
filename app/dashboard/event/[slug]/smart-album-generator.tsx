@@ -41,6 +41,28 @@ interface AlbumConfig {
   includeEventName: boolean;
 }
 
+function getLayoutPhotoLimit(layout: AlbumLayout): number {
+  switch (layout) {
+    case "polaroid":
+      return 5;
+    case "filmstrip":
+      return 6;
+    case "grid":
+    case "masonry":
+    default:
+      return 9;
+  }
+}
+
+function getRandomPhotos(photos: Photo[], count: number): Photo[] {
+  const shuffled = [...photos];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, count);
+}
+
 const THEMES: Record<AlbumTheme, { bg: string; text: string; accent: string; border: string }> = {
   light: { bg: "#ffffff", text: "#1f2937", accent: "#3b82f6", border: "#e5e7eb" },
   dark: { bg: "#1f2937", text: "#f9fafb", accent: "#60a5fa", border: "#374151" },
@@ -412,15 +434,18 @@ export function SmartAlbumGenerator({
       canvas.height = 1600;
 
       // Load images
-      const visiblePhotos = photos.filter((p) => p.is_visible).slice(0, 9);
+      const visiblePhotos = photos.filter((p) => p.is_visible);
       if (visiblePhotos.length === 0) {
         setIsGenerating(false);
         return;
       }
 
+      const photoLimit = Math.min(getLayoutPhotoLimit(config.layout), visiblePhotos.length);
+      const selectedPhotos = getRandomPhotos(visiblePhotos, photoLimit);
+
       const images: HTMLImageElement[] = [];
-      for (let i = 0; i < visiblePhotos.length; i++) {
-        const photo = visiblePhotos[i];
+      for (let i = 0; i < selectedPhotos.length; i++) {
+        const photo = selectedPhotos[i];
         const url = getR2PublicUrl(photo.storage_path);
         try {
           const img = await loadImage(url);
@@ -428,7 +453,7 @@ export function SmartAlbumGenerator({
         } catch {
           // Skip failed images
         }
-        setProgress(Math.round(((i + 1) / visiblePhotos.length) * 30));
+        setProgress(Math.round(((i + 1) / selectedPhotos.length) * 30));
       }
 
       setProgress(40);
