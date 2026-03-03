@@ -1,6 +1,6 @@
 "use client";
 
-import { Logo } from "@/components/logo";
+import { LiveDropLogo } from "@/components/livedrop-logo";
 import { Zap, ZapOff, MonitorPlay } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -16,11 +16,12 @@ export function CameraHeader({ eventName, eventSlug, flash, onToggleFlash }: Cam
   return (
     <div className="flex items-center justify-between p-4 bg-black/50 backdrop-blur">
       <div className="flex items-center gap-2">
-        <Logo variant="icon" size="sm" className="h-8 w-8 shrink-0" animated={false} />
-        <div className="text-white">
-          <p className="text-xs text-white/60 uppercase tracking-wide">LiveDrop</p>
-          <p className="font-medium">{eventName}</p>
-        </div>
+        <LiveDropLogo
+          subtitle={eventName}
+          labelClassName="text-white/60"
+          subtitleClassName="text-white font-medium text-base"
+          iconClassName="h-8 w-8 rounded-xl"
+        />
       </div>
       <div className="flex items-center gap-2">
         <Button

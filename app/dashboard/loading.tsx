@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo } from "@/components/logo";
+import { LiveDropLogo } from "@/components/livedrop-logo";
 import { Loader2 } from "lucide-react";
 
 export default function DashboardLoading() {
@@ -8,7 +8,7 @@ export default function DashboardLoading() {
       <header className="border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <Link href="/" className="flex items-center">
-            <Logo variant="full" size="sm" className="h-7" animated={false} />
+            <LiveDropLogo />
           </Link>
         </div>
       </header>

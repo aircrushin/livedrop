@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
-import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LiveDropLogo } from "@/components/livedrop-logo";
 import { CheckSquare, Clock, GalleryHorizontal, Loader2, Menu, TrendingUp, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -46,8 +45,6 @@ export function GalleryHeader({
   deselectAll,
 }: GalleryHeaderProps) {
   const t = useTranslations('live');
-  const { theme } = useTheme();
-  const logoSrc = theme === "light" ? "/icons/icon.svg" : "/icons/icon-dark.svg";
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const toggleSelectMode = () => {
@@ -62,18 +59,7 @@ export function GalleryHeader({
       <div className="flex items-center justify-between max-w-screen-2xl mx-auto">
         {/* Event Info */}
         <div className="flex items-center gap-3">
-          <Image
-            src={logoSrc}
-            alt="LiveDrop icon"
-            width={40}
-            height={40}
-            className="h-10 w-10 rounded-2xl"
-            priority
-          />
-          <div>
-            <p className="text-xs text-muted-foreground uppercase tracking-wide">LiveDrop</p>
-            <p className="font-bold text-lg">{eventName}</p>
-          </div>
+          <LiveDropLogo subtitle={eventName} priority />
           {/* Photo Count Badge */}
           <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

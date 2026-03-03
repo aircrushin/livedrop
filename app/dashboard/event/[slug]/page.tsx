@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Logo } from "@/components/logo";
+import { LiveDropLogo } from "@/components/livedrop-logo";
 import { ArrowLeft, ExternalLink, Tv, QrCode } from "lucide-react";
 import { QRCodeDisplay } from "./qr-code-display";
 import { PhotoGrid } from "./photo-grid";
@@ -22,6 +22,7 @@ interface Props {
 export default async function EventManagePage({ params }: Props) {
   const { slug } = await params;
   const t = await getTranslations('event');
+  const tStats = await getTranslations("statistics");
   const supabase = await createClient();
   
   const { data: { user } } = await supabase.auth.getUser();
@@ -78,8 +79,7 @@ export default async function EventManagePage({ params }: Props) {
               </Link>
             </Button>
             <div className="flex items-center gap-2">
-              <Logo variant="icon" size="sm" className="h-8 w-8 shrink-0" animated={false} />
-              <span className="text-xl font-bold">{event.name}</span>
+              <LiveDropLogo subtitle={event.name} iconClassName="h-8 w-8 rounded-xl" />
             </div>
           </div>
         </div>
@@ -151,7 +151,18 @@ export default async function EventManagePage({ params }: Props) {
               </CardContent>
             </Card>
 
-            <StatisticsPanel eventId={event.id} initialStats={statistics} />
+            <StatisticsPanel
+              eventId={event.id}
+              initialStats={statistics}
+              labels={{
+                title: tStats("title"),
+                description: tStats("description"),
+                totalPhotos: tStats("totalPhotos"),
+                todayPhotos: tStats("todayPhotos"),
+                onlineViewers: tStats("onlineViewers"),
+                totalDownloads: tStats("totalDownloads"),
+              }}
+            />
 
             <BrandingSettings 
               eventId={event.id} 

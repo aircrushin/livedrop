@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getTranslations } from 'next-intl/server';
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { Logo } from "@/components/logo";
+import { LiveDropLogo } from "@/components/livedrop-logo";
 import { DraggablePhotoCollage } from "@/components/landing/draggable-photo-collage";
 import Image from "next/image";
 import { Camera, Zap, QrCode } from "lucide-react";
@@ -87,7 +87,7 @@ export default async function Home() {
         <div className="container mx-auto px-4 py-8 relative z-10">
           <nav className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <Logo variant="full" size="sm" className="h-7" />
+              <LiveDropLogo />
             </Link>
             <div className="flex items-center gap-4">
               <LanguageSwitcher />
@@ -220,7 +220,7 @@ export default async function Home() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <Link href="/" className="flex items-center">
-              <Logo variant="full" size="sm" className="h-5" animated={false} />
+              <LiveDropLogo iconClassName="h-8 w-8 rounded-xl" />
             </Link>
             <p className="text-sm text-muted-foreground">
               {t('footer.builtFor')}

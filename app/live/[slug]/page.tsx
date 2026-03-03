@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { LiveGallery } from "./live-gallery";
 import type { Event, Photo } from "@/lib/supabase/types";
@@ -14,6 +16,8 @@ export interface PhotoWithLikes extends Photo {
 
 export default async function LiveViewPage({ params }: Props) {
   const { slug } = await params;
+  const locale = await getLocale();
+  const messages = await getMessages();
   const supabase = await createClient();
 
   const { data: eventData } = await supabase
@@ -47,9 +51,8 @@ export default async function LiveViewPage({ params }: Props) {
   })) as PhotoWithLikes[];
 
   return (
-    <LiveGallery 
-      event={event} 
-      initialPhotos={initialPhotos} 
-    />
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <LiveGallery event={event} initialPhotos={initialPhotos} />
+    </NextIntlClientProvider>
   );
 }

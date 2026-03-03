@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Logo } from "@/components/logo";
+import { LiveDropLogo } from "@/components/livedrop-logo";
 import { Camera, ExternalLink, Edit2, Trash2, MoreVertical } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { SignOutButton } from "./sign-out-button";
@@ -37,7 +37,7 @@ export function DashboardClient({ events, userEmail }: DashboardClientProps) {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center">
-              <Logo variant="full" size="sm" className="h-7" />
+              <LiveDropLogo />
             </Link>
             <div className="flex items-center gap-4">
               <span className="text-sm text-muted-foreground hidden sm:block">

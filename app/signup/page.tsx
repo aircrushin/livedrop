@@ -7,9 +7,10 @@ import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Camera, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { LiveDropLogo } from "@/components/livedrop-logo";
 
 export default function SignUpPage() {
   const t = useTranslations('auth.signup');
@@ -74,10 +75,7 @@ export default function SignUpPage() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <Link href="/" className="inline-flex items-center gap-2 mb-8">
-            <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center">
-              <Camera className="h-5 w-5 text-accent-foreground" />
-            </div>
-            <span className="text-2xl font-bold">LiveDrop</span>
+            <LiveDropLogo />
           </Link>
         </div>
 

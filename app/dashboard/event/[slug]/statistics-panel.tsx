@@ -1,28 +1,25 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useTranslations } from "next-intl";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Camera, Download, Users, TrendingUp, BarChart3 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { EventStatistics } from "@/lib/supabase/statistics";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
 
 interface StatisticsPanelProps {
   eventId: string;
   initialStats: EventStatistics;
+  labels: {
+    title: string;
+    description: string;
+    totalPhotos: string;
+    todayPhotos: string;
+    onlineViewers: string;
+    totalDownloads: string;
+  };
 }
 
-export function StatisticsPanel({ eventId, initialStats }: StatisticsPanelProps) {
-  const t = useTranslations("statistics");
+export function StatisticsPanel({ eventId, initialStats, labels }: StatisticsPanelProps) {
   const [stats, setStats] = useState(initialStats);
   const supabase = createClient();
 
@@ -102,30 +99,21 @@ export function StatisticsPanel({ eventId, initialStats }: StatisticsPanelProps)
     };
   }, [eventId, supabase, fetchStats]);
 
-  const formatHour = (hour: number) => {
-    return `${hour.toString().padStart(2, "0")}:00`;
-  };
-
-  const chartData = stats.uploadDistribution.map(item => ({
-    hour: formatHour(item.hour),
-    count: item.count,
-  }));
-
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <BarChart3 className="h-5 w-5" />
-          {t("title")}
+          {labels.title}
         </CardTitle>
-        <CardDescription>{t("description")}</CardDescription>
+        <CardDescription>{labels.description}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2 p-4 bg-secondary rounded-lg">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Camera className="h-4 w-4" />
-              <span className="text-sm">{t("totalPhotos")}</span>
+              <span className="text-sm">{labels.totalPhotos}</span>
             </div>
             <p className="text-3xl font-bold">{stats.totalPhotos}</p>
           </div>
@@ -133,7 +121,7 @@ export function StatisticsPanel({ eventId, initialStats }: StatisticsPanelProps)
           <div className="space-y-2 p-4 bg-secondary rounded-lg">
             <div className="flex items-center gap-2 text-muted-foreground">
               <TrendingUp className="h-4 w-4" />
-              <span className="text-sm">{t("todayPhotos")}</span>
+              <span className="text-sm">{labels.todayPhotos}</span>
             </div>
             <p className="text-3xl font-bold">{stats.todayPhotos}</p>
           </div>
@@ -141,7 +129,7 @@ export function StatisticsPanel({ eventId, initialStats }: StatisticsPanelProps)
           <div className="space-y-2 p-4 bg-secondary rounded-lg">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Users className="h-4 w-4" />
-              <span className="text-sm">{t("onlineViewers")}</span>
+              <span className="text-sm">{labels.onlineViewers}</span>
             </div>
             <p className="text-3xl font-bold">{stats.onlineViewers}</p>
           </div>
@@ -149,7 +137,7 @@ export function StatisticsPanel({ eventId, initialStats }: StatisticsPanelProps)
           <div className="space-y-2 p-4 bg-secondary rounded-lg">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Download className="h-4 w-4" />
-              <span className="text-sm">{t("totalDownloads")}</span>
+              <span className="text-sm">{labels.totalDownloads}</span>
             </div>
             <p className="text-3xl font-bold">{stats.totalDownloads}</p>
           </div>

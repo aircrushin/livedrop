@@ -6,8 +6,9 @@ import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Camera, Loader2, Mail, ArrowLeft, KeyRound } from "lucide-react";
+import { Loader2, Mail, ArrowLeft, KeyRound } from "lucide-react";
 import { signInWithMagicLink, verifyOtp } from "@/lib/supabase/actions";
+import { LiveDropLogo } from "@/components/livedrop-logo";
 
 type Step = "email" | "otp";
 
@@ -90,22 +91,15 @@ export default function OtpLoginPage() {
     inputRefs.current[focusIdx]?.focus();
   }
 
-  const Logo = () => (
-    <div className="text-center">
-      <Link href="/" className="inline-flex items-center gap-2 mb-8">
-        <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center">
-          <Camera className="h-5 w-5 text-accent-foreground" />
-        </div>
-        <span className="text-2xl font-bold">LiveDrop</span>
-      </Link>
-    </div>
-  );
-
   if (step === "otp") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <div className="w-full max-w-md space-y-8">
-          <Logo />
+          <div className="text-center">
+            <Link href="/" className="inline-flex items-center gap-2 mb-8">
+              <LiveDropLogo />
+            </Link>
+          </div>
           <Card>
             <CardHeader className="text-center">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -166,7 +160,11 @@ export default function OtpLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
-        <Logo />
+        <div className="text-center">
+          <Link href="/" className="inline-flex items-center gap-2 mb-8">
+            <LiveDropLogo />
+          </Link>
+        </div>
         <Card>
           <CardHeader className="text-center">
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
