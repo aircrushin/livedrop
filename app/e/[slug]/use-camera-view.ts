@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from 'next-intl';
 import { createClient } from "@/lib/supabase/client";
+import { trackKickoffEvent } from "@/lib/analytics/kickoff";
 import { compressImage, formatFileSize } from "@/lib/utils/image-compression";
 import { uploadToR2 } from "@/lib/r2/actions";
 import type { Event } from "@/lib/supabase/types";
@@ -43,6 +45,7 @@ const MAX_BATCH_SIZE = 20; // Maximum number of files per batch
 
 export function useCameraView({ event }: UseCameraViewProps): UseCameraViewReturn {
   const t = useTranslations('camera');
+  const searchParams = useSearchParams();
   const [status, setStatus] = useState<UploadStatus>("idle");
   const [progress, setProgress] = useState(0);
   const [overallProgress, setOverallProgress] = useState(0);
@@ -51,6 +54,7 @@ export function useCameraView({ event }: UseCameraViewProps): UseCameraViewRetur
   const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const supabase = createClient();
+  const isKickoffSource = searchParams.get("src") === "kickoff";
 
   // Ensure authentication
   useEffect(() => {
@@ -70,6 +74,15 @@ export function useCameraView({ event }: UseCameraViewProps): UseCameraViewRetur
     
     ensureAuth();
   }, [supabase.auth, t]);
+
+  useEffect(() => {
+    if (!isKickoffSource) return;
+
+    trackKickoffEvent("kickoff_scan_qr", {
+      eventId: event.id,
+      eventSlug: event.slug,
+    });
+  }, [event.id, event.slug, isKickoffSource]);
 
   const validateFile = useCallback((file: File): boolean => {
     // Validate file type
@@ -203,7 +216,6 @@ export function useCameraView({ event }: UseCameraViewProps): UseCameraViewRetur
       const totalFiles = pendingFiles.length;
       let completedFiles = 0;
       let successCount = 0;
-      let errorCount = 0;
 
       // Upload files sequentially to avoid overwhelming the server
       for (let i = 0; i < pendingFiles.length; i++) {
@@ -226,7 +238,6 @@ export function useCameraView({ event }: UseCameraViewProps): UseCameraViewRetur
             f.id === pendingFile.id ? { ...f, status: "success" } : f
           ));
         } else {
-          errorCount++;
           setPendingFiles(prev => prev.map(f => 
             f.id === pendingFile.id ? { ...f, status: "error", error: t('uploadFailed') } : f
           ));
@@ -239,6 +250,17 @@ export function useCameraView({ event }: UseCameraViewProps): UseCameraViewRetur
       setProgress(100);
 
       if (successCount === totalFiles) {
+        if (isKickoffSource) {
+          const storageKey = `kickoff-first-upload-${event.id}`;
+          if (!sessionStorage.getItem(storageKey)) {
+            trackKickoffEvent("kickoff_first_upload_after_open", {
+              eventId: event.id,
+              eventSlug: event.slug,
+            });
+            sessionStorage.setItem(storageKey, "1");
+          }
+        }
+
         setStatus("success");
         // Reset after success
         setTimeout(() => {
@@ -249,6 +271,17 @@ export function useCameraView({ event }: UseCameraViewProps): UseCameraViewRetur
           setOverallProgress(0);
         }, 1500);
       } else if (successCount > 0) {
+        if (isKickoffSource) {
+          const storageKey = `kickoff-first-upload-${event.id}`;
+          if (!sessionStorage.getItem(storageKey)) {
+            trackKickoffEvent("kickoff_first_upload_after_open", {
+              eventId: event.id,
+              eventSlug: event.slug,
+            });
+            sessionStorage.setItem(storageKey, "1");
+          }
+        }
+
         // Partial success
         setStatus("success");
         setError(t('partialUpload', { success: successCount, total: totalFiles }));
@@ -271,7 +304,7 @@ export function useCameraView({ event }: UseCameraViewProps): UseCameraViewRetur
       setError(err instanceof Error ? err.message : "Upload failed");
       setStatus("error");
     }
-  }, [pendingFiles, supabase, uploadSingleFile, t]);
+  }, [event.id, event.slug, isKickoffSource, pendingFiles, supabase, uploadSingleFile, t]);
 
   const handleCancel = useCallback(() => {
     // Revoke all object URLs

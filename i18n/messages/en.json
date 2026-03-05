@@ -205,7 +205,24 @@
     "eventEndedTitle": "Event has ended",
     "eventEndedDesc": "This event is no longer accepting uploads or live viewing.",
     "reenterEventCode": "Re-enter event code",
-    "contactHostHint": "If you believe this is a mistake, please contact the host."
+    "contactHostHint": "If you believe this is a mistake, please contact the host.",
+    "kickoff": {
+      "title": "Kickoff Mode",
+      "description": "Configure pre-show guidance, countdown, and display mode switching.",
+      "enabled": "Enable kickoff mode",
+      "enabledHint": "When enabled, projector links open the kickoff screen by default.",
+      "mainTitle": "Kickoff title",
+      "mainTitlePlaceholder": "e.g. The show starts in a few minutes",
+      "subtitle": "Subtitle",
+      "subtitlePlaceholder": "e.g. Scan the QR code and upload your photos",
+      "countdownEndAt": "Countdown end time",
+      "autoSwitch": "Auto switch",
+      "autoSwitchHint": "Switch to live mode automatically when countdown ends",
+      "switchToKickoff": "Switch to kickoff",
+      "startLive": "Start live",
+      "save": "Save settings",
+      "readOnlyHint": "You have read-only access and cannot update kickoff settings."
+    }
   },
   "camera": {
     "title": "Take a Photo",
@@ -274,7 +291,27 @@
     "justNow": "Just now",
     "minutesAgo": "{count}m ago",
     "hoursAgo": "{count}h ago",
-    "daysAgo": "{count}d ago"
+    "daysAgo": "{count}d ago",
+    "kickoff": {
+      "switchToKickoff": "Switch to kickoff",
+      "defaultSubtitle": "Scan to upload photos and warm up before the live wall starts.",
+      "connected": "Connected",
+      "connecting": "Connecting",
+      "kicker": "Kickoff Mode",
+      "step1Title": "Step 1",
+      "step1Desc": "Scan the QR code",
+      "step2Title": "Step 2",
+      "step2Desc": "Take or upload photos",
+      "step3Title": "Step 3",
+      "step3Desc": "Watch them appear live",
+      "countdown": "Live starts in",
+      "comingSoon": "Starting soon",
+      "targetTime": "Target start: {time}",
+      "startLive": "Start live",
+      "scanTitle": "Scan to join",
+      "joinedUsers": "Joined Users",
+      "uploadedPhotos": "Uploaded Photos"
+    }
   },
   "statistics": {
     "title": "Statistics",

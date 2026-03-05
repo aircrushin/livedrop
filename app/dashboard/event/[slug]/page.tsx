@@ -14,6 +14,9 @@ import { StatisticsPanel } from "./statistics-panel";
 import { BrandingSettings } from "./branding-settings";
 import { EventStatusToggle } from "./event-status-toggle";
 import { getEventStatistics } from "@/lib/supabase/statistics";
+import { KickoffSettings } from "./kickoff-settings";
+import { canEditKickoff, getUserEventRole } from "@/lib/supabase/event-permissions";
+import { parseEventKickoffConfig } from "@/lib/supabase/kickoff";
 import type { Event, Photo } from "@/lib/supabase/types";
 
 interface Props {
@@ -36,14 +39,20 @@ export default async function EventManagePage({ params }: Props) {
     .from("events")
     .select("*")
     .eq("slug", slug)
-    .eq("host_id", user.id)
-    .single();
+    .maybeSingle();
 
   const event = eventData as Event | null;
 
   if (!event) {
     notFound();
   }
+
+  const role = await getUserEventRole(supabase, event.id, user.id, event.host_id);
+  if (!role) {
+    notFound();
+  }
+
+  const canManageEvent = canEditKickoff(role);
 
   const { data: photosData } = await supabase
     .from("photos")
@@ -169,9 +178,20 @@ export default async function EventManagePage({ params }: Props) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <EventStatusToggle eventId={event.id} isActive={event.is_active} />
+                {canManageEvent ? (
+                  <EventStatusToggle eventId={event.id} isActive={event.is_active} />
+                ) : (
+                  <p className="text-sm text-muted-foreground">{t("contactHostHint")}</p>
+                )}
               </CardContent>
             </Card>
+
+            <KickoffSettings
+              eventId={event.id}
+              initialMode={event.display_mode}
+              initialConfig={parseEventKickoffConfig(event)}
+              canEdit={canManageEvent}
+            />
 
             <StatisticsPanel
               eventId={event.id}
@@ -186,17 +206,21 @@ export default async function EventManagePage({ params }: Props) {
               }}
             />
 
-            <BrandingSettings 
-              eventId={event.id} 
-              initialBranding={{
-                logoUrl: branding.logoUrl || null,
-                bannerUrl: branding.bannerUrl || null,
-                logoPosition: (branding.logoPosition as "center" | "top-left" | "top-right" | "bottom-left" | "bottom-right") || "center",
-                qrStyle: (branding.qrStyle as "default" | "rounded" | "dots") || "default",
-                primaryColor: branding.primaryColor || "#3b82f6",
-                backgroundColor: branding.backgroundColor || "#ffffff",
-              }}
-            />
+            {canManageEvent ? (
+              <BrandingSettings
+                eventId={event.id}
+                initialBranding={{
+                  logoUrl: branding.logoUrl || null,
+                  bannerUrl: branding.bannerUrl || null,
+                  logoPosition:
+                    (branding.logoPosition as "center" | "top-left" | "top-right" | "bottom-left" | "bottom-right") ||
+                    "center",
+                  qrStyle: (branding.qrStyle as "default" | "rounded" | "dots") || "default",
+                  primaryColor: branding.primaryColor || "#000000",
+                  backgroundColor: branding.backgroundColor || "#ffffff",
+                }}
+              />
+            ) : null}
           </div>
 
           {/* Photos Grid */}
@@ -209,12 +233,16 @@ export default async function EventManagePage({ params }: Props) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <PhotoGrid 
-                  photos={photos} 
-                  eventId={event.id}
-                  eventSlug={event.slug}
-                  eventCreatedAt={event.created_at}
-                />
+                {canManageEvent ? (
+                  <PhotoGrid
+                    photos={photos}
+                    eventId={event.id}
+                    eventSlug={event.slug}
+                    eventCreatedAt={event.created_at}
+                  />
+                ) : (
+                  <p className="text-sm text-muted-foreground">{t("contactHostHint")}</p>
+                )}
               </CardContent>
             </Card>
           </div>

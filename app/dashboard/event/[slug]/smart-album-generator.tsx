@@ -64,7 +64,7 @@ function getRandomPhotos(photos: Photo[], count: number): Photo[] {
 }
 
 const THEMES: Record<AlbumTheme, { bg: string; text: string; accent: string; border: string }> = {
-  light: { bg: "#ffffff", text: "#1f2937", accent: "#3b82f6", border: "#e5e7eb" },
+  light: { bg: "#ffffff", text: "#1f2937", accent: "#000000", border: "#e5e7eb" },
   dark: { bg: "#1f2937", text: "#f9fafb", accent: "#60a5fa", border: "#374151" },
   warm: { bg: "#fff7ed", text: "#7c2d12", accent: "#ea580c", border: "#fed7aa" },
   cool: { bg: "#f0f9ff", text: "#0c4a6e", accent: "#0284c7", border: "#bae6fd" },

@@ -1,7 +1,8 @@
 "use server";
 
-import { createClient } from "./server";
 import { revalidatePath } from "next/cache";
+import { canEditKickoff, getUserEventRole } from "@/lib/supabase/event-permissions";
+import { createClient } from "@/lib/supabase/server";
 
 interface BrandingConfig {
   logoUrl: string | null;
@@ -33,7 +34,9 @@ export async function updateEventBranding(
       .eq("id", eventId)
       .single();
 
-    if (!event || event.host_id !== user.id) {
+    const role = event ? await getUserEventRole(supabase, eventId, user.id, event.host_id) : null;
+
+    if (!event || !canEditKickoff(role)) {
       return { error: "Unauthorized" };
     }
 
@@ -79,7 +82,7 @@ export async function getEventBranding(
       bannerUrl: null,
       logoPosition: "center",
       qrStyle: "default",
-      primaryColor: "#3b82f6",
+      primaryColor: "#000000",
       backgroundColor: "#ffffff",
     };
 
@@ -115,7 +118,9 @@ export async function setEventActiveStatus(
       .eq("id", eventId)
       .single();
 
-    if (!event || event.host_id !== user.id) {
+    const role = event ? await getUserEventRole(supabase, eventId, user.id, event.host_id) : null;
+
+    if (!event || !canEditKickoff(role)) {
       return { error: "Unauthorized" };
     }
 

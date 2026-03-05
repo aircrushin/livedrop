@@ -22,6 +22,9 @@ export interface Database {
           banner_image: string | null;
           branding: Json;
           is_active: boolean;
+          display_mode: "kickoff" | "live";
+          kickoff_config: Json;
+          display_mode_updated_at: string;
         };
         Insert: {
           id?: string;
@@ -35,6 +38,9 @@ export interface Database {
           banner_image?: string | null;
           branding?: Json;
           is_active?: boolean;
+          display_mode?: "kickoff" | "live";
+          kickoff_config?: Json;
+          display_mode_updated_at?: string;
         };
         Update: {
           id?: string;
@@ -48,8 +54,42 @@ export interface Database {
           banner_image?: string | null;
           branding?: Json;
           is_active?: boolean;
+          display_mode?: "kickoff" | "live";
+          kickoff_config?: Json;
+          display_mode_updated_at?: string;
         };
         Relationships: [];
+      };
+      event_members: {
+        Row: {
+          id: string;
+          created_at: string;
+          event_id: string;
+          user_id: string;
+          role: "manager" | "moderator" | "viewer";
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          event_id: string;
+          user_id: string;
+          role: "manager" | "moderator" | "viewer";
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          event_id?: string;
+          user_id?: string;
+          role?: "manager" | "moderator" | "viewer";
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_members_event_id_fkey";
+            columns: ["event_id"];
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       photos: {
         Row: {
@@ -187,6 +227,7 @@ export interface Database {
 }
 
 export type Event = Database["public"]["Tables"]["events"]["Row"];
+export type EventMember = Database["public"]["Tables"]["event_members"]["Row"];
 export type Photo = Database["public"]["Tables"]["photos"]["Row"];
 export type PhotoLike = Database["public"]["Tables"]["photo_likes"]["Row"];
 export type PhotoComment = Database["public"]["Tables"]["photo_comments"]["Row"];

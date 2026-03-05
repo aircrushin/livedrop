@@ -205,7 +205,24 @@
     "eventEndedTitle": "活动已结束",
     "eventEndedDesc": "该活动已停止上传与实时观看。",
     "reenterEventCode": "重新输入活动码",
-    "contactHostHint": "如有疑问，请联系主持人。"
+    "contactHostHint": "如有疑问，请联系主持人。",
+    "kickoff": {
+      "title": "开场模式",
+      "description": "配置开场引导页、倒计时与模式切换。",
+      "enabled": "启用开场模式",
+      "enabledHint": "开启后，投屏链接默认进入开场页。",
+      "mainTitle": "开场标题",
+      "mainTitlePlaceholder": "例如：婚礼倒计时即将开始",
+      "subtitle": "副标题",
+      "subtitlePlaceholder": "例如：扫码上传照片，精彩即将上屏",
+      "countdownEndAt": "倒计时结束时间",
+      "autoSwitch": "自动切换",
+      "autoSwitchHint": "倒计时结束后自动切换到直播",
+      "switchToKickoff": "切回开场",
+      "startLive": "开始直播",
+      "save": "保存配置",
+      "readOnlyHint": "你当前为只读权限，无法修改开场配置。"
+    }
   },
   "camera": {
     "title": "拍摄照片",
@@ -274,7 +291,27 @@
     "justNow": "刚刚",
     "minutesAgo": "{count}分钟前",
     "hoursAgo": "{count}小时前",
-    "daysAgo": "{count}天前"
+    "daysAgo": "{count}天前",
+    "kickoff": {
+      "switchToKickoff": "切回开场",
+      "defaultSubtitle": "扫码上传照片，直播将在开场后自动点亮。",
+      "connected": "连接正常",
+      "connecting": "连接中",
+      "kicker": "开场模式",
+      "step1Title": "步骤 1",
+      "step1Desc": "扫码进入上传页",
+      "step2Title": "步骤 2",
+      "step2Desc": "拍照或上传照片",
+      "step3Title": "步骤 3",
+      "step3Desc": "等待大屏实时展示",
+      "countdown": "直播倒计时",
+      "comingSoon": "即将开始",
+      "targetTime": "预计开始：{time}",
+      "startLive": "开始直播",
+      "scanTitle": "扫码参与",
+      "joinedUsers": "已加入人数",
+      "uploadedPhotos": "已上传照片数"
+    }
   },
   "statistics": {
     "title": "数据统计",

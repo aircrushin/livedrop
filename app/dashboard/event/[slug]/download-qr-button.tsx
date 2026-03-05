@@ -92,7 +92,7 @@ export function DownloadQRButton({ url, eventName, slug, branding: initialBrandi
     const svg = qrCodeRef.current.querySelector("svg");
     if (!svg) return;
 
-    const primary = branding?.primaryColor || "#3b82f6";
+    const primary = branding?.primaryColor || "#000000";
     const hasBanner = !!branding?.bannerUrl;
     const hasLogo = !!branding?.logoUrl;
     const logoPos = branding?.logoPosition ?? "top-left";

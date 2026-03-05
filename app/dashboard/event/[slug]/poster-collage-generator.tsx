@@ -63,7 +63,7 @@ const THEMES: Record<PosterTheme, {
   modern: { 
     bg: "#0f172a", 
     text: "#ffffff", 
-    accent: "#3b82f6", 
+    accent: "#000000", 
     overlay: "rgba(0,0,0,0.3)",
     gradient: ["#1e293b", "#0f172a"]
   },
