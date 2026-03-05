@@ -12,6 +12,7 @@ import { CopyButton } from "./copy-button";
 import { DownloadQRButton } from "./download-qr-button";
 import { StatisticsPanel } from "./statistics-panel";
 import { BrandingSettings } from "./branding-settings";
+import { EventStatusToggle } from "./event-status-toggle";
 import { getEventStatistics } from "@/lib/supabase/statistics";
 import type { Event, Photo } from "@/lib/supabase/types";
 
@@ -80,6 +81,15 @@ export default async function EventManagePage({ params }: Props) {
             </Button>
             <div className="flex items-center gap-2">
               <LiveDropLogo subtitle={event.name} iconClassName="h-8 w-8 rounded-xl" />
+              <span
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                  event.is_active
+                    ? "bg-emerald-500/15 text-emerald-500"
+                    : "bg-destructive/15 text-destructive"
+                }`}
+              >
+                {event.is_active ? t("eventOnline") : t("eventOffline")}
+              </span>
             </div>
           </div>
         </div>
@@ -148,6 +158,18 @@ export default async function EventManagePage({ params }: Props) {
                     {t('openLiveView')}
                   </Link>
                 </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("eventStatus")}</CardTitle>
+                <CardDescription>
+                  {t("eventStatusDesc")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EventStatusToggle eventId={event.id} isActive={event.is_active} />
               </CardContent>
             </Card>
 

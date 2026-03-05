@@ -1,5 +1,5 @@
-import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { EventUnavailableState } from "@/components/event-unavailable-state";
 import { CameraView } from "./camera-view";
 import type { Event } from "@/lib/supabase/types";
 
@@ -13,14 +13,18 @@ export default async function GuestEventPage({ params }: Props) {
 
   const { data: eventData } = await supabase
     .from("events")
-    .select("id, name, slug")
+    .select("id, name, slug, is_active")
     .eq("slug", slug)
     .single();
 
-  const event = eventData as Pick<Event, "id" | "name" | "slug"> | null;
+  const event = eventData as Pick<Event, "id" | "name" | "slug" | "is_active"> | null;
 
   if (!event) {
-    notFound();
+    return <EventUnavailableState reason="not_found" />;
+  }
+
+  if (!event.is_active) {
+    return <EventUnavailableState reason="ended" />;
   }
 
   return <CameraView event={event} />;

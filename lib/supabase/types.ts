@@ -21,6 +21,7 @@ export interface Database {
           cover_image: string | null;
           banner_image: string | null;
           branding: Json;
+          is_active: boolean;
         };
         Insert: {
           id?: string;
@@ -33,6 +34,7 @@ export interface Database {
           cover_image?: string | null;
           banner_image?: string | null;
           branding?: Json;
+          is_active?: boolean;
         };
         Update: {
           id?: string;
@@ -45,6 +47,7 @@ export interface Database {
           cover_image?: string | null;
           banner_image?: string | null;
           branding?: Json;
+          is_active?: boolean;
         };
         Relationships: [];
       };

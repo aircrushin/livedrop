@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { EventUnavailableState } from "@/components/event-unavailable-state";
 import { LiveGallery } from "./live-gallery";
 import type { Event, Photo } from "@/lib/supabase/types";
 
@@ -22,14 +22,18 @@ export default async function LiveViewPage({ params }: Props) {
 
   const { data: eventData } = await supabase
     .from("events")
-    .select("id, name, slug")
+    .select("id, name, slug, is_active")
     .eq("slug", slug)
     .single();
 
-  const event = eventData as Pick<Event, "id" | "name" | "slug"> | null;
+  const event = eventData as Pick<Event, "id" | "name" | "slug" | "is_active"> | null;
 
   if (!event) {
-    notFound();
+    return <EventUnavailableState reason="not_found" />;
+  }
+
+  if (!event.is_active) {
+    return <EventUnavailableState reason="ended" />;
   }
 
   // Fetch photos with likes and comments count

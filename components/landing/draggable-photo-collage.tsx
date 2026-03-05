@@ -123,8 +123,9 @@ export function DraggablePhotoCollage({ photos }: { photos: CollagePhoto[] }) {
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.3)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.3)_1px,transparent_1px)] bg-size-[4rem_4rem]" />
       <div className="absolute inset-0 bg-linear-to-br from-background/10 via-background/40 to-background/75" />
 
-      {photos.map((photo) => {
+      {photos.map((photo, index) => {
         const state = photoStates[photo.id] ?? { x: 0, y: 0, z: 0 };
+        const shouldPrioritize = index < 2;
 
         return (
           <button
@@ -159,6 +160,9 @@ export function DraggablePhotoCollage({ photos }: { photos: CollagePhoto[] }) {
               alt={photo.alt}
               fill
               quality={95}
+              priority={shouldPrioritize}
+              loading={shouldPrioritize ? "eager" : "lazy"}
+              fetchPriority={shouldPrioritize ? "high" : "auto"}
               className="object-cover transition duration-300 group-hover:scale-[1.04]"
               sizes="(max-width: 768px) 240px, 420px"
             />

@@ -95,3 +95,48 @@ export async function getEventBranding(
     return { error: "An unexpected error occurred" };
   }
 }
+
+export async function setEventActiveStatus(
+  eventId: string,
+  isActive: boolean
+): Promise<{ error?: string; success?: boolean }> {
+  const supabase = await createClient();
+
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { error: "Unauthorized" };
+    }
+
+    const { data: event } = await supabase
+      .from("events")
+      .select("host_id, slug")
+      .eq("id", eventId)
+      .single();
+
+    if (!event || event.host_id !== user.id) {
+      return { error: "Unauthorized" };
+    }
+
+    const { error } = await supabase
+      .from("events")
+      .update({ is_active: isActive })
+      .eq("id", eventId);
+
+    if (error) {
+      console.error("Error updating event active status:", error);
+      return { error: "Failed to update event status" };
+    }
+
+    revalidatePath("/dashboard");
+    revalidatePath(`/dashboard/event/${event.slug}`);
+    revalidatePath(`/e/${event.slug}`);
+    revalidatePath(`/live/${event.slug}`);
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error in setEventActiveStatus:", error);
+    return { error: "An unexpected error occurred" };
+  }
+}

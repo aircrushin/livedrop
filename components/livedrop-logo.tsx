@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 interface LiveDropLogoProps {
@@ -21,13 +20,10 @@ export function LiveDropLogo({
   subtitle,
   priority = false,
 }: LiveDropLogoProps) {
-  const { theme } = useTheme();
-  const logoSrc = theme === "light" ? "/icons/icon.svg" : "/icons/icon-dark.svg";
-
   return (
     <div className={cn("flex items-center gap-3", className)}>
       <Image
-        src={logoSrc}
+        src="/icons/icon-dark.svg"
         alt="LiveDrop icon"
         width={40}
         height={40}

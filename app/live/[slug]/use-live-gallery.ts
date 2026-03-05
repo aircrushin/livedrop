@@ -276,12 +276,31 @@ export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): U
       )
       .subscribe();
 
+    const eventStatusChannel = supabase
+      .channel(`event-status:${event.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "events",
+          filter: `id=eq.${event.id}`,
+        },
+        (payload: { new: { is_active: boolean } }) => {
+          if (payload.new?.is_active === false) {
+            window.location.href = `/live/${event.slug}`;
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(photosChannel);
       supabase.removeChannel(likesChannel);
       supabase.removeChannel(commentsChannel);
+      supabase.removeChannel(eventStatusChannel);
     };
-  }, [event.id, supabase, currentUserId]);
+  }, [event.id, event.slug, supabase, currentUserId]);
 
   const selectAll = () => {
     setSelectedPhotos(new Set(photos.map(p => p.id)));

@@ -190,6 +190,16 @@ export function useCameraView({ event }: UseCameraViewProps): UseCameraViewRetur
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      const { data: currentEvent } = await supabase
+        .from("events")
+        .select("is_active")
+        .eq("id", event.id)
+        .single();
+
+      if (!currentEvent?.is_active) {
+        throw new Error(t("eventEnded"));
+      }
+
       const totalFiles = pendingFiles.length;
       let completedFiles = 0;
       let successCount = 0;

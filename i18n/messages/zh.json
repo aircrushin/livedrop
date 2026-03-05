@@ -191,7 +191,21 @@
     "smartAlbum": "智能相册",
     "album": "相册",
     "posterCollage": "海报拼图",
-    "poster": "海报"
+    "poster": "海报",
+    "eventStatus": "活动状态",
+    "eventStatusDesc": "下线后，宾客将无法通过二维码或活动码上传照片，实时直播页也不可访问。",
+    "eventOnline": "进行中",
+    "eventOffline": "已下线",
+    "deactivateEvent": "下线活动",
+    "deactivatingEvent": "下线中...",
+    "activateEvent": "恢复活动",
+    "activatingEvent": "恢复中...",
+    "eventNotFoundTitle": "活动不存在",
+    "eventNotFoundDesc": "请检查活动码后重新输入。",
+    "eventEndedTitle": "活动已结束",
+    "eventEndedDesc": "该活动已停止上传与实时观看。",
+    "reenterEventCode": "重新输入活动码",
+    "contactHostHint": "如有疑问，请联系主持人。"
   },
   "camera": {
     "title": "拍摄照片",
@@ -213,7 +227,8 @@
     "allUploadFailed": "所有照片上传失败",
     "uploadingCount": "正在上传 {current} / {total}",
     "batchUploadSuccess": "{count} 张照片已上传！",
-    "selectedCount": "已选择 {count} 张照片"
+    "selectedCount": "已选择 {count} 张照片",
+    "eventEnded": "活动已结束，无法继续上传。"
   },
   "join": {
     "title": "加入活动",

@@ -191,7 +191,21 @@
     "smartAlbum": "Smart Album",
     "album": "Album",
     "posterCollage": "Poster Collage",
-    "poster": "Poster"
+    "poster": "Poster",
+    "eventStatus": "Event Status",
+    "eventStatusDesc": "After taking this event offline, guests can no longer upload from QR/event code and the live page will be unavailable.",
+    "eventOnline": "Online",
+    "eventOffline": "Offline",
+    "deactivateEvent": "Take Event Offline",
+    "deactivatingEvent": "Taking Offline...",
+    "activateEvent": "Bring Event Online",
+    "activatingEvent": "Bringing Online...",
+    "eventNotFoundTitle": "Event does not exist",
+    "eventNotFoundDesc": "Please check the event code and try again.",
+    "eventEndedTitle": "Event has ended",
+    "eventEndedDesc": "This event is no longer accepting uploads or live viewing.",
+    "reenterEventCode": "Re-enter event code",
+    "contactHostHint": "If you believe this is a mistake, please contact the host."
   },
   "camera": {
     "title": "Take a Photo",
@@ -213,7 +227,8 @@
     "allUploadFailed": "Failed to upload all photos",
     "uploadingCount": "Uploading {current} / {total}",
     "batchUploadSuccess": "{count} photos uploaded!",
-    "selectedCount": "{count} photos selected"
+    "selectedCount": "{count} photos selected",
+    "eventEnded": "This event has ended. Upload is no longer available."
   },
   "join": {
     "title": "Join an Event",
