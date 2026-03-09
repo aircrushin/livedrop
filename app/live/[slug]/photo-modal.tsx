@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -96,12 +97,6 @@ export function PhotoModal({
   const t = useTranslations('live');
   const [scale, setScale] = useState(1);
   const [currentPhoto, setCurrentPhoto] = useState(photo);
-
-  // Update currentPhoto when photo prop changes
-  useEffect(() => {
-    setCurrentPhoto(photo);
-    if (photo) setScale(1);
-  }, [photo]);
 
   const currentIndex = photos.findIndex((p) => p.id === currentPhoto?.id);
 

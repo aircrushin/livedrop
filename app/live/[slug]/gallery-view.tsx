@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -52,13 +53,6 @@ export function GalleryView({
     return () => ro.disconnect();
   }, []);
 
-  // Clamp index when photos change
-  useEffect(() => {
-    if (photos.length > 0 && currentIndex >= photos.length) {
-      setCurrentIndex(photos.length - 1);
-    }
-  }, [photos.length, currentIndex]);
-
   // Scroll active thumbnail into view
   useEffect(() => {
     const container = thumbnailsRef.current;
@@ -67,7 +61,7 @@ export function GalleryView({
     if (active) {
       active.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     }
-  }, [currentIndex]);
+  }, [currentIndex, photos.length]);
 
   const goTo = useCallback(
     (index: number) => {
@@ -123,8 +117,9 @@ export function GalleryView({
     );
   }
 
-  const isFirst = currentIndex === 0;
-  const isLast = currentIndex === photos.length - 1;
+  const boundedIndex = Math.min(currentIndex, photos.length - 1);
+  const isFirst = boundedIndex === 0;
+  const isLast = boundedIndex === photos.length - 1;
 
   // Pixel dimensions derived from measured stage
   const cardWidth = stageWidth * CARD_WIDTH_RATIO;
@@ -134,7 +129,7 @@ export function GalleryView({
 
   // Only render photos within 1 step of current index
   const visiblePhotos = photos
-    .map((photo, i) => ({ photo, index: i, offset: i - currentIndex }))
+    .map((photo, i) => ({ photo, index: i, offset: i - boundedIndex }))
     .filter(({ offset }) => Math.abs(offset) <= 1);
 
   return (
@@ -142,7 +137,7 @@ export function GalleryView({
       {/* Counter */}
       <div className="flex items-center justify-center py-2 shrink-0">
         <span className="text-sm text-muted-foreground tabular-nums">
-          {currentIndex + 1} / {photos.length}
+          {boundedIndex + 1} / {photos.length}
         </span>
       </div>
 
@@ -195,7 +190,7 @@ export function GalleryView({
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 34, mass: 0.9 }}
                 className={`flex items-center justify-center ${isPeek ? "cursor-pointer" : ""}`}
-                onClick={isPeek ? () => goTo(currentIndex + offset) : undefined}
+                onClick={isPeek ? () => goTo(boundedIndex + offset) : undefined}
               >
                 {/* Card */}
                 <div
@@ -300,7 +295,7 @@ export function GalleryView({
         >
           <div className="shrink-0 w-2" />
           {photos.map((photo, i) => {
-            const isActive = i === currentIndex;
+            const isActive = i === boundedIndex;
             return (
               <button
                 key={photo.id}
@@ -333,4 +328,3 @@ export function GalleryView({
     </div>
   );
 }
-

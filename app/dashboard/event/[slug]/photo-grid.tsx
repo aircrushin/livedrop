@@ -7,14 +7,13 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Eye, EyeOff, Trash2, Loader2, Download, CheckSquare, Square, X, AlertTriangle, Upload, Sparkles, LayoutTemplate } from "lucide-react";
+import { Eye, EyeOff, Trash2, Loader2, Download, CheckSquare, Square, X, AlertTriangle, Upload, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getR2PublicUrl } from "@/lib/r2/utils";
 import { deleteFromR2, deleteMultipleFromR2, uploadToR2 } from "@/lib/r2/actions";
 import { compressImage } from "@/lib/utils/image-compression";
 import { BatchDownloadDialog } from "@/components/batch-download-dialog";
 import { SmartAlbumGenerator } from "./smart-album-generator";
-import { PosterCollageGenerator } from "./poster-collage-generator";
 import type { Photo } from "@/lib/supabase/types";
 
 interface PhotoGridProps {
@@ -26,6 +25,7 @@ interface PhotoGridProps {
 
 export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoGridProps) {
   const [loading, setLoading] = useState<string | null>(null);
+  const [photoActionTarget, setPhotoActionTarget] = useState<Photo | null>(null);
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -34,7 +34,6 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showAlbumGenerator, setShowAlbumGenerator] = useState(false);
-  const [showPosterGenerator, setShowPosterGenerator] = useState(false);
   const uploadInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const t = useTranslations('event');
@@ -209,6 +208,13 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
     setShowBulkDeleteModal(true);
   }
 
+  function openMobileActionModal(photo: Photo) {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(max-width: 639px)").matches) {
+      setPhotoActionTarget(photo);
+    }
+  }
+
   if (photos.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground space-y-4">
@@ -368,7 +374,7 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
               } ${isSelectMode ? "cursor-pointer" : ""} ${
                 isSelected ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
               }`}
-              onClick={isSelectMode ? () => togglePhotoSelection(photo.id) : undefined}
+              onClick={isSelectMode ? () => togglePhotoSelection(photo.id) : () => openMobileActionModal(photo)}
             >
               <Image
                 src={getImageUrl(photo.storage_path)}
@@ -408,7 +414,10 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
                       <Button
                         variant="secondary"
                         size="icon"
-                        onClick={() => toggleVisibility(photo)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleVisibility(photo);
+                        }}
                         title={photo.is_visible ? t('hide') : t('show')}
                       >
                         {photo.is_visible ? (
@@ -515,6 +524,62 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
                   </Button>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Mobile photo actions modal */}
+      {photoActionTarget && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:hidden">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setPhotoActionTarget(null)}
+          />
+          <Card className="relative w-full max-w-md animate-in">
+            <CardHeader className="flex flex-row items-center justify-between pb-3">
+              <CardTitle className="text-base">{t('photos')}</CardTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setPhotoActionTarget(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full gap-2"
+                disabled={loading === photoActionTarget.id}
+                onClick={() => {
+                  void toggleVisibility(photoActionTarget);
+                  setPhotoActionTarget(null);
+                }}
+              >
+                {loading === photoActionTarget.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : photoActionTarget.is_visible ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+                {photoActionTarget.is_visible ? t('hide') : t('show')}
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                className="w-full gap-2"
+                disabled={loading === photoActionTarget.id}
+                onClick={() => {
+                  setPhotoToDelete(photoActionTarget);
+                  setPhotoActionTarget(null);
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+                {t('delete')}
+              </Button>
             </CardContent>
           </Card>
         </div>

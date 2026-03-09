@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
 import QRCode from "react-qr-code";
 import { cn } from "@/lib/utils";

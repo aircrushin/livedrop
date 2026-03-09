@@ -148,6 +148,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
 
       {viewMode !== "gallery" && (
         <PhotoModal
+          key={selectedPhoto?.id ?? "none"}
           photo={selectedPhoto}
           photos={sortedPhotos}
           currentUserId={currentUserId}

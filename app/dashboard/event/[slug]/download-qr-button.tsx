@@ -207,7 +207,7 @@ export function DownloadQRButton({ url, eventName, slug, branding: initialBrandi
     }
 
     // ── Event name ─────────────────────────────────────────────────────
-    let displayName = eventName.length > 22 ? eventName.slice(0, 19) + "…" : eventName;
+    const displayName = eventName.length > 22 ? eventName.slice(0, 19) + "…" : eventName;
     ctx.fillStyle = "#0f172a";
     ctx.font = `bold 38px -apple-system, "PingFang SC", "Helvetica Neue", sans-serif`;
     ctx.textAlign = "center";

@@ -16,12 +16,16 @@ const locales = [
   { code: "zh", label: "中文" },
 ];
 
+function setLocaleCookie(locale: string) {
+  document.cookie = `locale=${locale};path=/;max-age=31536000`;
+}
+
 export function LanguageSwitcher() {
   const locale = useLocale();
   const router = useRouter();
 
   function switchLocale(newLocale: string) {
-    document.cookie = `locale=${newLocale};path=/;max-age=31536000`;
+    setLocaleCookie(newLocale);
     router.refresh();
   }
 

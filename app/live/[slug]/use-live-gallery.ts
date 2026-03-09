@@ -1,29 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useTranslations } from 'next-intl';
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Camera, 
-  X, 
-  Download, 
-  ZoomIn, 
-  ZoomOut, 
-  LayoutGrid, 
-  Clock,
-  Square,
-  CheckSquare,
-  Loader2,
-  TrendingUp,
-  MessageCircle
-} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { getR2PublicUrl } from "@/lib/r2/utils";
-import { useBatchDownload } from "@/lib/hooks/use-batch-download";
 import { useViewerTracking } from "@/lib/hooks/use-viewer-tracking";
-import { LikeButton, LikeButtonCompact } from "@/components/like-button";
-import { CommentSection, CommentButtonCompact } from "@/components/comment-section";
 import type { Event } from "@/lib/supabase/types";
 import type { PhotoWithLikes } from "./page";
 
@@ -58,7 +37,11 @@ export interface UseLiveGalleryReturn {
 export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): UseLiveGalleryReturn {
   const [photos, setPhotos] = useState<PhotoWithLikes[]>(initialPhotos);
   const [isConnected, setIsConnected] = useState(initialPhotos.length > 0);
-  const [sortMode, setSortMode] = useState<SortMode>("newest");
+  const [sortMode, setSortMode] = useState<SortMode>(() => {
+    if (typeof window === "undefined") return "newest";
+    const savedSort = localStorage.getItem(`livedrop-sort-mode-${window.location.pathname}`);
+    return savedSort === "newest" || savedSort === "popular" ? savedSort : "newest";
+  });
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [likedPhotos, setLikedPhotos] = useState<Set<string>>(new Set());
   const [isSelectMode, setIsSelectMode] = useState(false);
@@ -85,14 +68,6 @@ export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): U
     };
     getUser();
   }, [supabase]);
-
-  // Load sort mode from localStorage
-  useEffect(() => {
-    const savedSort = localStorage.getItem(`livedrop-sort-mode-${window.location.pathname}`);
-    if (savedSort === "newest" || savedSort === "popular") {
-      setSortMode(savedSort);
-    }
-  }, []);
 
   // Save preferences to localStorage
   useEffect(() => {

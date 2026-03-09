@@ -18,20 +18,17 @@ export function PWAInstallPrompt() {
   const t = useTranslations('pwa');
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
+  const [isIOS] = useState(() =>
+    typeof window !== "undefined" && /iPad|iPhone|iPod/.test(window.navigator.userAgent)
+  );
+  const [isStandalone] = useState(() =>
+    typeof window !== "undefined" &&
+    (window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as Navigator & { standalone?: boolean }).standalone === true)
+  );
 
   useEffect(() => {
-    // Check if already installed
-    const isInStandaloneMode = window.matchMedia("(display-mode: standalone)").matches
-      || (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
-    setIsStandalone(isInStandaloneMode);
-
-    if (isInStandaloneMode) return;
-
-    // Check if iOS
-    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    setIsIOS(iOS);
+    if (isStandalone) return;
 
     // Listen for install prompt (Android/Chrome)
     const handleBeforeInstall = (e: Event) => {
@@ -43,7 +40,7 @@ export function PWAInstallPrompt() {
     window.addEventListener("beforeinstallprompt", handleBeforeInstall);
 
     // Show iOS prompt after a delay
-    if (iOS) {
+    if (isIOS) {
       const dismissed = localStorage.getItem("pwa-install-dismissed");
       if (!dismissed) {
         setTimeout(() => setShowPrompt(true), 3000);
@@ -53,7 +50,7 @@ export function PWAInstallPrompt() {
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
     };
-  }, []);
+  }, [isIOS, isStandalone]);
 
   async function handleInstall() {
     if (!deferredPrompt) return;
