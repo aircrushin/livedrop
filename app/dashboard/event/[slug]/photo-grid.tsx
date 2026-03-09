@@ -33,6 +33,7 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
   const [photoToDelete, setPhotoToDelete] = useState<Photo | null>(null);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{ completed: number; total: number } | null>(null);
   const [showAlbumGenerator, setShowAlbumGenerator] = useState(false);
   const uploadInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -50,11 +51,13 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
     e.target.value = "";
 
     setIsUploading(true);
+    setUploadProgress({ completed: 0, total: files.length });
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
       let successCount = 0;
+      let processedCount = 0;
       for (const file of files) {
         try {
           const compressedBlob = await compressImage(file, 1920, 1920, 0.85);
@@ -76,6 +79,9 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
           if (!insertError) successCount++;
         } catch {
           // continue with next file
+        } finally {
+          processedCount += 1;
+          setUploadProgress({ completed: processedCount, total: files.length });
         }
       }
 
@@ -89,6 +95,7 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
       toast.error(t('uploadFailed'));
     } finally {
       setIsUploading(false);
+      window.setTimeout(() => setUploadProgress(null), 1200);
     }
   }
 
@@ -215,6 +222,14 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
     }
   }
 
+  const uploadPercent = uploadProgress ? Math.round((uploadProgress.completed / uploadProgress.total) * 100) : 0;
+  const uploadCurrent = uploadProgress
+    ? Math.min(
+        uploadProgress.completed + (isUploading && uploadProgress.completed < uploadProgress.total ? 1 : 0),
+        uploadProgress.total
+      )
+    : 0;
+
   if (photos.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground space-y-4">
@@ -242,6 +257,20 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
           onChange={handleUploadFiles}
           className="hidden"
         />
+        {uploadProgress && (
+          <div className="mx-auto w-full max-w-xs">
+            <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
+              <span>{t('uploadingCount', { current: uploadCurrent, total: uploadProgress.total })}</span>
+              <span>{uploadPercent}%</span>
+            </div>
+            <div className="h-1.5 w-full rounded-full bg-muted/40">
+              <div
+                className="h-full rounded-full bg-primary transition-all"
+                style={{ width: `${uploadPercent}%` }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -359,6 +388,21 @@ export function PhotoGrid({ photos, eventId, eventSlug, eventCreatedAt }: PhotoG
             <span className="hidden sm:inline">{t('posterCollage')}</span>
             <span className="sm:hidden">{t('poster')}</span>
           </Button> */}
+        </div>
+      )}
+
+      {uploadProgress && (
+        <div className="rounded-md border border-border/60 p-3">
+          <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
+            <span>{t('uploadingCount', { current: uploadCurrent, total: uploadProgress.total })}</span>
+            <span>{uploadPercent}%</span>
+          </div>
+          <div className="h-1.5 w-full rounded-full bg-muted/40">
+            <div
+              className="h-full rounded-full bg-primary transition-all"
+              style={{ width: `${uploadPercent}%` }}
+            />
+          </div>
         </div>
       )}
 

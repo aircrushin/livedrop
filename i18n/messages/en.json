@@ -186,6 +186,7 @@
     "uploadSuccess": "{count} photo(s) uploaded",
     "uploadFailed": "Upload failed",
     "uploading": "Uploading...",
+    "uploadingCount": "Uploading {current} / {total}",
     "select": "Select",
     "download": "Download",
     "smartAlbum": "Smart Album",
