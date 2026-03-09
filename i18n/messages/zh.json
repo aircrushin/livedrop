@@ -186,6 +186,7 @@
     "uploadSuccess": "已上传 {count} 张照片",
     "uploadFailed": "上传失败",
     "uploading": "上传中...",
+    "uploadingCount": "正在上传 {current} / {total}",
     "select": "选择",
     "download": "下载",
     "smartAlbum": "智能相册",
