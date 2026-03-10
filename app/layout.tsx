@@ -19,13 +19,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LiveDrop",
-  description: "Real-time event photo sharing",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://livedrop.app"),
+  title: {
+    default: "LiveDrop – Live Photos, Instant Memories",
+    template: "%s | LiveDrop",
+  },
+  description: "Real-time event photo sharing. Create a live photo wall for weddings, conferences, parties, and meetups. Guests scan QR, snap photos, watch them appear instantly.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "LiveDrop",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "LiveDrop",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
