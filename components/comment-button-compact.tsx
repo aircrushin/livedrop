@@ -26,7 +26,7 @@ export function CommentButtonCompact({
   initialCount = 0,
   onCommentChange,
 }: CommentButtonCompactProps) {
-  const t = useTranslations();
+  const t = useTranslations("live");
   const [open, setOpen] = useState(false);
   const [count, setCount] = useState(initialCount);
   const [comments, setComments] = useState<CommentWithUser[]>([]);

@@ -36,6 +36,16 @@ export interface UseLiveGalleryReturn {
   togglePhotoSelection: (photoId: string) => void;
 }
 
+const LIVE_PHOTO_SELECT = `
+  id,
+  event_id,
+  storage_path,
+  created_at,
+  is_visible,
+  likes_count:photo_likes(count),
+  comments_count:photo_comments(count)
+`;
+
 export function useLiveGallery({ event, initialPhotos, initialViewerCount }: UseLiveGalleryProps): UseLiveGalleryReturn {
   const [photos, setPhotos] = useState<PhotoWithLikes[]>(initialPhotos);
   const [isConnected, setIsConnected] = useState(initialPhotos.length > 0);
@@ -139,11 +149,7 @@ export function useLiveGallery({ event, initialPhotos, initialViewerCount }: Use
     const fetchPhotos = async () => {
       const { data } = await supabase
         .from("photos")
-        .select(`
-          *,
-          likes_count:photo_likes(count),
-          comments_count:photo_comments(count)
-        `)
+        .select(LIVE_PHOTO_SELECT)
         .eq("event_id", event.id)
         .eq("is_visible", true)
         .order("created_at", { ascending: false });
@@ -162,6 +168,7 @@ export function useLiveGallery({ event, initialPhotos, initialViewerCount }: Use
       }
     };
 
+    void fetchPhotos();
     const interval = setInterval(fetchPhotos, 5000);
     return () => clearInterval(interval);
   }, [event.id, supabase]);

@@ -130,12 +130,12 @@ export async function trackViewerPresence(eventId: string, sessionId: string, us
     );
 }
 
-export async function removeViewerPresence(eventId: string, userId: string) {
+export async function removeViewerPresence(eventId: string, sessionId: string) {
   const supabase = await createClient();
   
   await supabase
     .from("event_viewers")
     .delete()
     .eq("event_id", eventId)
-    .eq("user_id", userId);
+    .eq("session_id", sessionId);
 }

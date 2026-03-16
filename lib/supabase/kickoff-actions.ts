@@ -189,7 +189,7 @@ export async function getKickoffMetrics(eventId: string): Promise<KickoffMetrics
         .eq("event_id", eventId),
       supabase
         .from("event_viewers")
-        .select("user_id")
+        .select("user_id, session_id")
         .eq("event_id", eventId),
     ]);
 
@@ -197,7 +197,11 @@ export async function getKickoffMetrics(eventId: string): Promise<KickoffMetrics
       return { error: "Failed to load metrics" };
     }
 
-    const uniqueJoiners = new Set((joinersResult.data || []).map((viewer) => viewer.user_id));
+    const uniqueJoiners = new Set(
+      (joinersResult.data || [])
+        .map((viewer) => viewer.user_id || viewer.session_id)
+        .filter(Boolean)
+    );
 
     return {
       joiners: uniqueJoiners.size,

@@ -133,21 +133,24 @@ export interface Database {
           id: string;
           created_at: string;
           event_id: string;
-          user_id: string;
+          user_id: string | null;
+          session_id: string;
           last_seen_at: string;
         };
         Insert: {
           id?: string;
           created_at?: string;
           event_id: string;
-          user_id: string;
+          user_id?: string | null;
+          session_id: string;
           last_seen_at?: string;
         };
         Update: {
           id?: string;
           created_at?: string;
           event_id?: string;
-          user_id?: string;
+          user_id?: string | null;
+          session_id?: string;
           last_seen_at?: string;
         };
         Relationships: [

@@ -16,10 +16,18 @@ export interface PhotoWithLikes extends Photo {
   comments_count: number;
 }
 
+const LIVE_PHOTO_SELECT = `
+  id,
+  event_id,
+  storage_path,
+  created_at,
+  is_visible,
+  likes_count:photo_likes(count),
+  comments_count:photo_comments(count)
+`;
+
 export default async function LiveViewPage({ params }: Props) {
   const { slug } = await params;
-  const locale = await getLocale();
-  const messages = await getMessages();
   const supabase = await createClient();
 
   const { data: eventData } = await supabase
@@ -41,35 +49,39 @@ export default async function LiveViewPage({ params }: Props) {
     return <EventUnavailableState reason="ended" />;
   }
 
-  // Fetch photos with likes and comments count
-  const { data: photosData } = await supabase
-    .from("photos")
-    .select(`
-      *,
-      likes_count:photo_likes(count),
-      comments_count:photo_comments(count)
-    `)
-    .eq("event_id", event.id)
-    .eq("is_visible", true)
-    .order("created_at", { ascending: false });
-
-  const initialPhotos = (photosData || []).map((photo) => ({
-    ...photo,
-    likes_count: (photo as unknown as { likes_count: [{ count: number }] }).likes_count?.[0]?.count || 0,
-    comments_count: (photo as unknown as { comments_count: [{ count: number }] }).comments_count?.[0]?.count || 0,
-  })) as PhotoWithLikes[];
-
   const kickoffConfig = normalizeKickoffConfig(event.kickoff_config);
   const initialMode =
     kickoffConfig.enabled && !shouldAutoSwitchToLive(kickoffConfig)
       ? event.display_mode
       : "live";
-  const { count: initialViewerCount } = await supabase
-    .from("event_viewers")
-    .select("id", { count: "exact", head: true })
-    .eq("event_id", event.id);
-  const metricsResult = await getKickoffMetrics(event.id);
-  const initialMetrics = "error" in metricsResult ? null : metricsResult;
+
+  const [locale, messages, photosResult, viewerResult, metricsResult] = await Promise.all([
+    getLocale(),
+    getMessages(),
+    supabase
+      .from("photos")
+      .select(LIVE_PHOTO_SELECT)
+      .eq("event_id", event.id)
+      .eq("is_visible", true)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("event_viewers")
+      .select("id", { count: "exact", head: true })
+      .eq("event_id", event.id),
+    initialMode === "kickoff" ? getKickoffMetrics(event.id) : Promise.resolve(null),
+  ]);
+
+  const liveMessages = messages.live ? { live: messages.live } : messages;
+
+  const initialPhotos = (photosResult.data || []).map((photo) => ({
+    ...photo,
+    likes_count: (photo as unknown as { likes_count: [{ count: number }] }).likes_count?.[0]?.count || 0,
+    comments_count: (photo as unknown as { comments_count: [{ count: number }] }).comments_count?.[0]?.count || 0,
+  })) as PhotoWithLikes[];
+
+  const initialViewerCount = viewerResult.count || 0;
+  const initialMetrics =
+    metricsResult && !("error" in metricsResult) ? metricsResult : null;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const guestUrl = `${appUrl}/e/${event.slug}?src=kickoff`;
   const branding = (event.branding as {
@@ -79,7 +91,7 @@ export default async function LiveViewPage({ params }: Props) {
   }) || { logoUrl: null, primaryColor: "#000000", backgroundColor: "#ffffff" };
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={liveMessages}>
       <LiveDisplay
         event={event}
         initialPhotos={initialPhotos}
@@ -91,7 +103,7 @@ export default async function LiveViewPage({ params }: Props) {
           primaryColor: branding.primaryColor || "#000000",
           backgroundColor: branding.backgroundColor || "#ffffff",
         }}
-        initialViewerCount={initialViewerCount || 0}
+        initialViewerCount={initialViewerCount}
         initialMetrics={initialMetrics}
       />
     </NextIntlClientProvider>
