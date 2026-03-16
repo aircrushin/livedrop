@@ -133,7 +133,7 @@ export function GalleryView({
     .filter(({ offset }) => Math.abs(offset) <= 1);
 
   return (
-    <div className="flex flex-col h-screen pt-[72px] overflow-hidden bg-background">
+    <div className="flex flex-col h-screen pt-[112px] overflow-hidden bg-background">
       {/* Counter */}
       <div className="flex items-center justify-center py-2 shrink-0">
         <span className="text-sm text-muted-foreground tabular-nums">

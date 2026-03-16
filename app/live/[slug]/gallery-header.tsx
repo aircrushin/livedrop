@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LiveDropLogo } from "@/components/livedrop-logo";
-import { CheckSquare, Clock, GalleryHorizontal, Loader2, Menu, TrendingUp, X } from "lucide-react";
+import { CheckSquare, Clock, Eye, GalleryHorizontal, Loader2, Menu, TrendingUp, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import * as Dialog from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,7 @@ import type { ViewMode } from "./live-gallery";
 interface GalleryHeaderProps {
   eventName: string;
   photos: PhotoWithLikes[];
+  viewerCount: number;
   isConnected: boolean;
   sortMode: SortMode;
   setSortMode: (mode: SortMode) => void;
@@ -31,6 +32,7 @@ interface GalleryHeaderProps {
 export function GalleryHeader({
   eventName,
   photos,
+  viewerCount,
   isConnected,
   sortMode,
   setSortMode,
@@ -60,12 +62,18 @@ export function GalleryHeader({
         {/* Event Info */}
         <div className="flex items-center gap-3">
           <LiveDropLogo subtitle={eventName} priority />
-          {/* Photo Count Badge */}
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>{photos.length} {t('photos')}</span>
+          <div className="hidden sm:flex items-center gap-2">
+            {/* Photo Count Badge */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>{photos.length} {t('photos')}</span>
+            </div>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-secondary/50 text-foreground rounded-full text-sm font-medium">
+              <Eye className="h-4 w-4" />
+              <span>{t('viewsCount', { count: viewerCount })}</span>
+            </div>
           </div>
         </div>
 
@@ -160,7 +168,7 @@ export function GalleryHeader({
         {/* Controls - Mobile */}
         <div className="flex md:hidden items-center gap-2">
           {/* Connection Status - Mobile */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <div
               className={`h-2 w-2 rounded-full ${
                 isConnected ? "bg-green-500" : "bg-yellow-500"
@@ -169,6 +177,7 @@ export function GalleryHeader({
             <span className="text-xs text-muted-foreground">
               {isConnected ? t('live') : t('connecting')}
             </span>
+            <span className="text-xs text-muted-foreground tabular-nums">{viewerCount}</span>
           </div>
 
           {/* Theme Toggle - Mobile (always visible) */}
@@ -204,7 +213,7 @@ export function GalleryHeader({
               <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto max-h-[80vh] flex-col rounded-t-2xl bg-background border border-border shadow-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom">
                 {/* Drawer Handle */}
                 <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-muted-foreground/20" />
-                
+
                 {/* Drawer Header */}
                 <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                   <Dialog.Title className="text-base font-semibold">

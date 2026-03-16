@@ -129,7 +129,7 @@ export function PhotoGrid({
   }
 
   return (
-    <div className="pt-24 pb-8 px-4">
+    <div className="pt-32 pb-8 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

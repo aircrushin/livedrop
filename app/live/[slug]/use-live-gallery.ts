@@ -11,6 +11,7 @@ export type SortMode = "newest" | "popular";
 export interface UseLiveGalleryProps {
   event: Pick<Event, "id" | "name" | "slug">;
   initialPhotos: PhotoWithLikes[];
+  initialViewerCount: number;
 }
 
 export interface UseLiveGalleryReturn {
@@ -19,6 +20,7 @@ export interface UseLiveGalleryReturn {
   isConnected: boolean;
   sortMode: SortMode;
   setSortMode: (mode: SortMode) => void;
+  viewerCount: number;
   currentUserId: string | null;
   likedPhotos: Set<string>;
   setLikedPhotos: React.Dispatch<React.SetStateAction<Set<string>>>;
@@ -34,7 +36,7 @@ export interface UseLiveGalleryReturn {
   togglePhotoSelection: (photoId: string) => void;
 }
 
-export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): UseLiveGalleryReturn {
+export function useLiveGallery({ event, initialPhotos, initialViewerCount }: UseLiveGalleryProps): UseLiveGalleryReturn {
   const [photos, setPhotos] = useState<PhotoWithLikes[]>(initialPhotos);
   const [isConnected, setIsConnected] = useState(initialPhotos.length > 0);
   const [sortMode, setSortMode] = useState<SortMode>(() => {
@@ -42,6 +44,7 @@ export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): U
     const savedSort = localStorage.getItem(`livedrop-sort-mode-${window.location.pathname}`);
     return savedSort === "newest" || savedSort === "popular" ? savedSort : "newest";
   });
+  const [viewerCount, setViewerCount] = useState(initialViewerCount);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [likedPhotos, setLikedPhotos] = useState<Set<string>>(new Set());
   const [isSelectMode, setIsSelectMode] = useState(false);
@@ -111,6 +114,25 @@ export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): U
       prev.map((p) => (p.id === photoId ? { ...p, comments_count: newCount } : p))
     );
   }, []);
+
+  // Poll viewer count as a realtime fallback
+  useEffect(() => {
+    const fetchViewerCount = async () => {
+      const { count } = await supabase
+        .from("event_viewers")
+        .select("id", { count: "exact", head: true })
+        .eq("event_id", event.id);
+
+      if (typeof count === "number") {
+        setViewerCount(count);
+      }
+    };
+
+    void fetchViewerCount();
+    const interval = setInterval(fetchViewerCount, 15000);
+
+    return () => clearInterval(interval);
+  }, [event.id, supabase]);
 
   // Poll for photos every 5 seconds as a fallback
   useEffect(() => {
@@ -198,9 +220,8 @@ export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): U
               return prev.map((p) =>
                 p.id === updatedPhoto.id ? { ...p, ...updatedPhoto } : p
               );
-            } else {
-              return prev.filter((p) => p.id !== updatedPhoto.id);
             }
+            return prev.filter((p) => p.id !== updatedPhoto.id);
           });
         }
       )
@@ -269,16 +290,41 @@ export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): U
       )
       .subscribe();
 
+    const viewersChannel = supabase
+      .channel(`viewers:${event.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "event_viewers",
+          filter: `event_id=eq.${event.id}`,
+        },
+        () => {
+          void supabase
+            .from("event_viewers")
+            .select("id", { count: "exact", head: true })
+            .eq("event_id", event.id)
+            .then(({ count }) => {
+              if (typeof count === "number") {
+                setViewerCount(count);
+              }
+            });
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(photosChannel);
       supabase.removeChannel(likesChannel);
       supabase.removeChannel(commentsChannel);
       supabase.removeChannel(eventStatusChannel);
+      supabase.removeChannel(viewersChannel);
     };
   }, [event.id, event.slug, supabase, currentUserId]);
 
   const selectAll = () => {
-    setSelectedPhotos(new Set(photos.map(p => p.id)));
+    setSelectedPhotos(new Set(photos.map((p) => p.id)));
   };
 
   const deselectAll = () => {
@@ -301,6 +347,7 @@ export function useLiveGallery({ event, initialPhotos }: UseLiveGalleryProps): U
     isConnected,
     sortMode,
     setSortMode,
+    viewerCount,
     currentUserId,
     likedPhotos,
     setLikedPhotos,

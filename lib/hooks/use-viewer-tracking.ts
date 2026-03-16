@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { trackViewerPresence, removeViewerPresence } from "@/lib/supabase/statistics";
+import { trackViewerPresence } from "@/lib/supabase/statistics";
 
 export function useViewerTracking(eventId: string) {
   const supabase = createClient();
@@ -21,18 +21,11 @@ export function useViewerTracking(eventId: string) {
     }
   }, [eventId, supabase]);
 
-  const cleanup = useCallback(async () => {
-    if (userIdRef.current) {
-      try {
-        await removeViewerPresence(eventId, userIdRef.current);
-      } catch (error) {
-        console.error("Error removing viewer presence:", error);
-      }
-    }
+  const cleanup = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
-  }, [eventId]);
+  }, []);
 
   useEffect(() => {
     trackPresence();

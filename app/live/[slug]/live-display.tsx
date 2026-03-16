@@ -28,6 +28,7 @@ interface LiveDisplayProps {
   kickoffConfig: KickoffConfig;
   guestUrl: string;
   branding: BrandingView;
+  initialViewerCount: number;
   initialMetrics: KickoffMetrics | null;
 }
 
@@ -62,6 +63,7 @@ export function LiveDisplay({
   kickoffConfig,
   guestUrl,
   branding,
+  initialViewerCount,
   initialMetrics,
 }: LiveDisplayProps) {
   const t = useTranslations("live.kickoff");
@@ -177,7 +179,7 @@ export function LiveDisplay({
   }, [currentKickoffConfig, displayMode, event.id, nowMs]);
 
   if (displayMode === "live") {
-    return <LiveGallery event={event} initialPhotos={initialPhotos} />;
+    return <LiveGallery event={event} initialPhotos={initialPhotos} initialViewerCount={initialViewerCount} />;
   }
 
   const title = currentKickoffConfig.title || event.name;

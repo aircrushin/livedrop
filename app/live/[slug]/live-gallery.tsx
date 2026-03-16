@@ -18,9 +18,10 @@ export type ViewMode = "default" | "gallery";
 interface LiveGalleryProps {
   event: Pick<Event, "id" | "name" | "slug">;
   initialPhotos: PhotoWithLikes[];
+  initialViewerCount: number;
 }
 
-export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
+export function LiveGallery({ event, initialPhotos, initialViewerCount }: LiveGalleryProps) {
   const t = useTranslations('live');
   const [selectedPhoto, setSelectedPhoto] = useState<PhotoWithLikes | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("default");
@@ -30,6 +31,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
     isConnected,
     sortMode,
     setSortMode,
+    viewerCount,
     currentUserId,
     likedPhotos,
     isSelectMode,
@@ -41,7 +43,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
     selectAll,
     deselectAll,
     togglePhotoSelection,
-  } = useLiveGallery({ event, initialPhotos });
+  } = useLiveGallery({ event, initialPhotos, initialViewerCount });
 
   const { isDownloading, downloadPhotos } = useBatchDownload({
     eventSlug: event.slug,
@@ -97,6 +99,7 @@ export function LiveGallery({ event, initialPhotos }: LiveGalleryProps) {
       <GalleryHeader
         eventName={event.name}
         photos={photos}
+        viewerCount={viewerCount}
         isConnected={isConnected}
         sortMode={sortMode}
         setSortMode={setSortMode}

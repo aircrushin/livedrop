@@ -64,6 +64,10 @@ export default async function LiveViewPage({ params }: Props) {
     kickoffConfig.enabled && !shouldAutoSwitchToLive(kickoffConfig)
       ? event.display_mode
       : "live";
+  const { count: initialViewerCount } = await supabase
+    .from("event_viewers")
+    .select("id", { count: "exact", head: true })
+    .eq("event_id", event.id);
   const metricsResult = await getKickoffMetrics(event.id);
   const initialMetrics = "error" in metricsResult ? null : metricsResult;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -87,6 +91,7 @@ export default async function LiveViewPage({ params }: Props) {
           primaryColor: branding.primaryColor || "#000000",
           backgroundColor: branding.backgroundColor || "#ffffff",
         }}
+        initialViewerCount={initialViewerCount || 0}
         initialMetrics={initialMetrics}
       />
     </NextIntlClientProvider>

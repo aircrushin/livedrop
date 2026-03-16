@@ -263,6 +263,7 @@
     "live": "直播",
     "connecting": "连接中...",
     "photos": "张照片",
+    "viewsCount": "{count} 次浏览",
     "settings": "设置",
     "theme": "主题",
     "view": "视图",

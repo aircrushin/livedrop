@@ -98,27 +98,36 @@ export async function incrementDownloadCount(photoId: string) {
   }
 }
 
-export async function trackViewerPresence(eventId: string, userId: string) {
+export async function trackViewerPresence(eventId: string, sessionId: string, userId: string | null) {
   const supabase = await createClient();
   const now = new Date().toISOString();
-  
-  const { data: existing } = await supabase
-    .from("event_viewers")
-    .select("id")
-    .eq("event_id", eventId)
-    .eq("user_id", userId)
-    .single();
-  
-  if (existing) {
+
+  if (userId) {
     await supabase
       .from("event_viewers")
-      .update({ last_seen_at: now })
-      .eq("id", existing.id);
-  } else {
-    await supabase
-      .from("event_viewers")
-      .insert({ event_id: eventId, user_id: userId, last_seen_at: now });
+      .upsert(
+        {
+          event_id: eventId,
+          session_id: sessionId,
+          user_id: userId,
+          last_seen_at: now,
+        },
+        { onConflict: "event_id,session_id" }
+      );
+    return;
   }
+
+  await supabase
+    .from("event_viewers")
+    .upsert(
+      {
+        event_id: eventId,
+        session_id: sessionId,
+        user_id: null,
+        last_seen_at: now,
+      },
+      { onConflict: "event_id,session_id", ignoreDuplicates: true }
+    );
 }
 
 export async function removeViewerPresence(eventId: string, userId: string) {

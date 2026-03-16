@@ -263,6 +263,7 @@
     "live": "Live",
     "connecting": "Connecting...",
     "photos": "photos",
+    "viewsCount": "{count} views",
     "settings": "Settings",
     "theme": "Theme",
     "view": "View",

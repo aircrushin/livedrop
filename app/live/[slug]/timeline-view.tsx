@@ -239,14 +239,14 @@ export function TimelineView({
 
   if (photos.length === 0) {
     return (
-      <div className="pt-24 pb-8 px-4">
+      <div className="pt-32 pb-8 px-4">
         <EmptyState locale={locale} />
       </div>
     );
   }
 
   return (
-    <div className="pt-24 pb-8 px-4">
+    <div className="pt-32 pb-8 px-4">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

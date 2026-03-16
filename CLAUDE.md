@@ -1,108 +1,33 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI agents working in this codebase.
 
-## Development Commands
+## Build/Lint Commands
 
-### Running the Application
 ```bash
-pnpm run dev          # Start development server (http://localhost:3000)
-pnpm run build        # Build for production (must use webpack flag, not turbopack)
-pnpm start            # Start production server
-pnpm run lint         # Run ESLint
+# Development
+pnpm run dev                    # Start development server (http://localhost:3000)
+
+# Production build (MUST use webpack flag - Serwist PWA doesn't support Turbopack)
+pnpm run build -- --webpack
+pnpm start                      # Start production server
+
+# Linting
+pnpm run lint                   # Run ESLint (uses eslint-config-next)
 ```
 
-### Production Build
-**Important**: When building for production, use the webpack flag due to Serwist PWA limitations:
-```bash
-npm run build -- --webpack
-npm start
-```
-
-### Supabase Setup
-After creating a Supabase project:
-1. Run migrations: `supabase/migrations/001_initial_schema.sql` in SQL Editor
-2. Create storage bucket named `event-photos` (public, 5MB limit, images only)
-3. Run storage policies: `supabase/storage_policies.sql`
-4. Enable Anonymous Sign-ins in Authentication > Settings
+**Note:** No test framework is configured in this project.
 
 ## Architecture Overview
 
-### Dual Authentication System
-The app uses two distinct authentication flows:
-- **Host users**: Email/password auth via `/login` and `/signup` for creating/managing events
-- **Guest users**: Anonymous auth for frictionless photo uploads (no sign-up required)
-
-Guest authentication is handled client-side in `app/e/[slug]/camera-view.tsx` - it automatically signs in anonymous users on mount.
-
-### Supabase Client Pattern
-- **Client-side**: Use `lib/supabase/client.ts` for browser components (marked with "use client")
-- **Server-side**: Use `lib/supabase/server.ts` for server components and server actions
-- **Server Actions**: Auth actions in `lib/supabase/actions.ts` (signUp, signIn, signOut, signInAnonymously)
-
-### Database Types
-TypeScript types are auto-generated in `lib/supabase/types.ts`. Key types:
-- `Event`: id, created_at, host_id, name, slug, qr_code_url
-- `Photo`: id, created_at, event_id, user_id, storage_path, is_visible
-
-### Real-time Architecture
-The live gallery (`app/live/[slug]/live-gallery.tsx`) subscribes to Supabase Realtime for:
-- INSERT events: New photos appear instantly
-- UPDATE events: Moderation (hide/show) reflects immediately
-- DELETE events: Removed photos disappear from gallery
-
-### Storage Architecture
-Photos are stored in **Cloudflare R2** (S3-compatible storage) with paths like `{eventSlug}/{userId}-{timestamp}.{ext}`.
-
-**R2 Configuration:**
-- Client configuration: `lib/r2/client.ts`
-- Server actions: `lib/r2/actions.ts` (upload, delete, batch delete)
-- URL utilities: `lib/r2/utils.ts` (getR2PublicUrl)
-
-### R2 Setup
-After creating a Cloudflare R2 bucket:
-1. Create a public bucket named `event-photos`
-2. Generate S3 API tokens (Access Key ID + Secret Access Key)
-3. Update `.env.local` with R2 credentials
-4. Configure CORS for the bucket to allow uploads from your domain
-
-### App Routes Structure
-- `/` - Landing page
-- `/login`, `/signup` - Host authentication
-- `/dashboard` - Host dashboard for event management
-- `/e/[slug]` - Guest camera view (photo upload interface)
-- `/live/[slug]` - Projector view (real-time photo gallery)
-- `/join` - Event code lookup page
-
-### PWA Configuration
-- Service worker source: `app/sw.ts`
-- Service worker output: `public/sw.js`
-- Manifest: `public/manifest.json`
-- Configured via `@serwist/next` in `next.config.ts`
-- **Note**: Turbopack is enabled in config but must use webpack for builds due to Serwist limitations
-
-### RLS Policy Structure
-Row Level Security policies govern access:
-- **Events**: Readable by everyone, editable only by host (host_id = auth.uid())
-- **Photos**: Visible photos readable by everyone, uploads by authenticated users (including anonymous), moderation by event hosts
-
-### Environment Variables
-Required in `.env.local`:
-```
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-
-# App Configuration
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# Cloudflare R2 Configuration
-R2_ENDPOINT=https://your-account.r2.cloudflarestorage.com
-R2_BUCKET=event-photos
-R2_ACCESS_KEY_ID=your-access-key-id
-R2_SECRET_ACCESS_KEY=your-secret-access-key
-NEXT_PUBLIC_R2_PUBLIC_URL=https://your-account.r2.cloudflarestorage.com/event-photos
-```
+- **Framework:** Next.js 16 App Router with React 19
+- **Language:** TypeScript (strict mode enabled)
+- **Styling:** Tailwind CSS v4 with custom CSS variables
+- **Auth:** Supabase (host users: email/password, guests: anonymous)
+- **Storage:** Cloudflare R2 (S3-compatible)
+- **Database:** Supabase with TypeScript types in `lib/supabase/types.ts`
+- **i18n:** next-intl (English/Chinese) - translations in `i18n/messages/`
+- **PWA:** Serwist for service worker
 
 ## Code Style Guidelines
 
@@ -122,6 +47,7 @@ NEXT_PUBLIC_R2_PUBLIC_URL=https://your-account.r2.cloudflarestorage.com/event-ph
 ### TypeScript
 - Strict mode enabled - always define types explicitly
 - Use interfaces for object shapes, types for unions
+- Database types auto-generated in `lib/supabase/types.ts`
 - Use `type` imports when importing only types
 
 ### Naming Conventions
@@ -141,6 +67,11 @@ NEXT_PUBLIC_R2_PUBLIC_URL=https://your-account.r2.cloudflarestorage.com/event-ph
 - Use `notFound()` from next/navigation for 404s
 - Redirects use `redirect()` from next/navigation
 
+### Supabase Patterns
+- Server components: `import { createClient } from "@/lib/supabase/server"`
+- Client components: `import { createClient } from "@/lib/supabase/client"`
+- Auth actions in `lib/supabase/actions.ts`
+
 ### i18n Patterns
 - Server components: `const t = await getTranslations('namespace')`
 - Translations in `i18n/messages/{locale}.json`
@@ -153,6 +84,7 @@ app/              # Next.js App Router
   e/[slug]/       # Guest camera view (photo upload)
   live/[slug]/    # Real-time gallery (projector view)
   dashboard/      # Host management interface
+  layout.tsx      # Root layout with providers
 components/
   ui/             # Reusable UI components (Button, Input, etc.)
 lib/
@@ -164,18 +96,67 @@ i18n/
   request.ts      # Locale detection
 ```
 
-## Key Implementation Details
+## Important Notes
 
-### Photo Upload Flow
-1. Guest opens `/e/[slug]` page
-2. Anonymous auth is auto-triggered if not authenticated
-3. User selects/captures photo via file input with `capture="environment"`
-4. Photo uploaded to Cloudflare R2 via Server Action `uploadToR2()`
-5. Photo metadata inserted into `photos` table with `is_visible = true`
-6. Realtime subscription triggers live gallery update on `/live/[slug]`
+1. **Build requirement:** Always use `--webpack` flag for production builds
+2. **Anonymous auth:** Guest users are auto-signed in via `signInAnonymously()`
+3. **Real-time:** Live gallery uses Supabase Realtime subscriptions
+4. **Photo flow:** Upload to R2 → Insert metadata → Realtime update
+5. **Moderation:** Hosts toggle `is_visible` flag; changes propagate via Realtime
 
-### Photo Moderation
-Hosts can toggle `is_visible` flag on photos via the event management page (`/dashboard/event/[slug]`). This triggers an UPDATE event that propagates via Realtime to hide/show photos on live view.
 
-### Camera Capture
-The camera interface uses HTML file input with `capture="environment"` attribute to trigger native camera on mobile devices. PWA install prompt available for installing as home screen app.
+## Skills
+A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill.
+### Available skills
+- playwright: Use when the task requires automating a real browser from the terminal (navigation, form filling, snapshots, screenshots, data extraction, UI-flow debugging) via `playwright-cli` or the bundled wrapper script. (file: /Users/mac/.codex/skills/playwright/SKILL.md)
+- screenshot: Use when the user explicitly asks for a desktop or system screenshot (full screen, specific app or window, or a pixel region), or when tool-specific capture capabilities are unavailable and an OS-level capture is needed. (file: /Users/mac/.codex/skills/screenshot/SKILL.md)
+- ui-ux-pro-max: UI/UX design intelligence. 50 styles, 21 palettes, 50 font pairings, 20 charts, 9 stacks (React, Next.js, Vue, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui). Actions: plan, build, create, design, implement, review, fix, improve, optimize, enhance, refactor, check UI/UX code. Projects: website, landing page, dashboard, admin panel, e-commerce, SaaS, portfolio, blog, mobile app, .html, .tsx, .vue, .svelte. Elements: button, modal, navbar, sidebar, card, table, form, chart. Styles: glassmorphism, claymorphism, minimalism, brutalism, neumorphism, bento grid, dark mode, responsive, skeuomorphism, flat design. Topics: color palette, accessibility, animation, layout, typography, font pairing, spacing, hover, shadow, gradient. Integrations: shadcn/ui MCP for component search and examples. (file: /Users/mac/.codex/skills/ui-ux-pro-max/SKILL.md)
+- ui-ux-pro-max: UI/UX design intelligence. 50 styles, 21 palettes, 50 font pairings, 20 charts, 9 stacks (React, Next.js, Vue, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui). Actions: plan, build, create, design, implement, review, fix, improve, optimize, enhance, refactor, check UI/UX code. Projects: website, landing page, dashboard, admin panel, e-commerce, SaaS, portfolio, blog, mobile app, .html, .tsx, .vue, .svelte. Elements: button, modal, navbar, sidebar, card, table, form, chart. Styles: glassmorphism, claymorphism, minimalism, brutalism, neumorphism, bento grid, dark mode, responsive, skeuomorphism, flat design. Topics: color palette, accessibility, animation, layout, typography, font pairing, spacing, hover, shadow, gradient. Integrations: shadcn/ui MCP for component search and examples. (file: /Users/mac/.codex/skills/ui-ux-pro-max.bak-20260205-122747/SKILL.md)
+### How to use skills
+- Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths.
+- Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned.
+- Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback.
+- How to use a skill (progressive disclosure):
+  1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow.
+  2) When `SKILL.md` references relative paths (e.g., `scripts/foo.py`), resolve them relative to the skill directory listed above first, and only consider other paths if needed.
+  3) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything.
+  4) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks.
+  5) If `assets/` or templates exist, reuse them instead of recreating from scratch.
+- Coordination and sequencing:
+  - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them.
+  - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why.
+- Context hygiene:
+  - Keep context small: summarize long sections instead of pasting them; only load extra files when needed.
+  - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked.
+  - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice.
+- Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue.
+
+
+## Skills
+A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill.
+### Available skills
+- doc: Use when the task involves reading, creating, or editing `.docx` documents, especially when formatting or layout fidelity matters; prefer `python-docx` plus the bundled `scripts/render_docx.py` for visual checks. (file: /Users/mac/.codex/skills/doc/SKILL.md)
+- playwright: Use when the task requires automating a real browser from the terminal (navigation, form filling, snapshots, screenshots, data extraction, UI-flow debugging) via `playwright-cli` or the bundled wrapper script. (file: /Users/mac/.codex/skills/playwright/SKILL.md)
+- screenshot: Use when the user explicitly asks for a desktop or system screenshot (full screen, specific app or window, or a pixel region), or when tool-specific capture capabilities are unavailable and an OS-level capture is needed. (file: /Users/mac/.codex/skills/screenshot/SKILL.md)
+- ui-ux-pro-max: UI/UX design intelligence. 50 styles, 21 palettes, 50 font pairings, 20 charts, 9 stacks (React, Next.js, Vue, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui). Actions: plan, build, create, design, implement, review, fix, improve, optimize, enhance, refactor, check UI/UX code. Projects: website, landing page, dashboard, admin panel, e-commerce, SaaS, portfolio, blog, mobile app, .html, .tsx, .vue, .svelte. Elements: button, modal, navbar, sidebar, card, table, form, chart. Styles: glassmorphism, claymorphism, minimalism, brutalism, neumorphism, bento grid, dark mode, responsive, skeuomorphism, flat design. Topics: color palette, accessibility, animation, layout, typography, font pairing, spacing, hover, shadow, gradient. Integrations: shadcn/ui MCP for component search and examples. (file: /Users/mac/.codex/skills/ui-ux-pro-max/SKILL.md)
+- ui-ux-pro-max: UI/UX design intelligence. 50 styles, 21 palettes, 50 font pairings, 20 charts, 9 stacks (React, Next.js, Vue, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui). Actions: plan, build, create, design, implement, review, fix, improve, optimize, enhance, refactor, check UI/UX code. Projects: website, landing page, dashboard, admin panel, e-commerce, SaaS, portfolio, blog, mobile app, .html, .tsx, .vue, .svelte. Elements: button, modal, navbar, sidebar, card, table, form, chart. Styles: glassmorphism, claymorphism, minimalism, brutalism, neumorphism, bento grid, dark mode, responsive, skeuomorphism, flat design. Topics: color palette, accessibility, animation, layout, typography, font pairing, spacing, hover, shadow, gradient. Integrations: shadcn/ui MCP for component search and examples. (file: /Users/mac/.codex/skills/ui-ux-pro-max.bak-20260205-122747/SKILL.md)
+- skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: /Users/mac/.codex/skills/.system/skill-creator/SKILL.md)
+- skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: /Users/mac/.codex/skills/.system/skill-installer/SKILL.md)
+### How to use skills
+- Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths.
+- Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned.
+- Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback.
+- How to use a skill (progressive disclosure):
+  1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow.
+  2) When `SKILL.md` references relative paths (e.g., `scripts/foo.py`), resolve them relative to the skill directory listed above first, and only consider other paths if needed.
+  3) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything.
+  4) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks.
+  5) If `assets/` or templates exist, reuse them instead of recreating from scratch.
+- Coordination and sequencing:
+  - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them.
+  - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why.
+- Context hygiene:
+  - Keep context small: summarize long sections instead of pasting them; only load extra files when needed.
+  - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked.
+  - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice.
+- Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue.
