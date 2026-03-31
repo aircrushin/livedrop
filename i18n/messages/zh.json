@@ -11,11 +11,19 @@
       "dashboard": "控制台"
     },
     "hero": {
+      "kicker": "为主办方与宾客设计",
       "title1": "实时照片",
       "title2": "即时回忆",
       "subtitle": "为您的活动创建实时照片墙。宾客扫描二维码，拍摄照片，即可在大屏幕上实时显示。",
+      "hostLabel": "我要主办",
+      "hostHint": "快速创建活动、生成二维码，并在大屏开启实时照片墙。",
+      "guestLabel": "我要加入",
+      "guestHint": "已有活动码？立刻加入并开始上传活动照片。",
       "hostEvent": "举办活动",
-      "joinWithCode": "输入代码加入"
+      "joinWithCode": "输入代码加入",
+      "trustFast": "1 分钟内完成设置",
+      "trustNoApp": "无需安装应用",
+      "trustRealtime": "相册实时同步"
     },
     "features": {
       "title": "工作原理",

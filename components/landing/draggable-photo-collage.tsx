@@ -41,11 +41,25 @@ export function DraggablePhotoCollage({ photos }: { photos: CollagePhoto[] }) {
 
   const [photoStates, setPhotoStates] = useState<Record<string, PhotoState>>(initialStates);
   const [dragState, setDragState] = useState<DragState | null>(null);
+  const [isPointerFine, setIsPointerFine] = useState(false);
   const zIndexRef = useRef(photos.length + 1);
 
   useEffect(() => {
     setPhotoStates(initialStates);
   }, [initialStates]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(pointer: fine)");
+    const handleChange = () => setIsPointerFine(mediaQuery.matches);
+    handleChange();
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
   useEffect(() => {
     if (!dragState) {
@@ -89,6 +103,10 @@ export function DraggablePhotoCollage({ photos }: { photos: CollagePhoto[] }) {
   }, [dragState]);
 
   const handlePointerDown = (photoId: string, event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (!isPointerFine) {
+      return;
+    }
+
     event.preventDefault();
 
     zIndexRef.current += 1;
@@ -119,7 +137,7 @@ export function DraggablePhotoCollage({ photos }: { photos: CollagePhoto[] }) {
   };
 
   return (
-    <div className="relative h-104 w-full overflow-hidden rounded-4xl border border-border/60 bg-card/40 backdrop-blur-sm md:h-128">
+    <div className="relative h-84 w-full overflow-hidden rounded-4xl border border-border/60 bg-card/40 backdrop-blur-sm md:h-128">
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.3)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.3)_1px,transparent_1px)] bg-size-[4rem_4rem]" />
       <div className="absolute inset-0 bg-linear-to-br from-background/10 via-background/40 to-background/75" />
 
@@ -150,8 +168,8 @@ export function DraggablePhotoCollage({ photos }: { photos: CollagePhoto[] }) {
               height: `${photo.height}px`,
               zIndex: state.z,
               transform: `translate(${state.x}px, ${state.y}px) rotate(${photo.rotate ?? 0}deg)`,
-              cursor: dragState?.id === photo.id ? "grabbing" : "grab",
-              touchAction: "none",
+              cursor: isPointerFine ? (dragState?.id === photo.id ? "grabbing" : "grab") : "default",
+              touchAction: isPointerFine ? "none" : "auto",
             }}
             aria-label={`Draggable photo: ${photo.alt}`}
           >

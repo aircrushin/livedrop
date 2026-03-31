@@ -11,11 +11,19 @@
       "dashboard": "Dashboard"
     },
     "hero": {
+      "kicker": "Built for hosts and guests",
       "title1": "Live photos.",
       "title2": "Instant memories.",
       "subtitle": "Create a live photo wall for your event. Guests scan a QR code, snap photos, and watch them appear on the big screen instantly.",
+      "hostLabel": "Hosting",
+      "hostHint": "Create your event, get a QR code, and project the live wall in minutes.",
+      "guestLabel": "Joining",
+      "guestHint": "Got an event code? Jump in immediately and start sharing photos.",
       "hostEvent": "Host an Event",
-      "joinWithCode": "Join with Code"
+      "joinWithCode": "Join with Code",
+      "trustFast": "Setup in under a minute",
+      "trustNoApp": "No app installation",
+      "trustRealtime": "Real-time gallery sync"
     },
     "features": {
       "title": "How it works",

@@ -1,13 +1,14 @@
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { getTranslations } from 'next-intl/server';
-import { Button } from "@/components/ui/button";
+import { getTranslations } from "next-intl/server";
+import { Camera, QrCode, Zap } from "lucide-react";
+import { DraggablePhotoCollage } from "@/components/landing/draggable-photo-collage";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { LiveDropLogo } from "@/components/livedrop-logo";
-import { DraggablePhotoCollage } from "@/components/landing/draggable-photo-collage";
-import Image from "next/image";
-import { Camera, Zap, QrCode } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
-import type { Metadata } from "next";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://livedrop.app";
 const OG_IMAGE =
@@ -37,7 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: OG_IMAGE,
           width: 1200,
           height: 630,
-          alt: "LiveDrop – Real-time event photo sharing",
+          alt: "LiveDrop - Real-time event photo sharing",
         },
       ],
       locale: "en_US",
@@ -145,6 +146,7 @@ async function LandingJsonLd() {
       "No app download required",
     ],
   };
+
   return (
     <script
       type="application/ld+json"
@@ -154,20 +156,20 @@ async function LandingJsonLd() {
 }
 
 export default async function Home() {
-  const t = await getTranslations('landing');
+  const t = await getTranslations("landing");
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  return (
-    <div className="min-h-screen bg-background text-foreground relative">
-      <LandingJsonLd />
-      {/* Shared dot-matrix background for the whole page */}
-      <div className="pointer-events-none fixed inset-0 opacity-45 bg-[radial-gradient(hsl(var(--foreground)/0.18)_1px,transparent_1px)] bg-size-[18px_18px] z-0" />
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-      {/* Hero Section */}
-      <header className="relative overflow-hidden z-10">
-        <div className="absolute inset-0 bg-linear-to-br from-accent/10 via-transparent to-primary/5 pointer-events-none" />
-        <div className="container mx-auto px-4 py-8 relative z-10">
+  return (
+    <div className="relative min-h-screen bg-background pb-28 text-foreground md:pb-0">
+      <LandingJsonLd />
+      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(hsl(var(--foreground)/0.18)_1px,transparent_1px)] bg-size-[18px_18px] opacity-45" />
+
+      <header className="relative z-10 overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-accent/10 via-transparent to-primary/5" />
+        <div className="container relative z-10 mx-auto px-4 py-8">
           <nav className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
               <LiveDropLogo />
@@ -176,15 +178,15 @@ export default async function Home() {
               <LanguageSwitcher />
               {user ? (
                 <Button size="sm" asChild>
-                  <Link href="/dashboard">{t('nav.dashboard')}</Link>
+                  <Link href="/dashboard">{t("nav.dashboard")}</Link>
                 </Button>
               ) : (
                 <>
                   <Button variant="ghost" size="sm" asChild>
-                    <Link href="/login">{t('nav.login')}</Link>
+                    <Link href="/login">{t("nav.login")}</Link>
                   </Button>
                   <Button size="sm" asChild>
-                    <Link href="/signup">{t('nav.getStarted')}</Link>
+                    <Link href="/signup">{t("nav.getStarted")}</Link>
                   </Button>
                 </>
               )}
@@ -192,30 +194,62 @@ export default async function Home() {
           </nav>
         </div>
 
-        <div className="container mx-auto px-4 pb-20 pt-16 md:pb-28 md:pt-20 relative z-10">
+        <div className="container relative z-10 mx-auto px-4 pb-20 pt-16 md:pb-28 md:pt-20">
           <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-            <div className="space-y-8 text-center lg:text-left">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-                <span className="text-primary">{t('hero.title1')}</span>
-                <br />
-                <span className="text-accent">{t('hero.title2')}</span>
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0">
-                {t('hero.subtitle')}
+            <div className="space-y-7 text-center lg:text-left">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent/90">
+                {t("hero.kicker")}
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                {user ? (
-                  <Button size="lg" className="w-full sm:w-auto" asChild>
-                    <Link href="/dashboard">{t('nav.dashboard')}</Link>
+              <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
+                <span className="text-primary">{t("hero.title1")}</span>
+                <br />
+                <span className="text-accent">{t("hero.title2")}</span>
+              </h1>
+              <p className="mx-auto max-w-xl text-lg text-muted-foreground md:text-xl lg:mx-0">
+                {t("hero.subtitle")}
+              </p>
+
+              <div className="grid gap-3 text-left sm:grid-cols-2">
+                <div className="rounded-2xl border border-border/70 bg-card/60 p-4 backdrop-blur-sm">
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-[0.15em] text-accent">
+                    {t("hero.hostLabel")}
+                  </p>
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    {t("hero.hostHint")}
+                  </p>
+                  {user ? (
+                    <Button size="lg" className="w-full" asChild>
+                      <Link href="/dashboard">{t("nav.dashboard")}</Link>
+                    </Button>
+                  ) : (
+                    <Button size="lg" className="w-full" asChild>
+                      <Link href="/signup">{t("hero.hostEvent")}</Link>
+                    </Button>
+                  )}
+                </div>
+
+                <div className="rounded-2xl border border-border/70 bg-card/40 p-4 backdrop-blur-sm">
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-[0.15em] text-accent">
+                    {t("hero.guestLabel")}
+                  </p>
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    {t("hero.guestHint")}
+                  </p>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-full bg-background/80 backdrop-blur-sm"
+                    asChild
+                  >
+                    <Link href="/join">{t("hero.joinWithCode")}</Link>
                   </Button>
-                ) : (
-                  <Button size="lg" className="w-full sm:w-auto" asChild>
-                    <Link href="/signup">{t('hero.hostEvent')}</Link>
-                  </Button>
-                )}
-                <Button size="lg" variant="outline" className="w-full sm:w-auto bg-background/80 backdrop-blur-sm" asChild>
-                  <Link href="/join">{t('hero.joinWithCode')}</Link>
-                </Button>
+                </div>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-3">
+                <TrustTag text={t("hero.trustFast")} />
+                <TrustTag text={t("hero.trustNoApp")} />
+                <TrustTag text={t("hero.trustRealtime")} />
               </div>
             </div>
 
@@ -227,89 +261,154 @@ export default async function Home() {
       </header>
 
       <main>
-      {/* Features Section */}
-      <section className="relative py-24 md:py-28 z-10" aria-labelledby="features-heading">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-6xl rounded-3xl border border-border/70 bg-card/55 p-6 shadow-[0_30px_80px_-50px_rgba(0,0,0,0.85)] backdrop-blur-sm md:p-10">
-            <h2 id="features-heading" className="text-2xl md:text-3xl font-bold text-center mb-10 md:mb-14">
-              {t('features.title')}
+        <section className="relative z-10 py-24 md:py-28" aria-labelledby="features-heading">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-6xl rounded-3xl border border-border/70 bg-card/55 p-6 shadow-[0_30px_80px_-50px_rgba(0,0,0,0.85)] backdrop-blur-sm md:p-10">
+              <h2 id="features-heading" className="mb-10 text-center text-2xl font-bold md:mb-14 md:text-3xl">
+                {t("features.title")}
+              </h2>
+              <div className="relative">
+                <div className="absolute left-20 right-20 top-5 hidden border-t border-dashed border-border/70 md:block" />
+                <div className="grid gap-5 md:grid-cols-3">
+                  <FeatureStep
+                    step="01"
+                    icon={<QrCode className="h-5 w-5" />}
+                    title={t("features.step1Title")}
+                    description={t("features.step1Desc")}
+                  />
+                  <FeatureStep
+                    step="02"
+                    icon={<Camera className="h-5 w-5" />}
+                    title={t("features.step2Title")}
+                    description={t("features.step2Desc")}
+                  />
+                  <FeatureStep
+                    step="03"
+                    icon={<Zap className="h-5 w-5" />}
+                    title={t("features.step3Title")}
+                    description={t("features.step3Desc")}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative z-10 py-24 md:py-28" aria-labelledby="use-cases-heading">
+          <div className="container mx-auto px-4">
+            <h2 id="use-cases-heading" className="mb-4 text-center text-2xl font-bold md:text-3xl">
+              {t("useCases.title")}
             </h2>
-            <div className="grid gap-5 md:grid-cols-3">
-              <FeatureCard
-                icon={<QrCode className="h-6 w-6" />}
-                title={t('features.step1Title')}
-                description={t('features.step1Desc')}
+            <p className="mx-auto mb-12 max-w-xl text-center text-muted-foreground">
+              {t("useCases.subtitle")}
+            </p>
+            <div className="mx-auto flex max-w-5xl flex-wrap justify-center gap-3">
+              <UseCaseTag
+                icon={
+                  <Image
+                    src="https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=ffdfbf&seed=Wedding"
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="rounded-full"
+                    unoptimized
+                  />
+                }
+                title={t("useCases.weddings")}
               />
-              <FeatureCard
-                icon={<Camera className="h-6 w-6" />}
-                title={t('features.step2Title')}
-                description={t('features.step2Desc')}
+              <UseCaseTag
+                icon={
+                  <Image
+                    src="https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=ffdfbf&seed=Conference"
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="rounded-full"
+                    unoptimized
+                  />
+                }
+                title={t("useCases.conferences")}
               />
-              <FeatureCard
-                icon={<Zap className="h-6 w-6" />}
-                title={t('features.step3Title')}
-                description={t('features.step3Desc')}
+              <UseCaseTag
+                icon={
+                  <Image
+                    src="https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=ffdfbf&seed=Party"
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="rounded-full"
+                    unoptimized
+                  />
+                }
+                title={t("useCases.parties")}
+              />
+              <UseCaseTag
+                icon={
+                  <Image
+                    src="https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=ffdfbf&seed=Meetup"
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="rounded-full"
+                    unoptimized
+                  />
+                }
+                title={t("useCases.meetups")}
               />
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Use Cases */}
-      <section className="relative py-24 md:py-28 z-10" aria-labelledby="use-cases-heading">
-        <div className="container mx-auto px-4">
-          <h2 id="use-cases-heading" className="text-2xl md:text-3xl font-bold text-center mb-4">
-            {t('useCases.title')}
-          </h2>
-          <p className="text-muted-foreground text-center mb-16 max-w-xl mx-auto">
-            {t('useCases.subtitle')}
-          </p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
-            <UseCaseCard icon={<Image src="https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=ffdfbf&seed=Wedding" alt="" width={40} height={40} className="rounded-full" unoptimized />} title={t('useCases.weddings')} />
-            <UseCaseCard icon={<Image src="https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=ffdfbf&seed=Conference" alt="" width={40} height={40} className="rounded-full" unoptimized />} title={t('useCases.conferences')} />
-            <UseCaseCard icon={<Image src="https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=ffdfbf&seed=Party" alt="" width={40} height={40} className="rounded-full" unoptimized />} title={t('useCases.parties')} />
-            <UseCaseCard icon={<Image src="https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=ffdfbf&seed=Meetup" alt="" width={40} height={40} className="rounded-full" unoptimized />} title={t('useCases.meetups')} />
+        <section className="relative z-10 py-24" aria-labelledby="cta-heading">
+          <div className="container mx-auto px-4">
+            <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl border border-border/70 bg-card px-6 py-14 text-center shadow-[0_30px_80px_-48px_rgba(0,0,0,0.85)] md:px-10">
+              <div className="pointer-events-none absolute -left-8 top-0 h-12 w-56 -rotate-3 rounded-b-3xl border-b border-border/60 bg-background/70" />
+              <div className="pointer-events-none absolute -right-10 bottom-0 h-12 w-64 rotate-2 rounded-t-3xl border-t border-border/60 bg-background/70" />
+
+              <h2 id="cta-heading" className="relative mb-4 text-2xl font-bold md:text-3xl">
+                {t("cta.title")}
+              </h2>
+              <p className="relative mx-auto mb-8 max-w-md text-muted-foreground">
+                {t("cta.subtitle")}
+              </p>
+              {user ? (
+                <Button size="lg" className="relative" asChild>
+                  <Link href="/dashboard">{t("nav.dashboard")}</Link>
+                </Button>
+              ) : (
+                <Button size="lg" className="relative" asChild>
+                  <Link href="/signup">{t("cta.button")}</Link>
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 relative z-10" aria-labelledby="cta-heading">
-        <div className="container mx-auto px-4">
-          <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl border border-border/70 bg-card px-6 py-14 text-center shadow-[0_30px_80px_-48px_rgba(0,0,0,0.85)] md:px-10">
-            <div className="pointer-events-none absolute -left-8 top-0 h-12 w-56 -rotate-3 rounded-b-3xl border-b border-border/60 bg-background/70" />
-            <div className="pointer-events-none absolute -right-10 bottom-0 h-12 w-64 rotate-2 rounded-t-3xl border-t border-border/60 bg-background/70" />
-
-            <h2 id="cta-heading" className="relative text-2xl md:text-3xl font-bold mb-4">
-              {t('cta.title')}
-            </h2>
-            <p className="relative text-muted-foreground mb-8 max-w-md mx-auto">
-              {t('cta.subtitle')}
-            </p>
-            {user ? (
-              <Button size="lg" className="relative" asChild>
-                <Link href="/dashboard">{t('nav.dashboard')}</Link>
-              </Button>
-            ) : (
-              <Button size="lg" className="relative" asChild>
-                <Link href="/signup">{t('cta.button')}</Link>
-              </Button>
-            )}
-          </div>
-        </div>
-      </section>
+        </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border/70 bg-card/35 py-8 relative z-10">
+      <div className="fixed inset-x-4 bottom-4 z-20 md:hidden">
+        <div className="grid grid-cols-2 gap-2 rounded-2xl border border-border/70 bg-card/85 p-2 shadow-[0_20px_36px_-24px_rgba(0,0,0,0.95)] backdrop-blur">
+          {user ? (
+            <Button size="sm" asChild>
+              <Link href="/dashboard">{t("nav.dashboard")}</Link>
+            </Button>
+          ) : (
+            <Button size="sm" asChild>
+              <Link href="/signup">{t("hero.hostEvent")}</Link>
+            </Button>
+          )}
+          <Button size="sm" variant="outline" className="bg-background/80" asChild>
+            <Link href="/join">{t("hero.joinWithCode")}</Link>
+          </Button>
+        </div>
+      </div>
+
+      <footer className="relative z-10 border-t border-border/70 bg-card/35 py-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <Link href="/" className="flex items-center">
               <LiveDropLogo iconClassName="h-8 w-8 rounded-xl" />
             </Link>
-            <p className="text-sm text-muted-foreground">
-              {t('footer.builtFor')}
-            </p>
+            <p className="text-sm text-muted-foreground">{t("footer.builtFor")}</p>
           </div>
         </div>
       </footer>
@@ -317,39 +416,54 @@ export default async function Home() {
   );
 }
 
-function FeatureCard({
-  icon,
-  title,
-  description,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}) {
+function TrustTag({ text }: { text: string }) {
   return (
-    <div className="group rounded-2xl border border-border/70 bg-background/70 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-[0_22px_40px_-30px_rgba(0,0,0,0.9)]">
-      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-accent/15 text-accent transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
-        {icon}
-      </div>
-      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
-      <p className="text-sm leading-6 text-muted-foreground">{description}</p>
+    <div className="rounded-full border border-border/70 bg-background/60 px-3 py-2 text-center text-xs font-medium text-muted-foreground">
+      {text}
     </div>
   );
 }
 
-function UseCaseCard({
+function FeatureStep({
+  step,
+  icon,
+  title,
+  description,
+}: {
+  step: string;
+  icon: ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <article className="group relative rounded-2xl border border-border/70 bg-background/70 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-[0_22px_40px_-30px_rgba(0,0,0,0.9)]">
+      <div className="mb-4 flex items-center gap-3">
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-accent/30 bg-accent/15 text-xs font-semibold tracking-[0.12em] text-accent">
+          {step}
+        </span>
+        <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-accent/15 text-accent transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
+          {icon}
+        </span>
+      </div>
+      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
+      <p className="text-sm leading-6 text-muted-foreground">{description}</p>
+    </article>
+  );
+}
+
+function UseCaseTag({
   icon,
   title,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card/65 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-[0_22px_40px_-32px_rgba(0,0,0,0.85)]">
-      <div className="pointer-events-none absolute right-0 top-0 h-16 w-16 translate-x-6 -translate-y-6 rounded-full bg-accent/12 blur-xl transition-opacity group-hover:opacity-100" />
-      <div className="relative flex items-center gap-3">
-        <div className="rounded-lg bg-accent/15 p-2 text-accent">{icon}</div>
-        <span className="font-medium">{title}</span>
+    <div className="group relative overflow-hidden rounded-full border border-border/70 bg-card/65 px-4 py-2.5 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_14px_30px_-22px_rgba(0,0,0,0.9)]">
+      <div className="pointer-events-none absolute right-0 top-0 h-12 w-12 translate-x-4 -translate-y-4 rounded-full bg-accent/12 blur-xl transition-opacity group-hover:opacity-100" />
+      <div className="relative flex items-center gap-2.5">
+        <div className="rounded-full bg-accent/15 p-1 text-accent">{icon}</div>
+        <span className="text-sm font-medium">{title}</span>
       </div>
     </div>
   );
