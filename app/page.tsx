@@ -7,6 +7,58 @@ import { DraggablePhotoCollage } from "@/components/landing/draggable-photo-coll
 import Image from "next/image";
 import { Camera, Zap, QrCode } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import type { Metadata } from "next";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://livedrop.app";
+const OG_IMAGE =
+  "https://images.pexels.com/photos/1024960/pexels-photo-1024960.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=1200&h=630&fit=crop";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("seo");
+  const title = t("homeTitle");
+  const description = t("homeDescription");
+  const keywords = t("homeKeywords");
+
+  return {
+    title: { absolute: title },
+    description,
+    keywords,
+    alternates: {
+      canonical: APP_URL,
+    },
+    openGraph: {
+      type: "website",
+      url: APP_URL,
+      siteName: "LiveDrop",
+      title,
+      description,
+      images: [
+        {
+          url: OG_IMAGE,
+          width: 1200,
+          height: 630,
+          alt: "LiveDrop – Real-time event photo sharing",
+        },
+      ],
+      locale: "en_US",
+      alternateLocale: ["zh_CN"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [OG_IMAGE],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+      },
+    },
+  };
+}
 
 const HERO_PHOTOS = [
   {
@@ -71,6 +123,36 @@ const HERO_PHOTOS = [
   },
 ];
 
+async function LandingJsonLd() {
+  const t = await getTranslations("seo");
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "LiveDrop",
+    description: t("homeDescription"),
+    url: APP_URL,
+    applicationCategory: "MultimediaApplication",
+    operatingSystem: "Web",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    featureList: [
+      "Real-time photo sharing at events",
+      "QR code based guest upload",
+      "Live projector/gallery view",
+      "No app download required",
+    ],
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
+
 export default async function Home() {
   const t = await getTranslations('landing');
   const supabase = await createClient();
@@ -78,6 +160,7 @@ export default async function Home() {
   
   return (
     <div className="min-h-screen bg-background text-foreground relative">
+      <LandingJsonLd />
       {/* Shared dot-matrix background for the whole page */}
       <div className="pointer-events-none fixed inset-0 opacity-45 bg-[radial-gradient(hsl(var(--foreground)/0.18)_1px,transparent_1px)] bg-size-[18px_18px] z-0" />
 
@@ -143,11 +226,12 @@ export default async function Home() {
         </div>
       </header>
 
+      <main>
       {/* Features Section */}
-      <section className="relative py-24 md:py-28 z-10">
+      <section className="relative py-24 md:py-28 z-10" aria-labelledby="features-heading">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-6xl rounded-3xl border border-border/70 bg-card/55 p-6 shadow-[0_30px_80px_-50px_rgba(0,0,0,0.85)] backdrop-blur-sm md:p-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 md:mb-14">
+            <h2 id="features-heading" className="text-2xl md:text-3xl font-bold text-center mb-10 md:mb-14">
               {t('features.title')}
             </h2>
             <div className="grid gap-5 md:grid-cols-3">
@@ -172,9 +256,9 @@ export default async function Home() {
       </section>
 
       {/* Use Cases */}
-      <section className="relative py-24 md:py-28 z-10">
+      <section className="relative py-24 md:py-28 z-10" aria-labelledby="use-cases-heading">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">
+          <h2 id="use-cases-heading" className="text-2xl md:text-3xl font-bold text-center mb-4">
             {t('useCases.title')}
           </h2>
           <p className="text-muted-foreground text-center mb-16 max-w-xl mx-auto">
@@ -190,13 +274,13 @@ export default async function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 relative z-10">
+      <section className="py-24 relative z-10" aria-labelledby="cta-heading">
         <div className="container mx-auto px-4">
           <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl border border-border/70 bg-card px-6 py-14 text-center shadow-[0_30px_80px_-48px_rgba(0,0,0,0.85)] md:px-10">
             <div className="pointer-events-none absolute -left-8 top-0 h-12 w-56 -rotate-3 rounded-b-3xl border-b border-border/60 bg-background/70" />
             <div className="pointer-events-none absolute -right-10 bottom-0 h-12 w-64 rotate-2 rounded-t-3xl border-t border-border/60 bg-background/70" />
 
-            <h2 className="relative text-2xl md:text-3xl font-bold mb-4">
+            <h2 id="cta-heading" className="relative text-2xl md:text-3xl font-bold mb-4">
               {t('cta.title')}
             </h2>
             <p className="relative text-muted-foreground mb-8 max-w-md mx-auto">
@@ -214,6 +298,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      </main>
 
       {/* Footer */}
       <footer className="border-t border-border/70 bg-card/35 py-8 relative z-10">

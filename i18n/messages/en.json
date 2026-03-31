@@ -1,4 +1,9 @@
 {
+  "seo": {
+    "homeTitle": "LiveDrop – Live Photos, Instant Memories | Real-Time Event Photo Sharing",
+    "homeDescription": "Create a live photo wall for your event. Guests scan a QR code, snap photos, and watch them appear on the big screen instantly. Perfect for weddings, conferences, parties, and meetups.",
+    "homeKeywords": "event photo sharing, live photo wall, QR code photos, wedding photos, event photography, real-time gallery, photo sharing app"
+  },
   "landing": {
     "nav": {
       "login": "Log in",
@@ -186,6 +191,7 @@
     "uploadSuccess": "{count} photo(s) uploaded",
     "uploadFailed": "Upload failed",
     "uploading": "Uploading...",
+    "uploadingCount": "Uploading {current} / {total}",
     "select": "Select",
     "download": "Download",
     "smartAlbum": "Smart Album",

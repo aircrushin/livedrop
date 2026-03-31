@@ -1,4 +1,9 @@
 {
+  "seo": {
+    "homeTitle": "LiveDrop – 实时照片，即时回忆 | 活动实时照片共享",
+    "homeDescription": "为您的活动创建实时照片墙。宾客扫描二维码拍照，照片即可在大屏幕上实时显示。适用于婚礼、会议、派对和聚会。",
+    "homeKeywords": "活动照片共享,实时照片墙,二维码拍照,婚礼照片,活动摄影,实时相册,照片共享应用"
+  },
   "landing": {
     "nav": {
       "login": "登录",
@@ -186,6 +191,7 @@
     "uploadSuccess": "已上传 {count} 张照片",
     "uploadFailed": "上传失败",
     "uploading": "上传中...",
+    "uploadingCount": "正在上传 {current} / {total}",
     "select": "选择",
     "download": "下载",
     "smartAlbum": "智能相册",
