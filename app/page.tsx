@@ -163,7 +163,7 @@ export default async function Home() {
   } = await supabase.auth.getUser();
 
   return (
-    <div className="relative min-h-screen bg-background pb-28 text-foreground md:pb-0">
+    <div className="dark relative min-h-screen bg-background pb-28 text-foreground md:pb-0">
       <LandingJsonLd />
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(hsl(var(--foreground)/0.18)_1px,transparent_1px)] bg-size-[18px_18px] opacity-45" />
 
