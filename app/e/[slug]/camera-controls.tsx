@@ -12,6 +12,7 @@ interface CameraControlsProps {
   fileCount: number;
   onCancel: () => void;
   onUpload: () => void;
+  onUploadAnother: () => void;
   onCameraClick: () => void;
   onGalleryClick: () => void;
 }
@@ -24,6 +25,7 @@ export function CameraControls({
   fileCount,
   onCancel,
   onUpload,
+  onUploadAnother,
   onCameraClick,
   onGalleryClick,
 }: CameraControlsProps) {
@@ -51,7 +53,7 @@ export function CameraControls({
           className="bg-accent text-accent-foreground hover:bg-accent/90"
         >
           <Upload className="h-6 w-6 mr-2" />
-          {fileCount > 1 ? t('uploadBatch', { count: fileCount }) : t('upload')}
+          {fileCount > 1 ? t('uploadBatchAction', { count: fileCount }) : t('uploadSingleAction')}
         </Button>
       </>
     );
@@ -66,36 +68,45 @@ export function CameraControls({
   }
 
   if (isSuccess) {
-    return null; // Success state is handled in PreviewArea
+    return (
+      <Button
+        size="lg"
+        onClick={onUploadAnother}
+        className="bg-accent text-accent-foreground hover:bg-accent/90"
+      >
+        <Camera className="h-5 w-5 mr-2" />
+        {t('uploadAnother')}
+      </Button>
+    );
   }
 
   return (
-    <>
+    <div className="grid grid-cols-2 gap-6">
       <button
-        onClick={onGalleryClick}
-        disabled={!isIdle}
-        className="h-14 w-14 rounded-full border-2 border-white/60 flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all disabled:opacity-50"
-      >
-        <ImagePlus className="h-6 w-6 text-white" />
-      </button>
-
-      <button
+        type="button"
         onClick={onCameraClick}
         disabled={!isIdle}
-        className="h-20 w-20 rounded-full border-4 border-white flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all disabled:opacity-50"
+        aria-label={t('cameraAction')}
+        className="flex flex-col items-center gap-3 disabled:opacity-50"
       >
-        <div className="h-14 w-14 rounded-full bg-white" />
+        <span className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-white/10">
+          <span className="h-14 w-14 rounded-full bg-white" />
+        </span>
+        <span className="text-sm font-medium text-white">{t('cameraAction')}</span>
       </button>
 
       <button
         onClick={onGalleryClick}
+        type="button"
         disabled={!isIdle}
-        className="h-14 w-14 rounded-full border-2 border-white/60 flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all disabled:opacity-50 md:hidden"
+        aria-label={t('galleryAction')}
+        className="flex flex-col items-center gap-3 disabled:opacity-50"
       >
-        <Camera className="h-6 w-6 text-white" />
+        <span className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-white/60 bg-white/10">
+          <ImagePlus className="h-7 w-7 text-white" />
+        </span>
+        <span className="text-sm font-medium text-white">{t('galleryAction')}</span>
       </button>
-
-      <div className="w-14 hidden md:block" />
-    </>
+    </div>
   );
 }

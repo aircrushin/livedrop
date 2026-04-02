@@ -28,6 +28,7 @@ export function CameraView({ event }: CameraViewProps) {
     handleCancel,
     handleRemoveFile,
     clearError,
+    resetAfterSuccess,
   } = useCameraView({ event });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -93,6 +94,7 @@ export function CameraView({ event }: CameraViewProps) {
           fileCount={pendingFiles.length}
           onCancel={handleCancel}
           onUpload={handleUpload}
+          onUploadAnother={resetAfterSuccess}
           onCameraClick={triggerCamera}
           onGalleryClick={triggerGallery}
         />

@@ -37,6 +37,7 @@ interface UseCameraViewReturn {
   handleCancel: () => void;
   handleRemoveFile: (id: string) => void;
   clearError: () => void;
+  resetAfterSuccess: () => void;
 }
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/heic", "image/heif"];
@@ -191,6 +192,15 @@ export function useCameraView({ event }: UseCameraViewProps): UseCameraViewRetur
     }
   }, [event.id, event.slug, supabase]);
 
+  const resetAfterSuccess = useCallback(() => {
+    pendingFiles.forEach((file) => URL.revokeObjectURL(file.previewUrl));
+    setPendingFiles([]);
+    setStatus("idle");
+    setProgress(0);
+    setOverallProgress(0);
+    setError("");
+  }, [pendingFiles]);
+
   const handleUpload = useCallback(async () => {
     if (pendingFiles.length === 0) return;
 
@@ -262,14 +272,6 @@ export function useCameraView({ event }: UseCameraViewProps): UseCameraViewRetur
         }
 
         setStatus("success");
-        // Reset after success
-        setTimeout(() => {
-          pendingFiles.forEach(f => URL.revokeObjectURL(f.previewUrl));
-          setPendingFiles([]);
-          setStatus("idle");
-          setProgress(0);
-          setOverallProgress(0);
-        }, 1500);
       } else if (successCount > 0) {
         if (isKickoffSource) {
           const storageKey = `kickoff-first-upload-${event.id}`;
@@ -285,14 +287,6 @@ export function useCameraView({ event }: UseCameraViewProps): UseCameraViewRetur
         // Partial success
         setStatus("success");
         setError(t('partialUpload', { success: successCount, total: totalFiles }));
-        setTimeout(() => {
-          pendingFiles.forEach(f => URL.revokeObjectURL(f.previewUrl));
-          setPendingFiles([]);
-          setStatus("idle");
-          setProgress(0);
-          setOverallProgress(0);
-          setError("");
-        }, 2000);
       } else {
         // All failed
         setStatus("error");
@@ -348,5 +342,6 @@ export function useCameraView({ event }: UseCameraViewProps): UseCameraViewRetur
     handleCancel,
     handleRemoveFile,
     clearError,
+    resetAfterSuccess,
   };
 }
