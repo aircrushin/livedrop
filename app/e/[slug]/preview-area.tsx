@@ -32,12 +32,15 @@ export function PreviewArea({
 
   if (pendingFiles.length === 0) {
     return (
-      <div className="text-center text-white/40 p-8">
-        <svg className="h-16 w-16 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-        <p className="text-lg">{t('prompt')}</p>
+      <div className="mx-auto max-w-sm px-8 text-center text-white">
+        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full border border-white/15 bg-white/5">
+          <svg className="h-10 w-10 text-white/55" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        <p className="text-xl font-semibold">{t('emptyTitle')}</p>
+        <p className="mt-2 text-sm leading-6 text-white/60">{t('emptySubtitle')}</p>
       </div>
     );
   }
@@ -61,31 +64,33 @@ export function PreviewArea({
         {canRemove && (
           <button
             onClick={() => onRemoveFile(file.id)}
-            className="absolute -top-3 -right-3 h-8 w-8 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center hover:bg-destructive/90 transition-colors"
+            className="absolute -top-3 -right-3 flex h-8 w-8 items-center justify-center rounded-full bg-destructive text-destructive-foreground transition-colors hover:bg-destructive/90"
           >
             <X className="h-4 w-4" />
           </button>
         )}
         
         {isUploading && (
-          <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center rounded-lg">
-            <Loader2 className="h-12 w-12 animate-spin text-white mb-4" />
-            <div className="w-48 h-2 bg-white/20 rounded-full overflow-hidden">
+          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-black/70">
+            <Loader2 className="mb-4 h-12 w-12 animate-spin text-white" />
+            <div className="h-2 w-48 overflow-hidden rounded-full bg-white/20">
               <div
                 className="h-full bg-accent transition-all duration-200"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-white/60 text-sm mt-2">{t('uploading')}</p>
+            <p className="mt-3 text-sm font-medium text-white">{t('uploading')}</p>
+            <p className="mt-1 text-xs text-white/60">{t('uploadingHint')}</p>
           </div>
         )}
         
         {isSuccess && (
-          <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center rounded-lg">
-            <div className="h-16 w-16 rounded-full bg-green-500 flex items-center justify-center mb-4">
+          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-black/70">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500">
               <Check className="h-8 w-8 text-white" />
             </div>
-            <p className="text-white font-medium">{t('uploadSuccess')}</p>
+            <p className="text-lg font-semibold text-white">{t('uploadSuccessTitle')}</p>
+            <p className="mt-1 text-sm text-white/70">{t('uploadSuccessSubtitle')}</p>
           </div>
         )}
 
@@ -117,16 +122,18 @@ export function PreviewArea({
               style={{ width: `${overallProgress}%` }}
             />
           </div>
+          <p className="mt-3 text-center text-xs text-white/60">{t('uploadingHint')}</p>
         </div>
       )}
 
       {/* Success overlay */}
       {isSuccess && (
-        <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center z-10">
-          <div className="h-16 w-16 rounded-full bg-green-500 flex items-center justify-center mb-4">
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/70">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500">
             <Check className="h-8 w-8 text-white" />
           </div>
-          <p className="text-white font-medium">{t('batchUploadSuccess', { count: pendingFiles.length })}</p>
+          <p className="text-lg font-semibold text-white">{t('uploadSuccessTitle')}</p>
+          <p className="mt-1 text-sm text-white/70">{t('uploadSuccessSubtitle')}</p>
         </div>
       )}
 
