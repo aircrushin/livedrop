@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LiveDropLogo } from "@/components/livedrop-logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Camera, ExternalLink, Edit2, Trash2, MoreVertical } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { SignOutButton } from "./sign-out-button";
@@ -43,6 +44,7 @@ export function DashboardClient({ events, userEmail }: DashboardClientProps) {
               <span className="text-sm text-muted-foreground hidden sm:block">
                 {userEmail}
               </span>
+              <ThemeToggle className="text-foreground hover:bg-secondary/50" />
               <SignOutButton />
             </div>
           </div>

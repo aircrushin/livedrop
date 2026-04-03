@@ -1,6 +1,10 @@
 import withSerwistInit from "@serwist/next";
 import type { NextConfig } from "next";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import createNextIntlPlugin from 'next-intl/plugin';
+
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
@@ -41,7 +45,9 @@ const nextConfig: NextConfig = {
     ],
   },
   // Use webpack for build (Serwist doesn't support Turbopack yet)
-  turbopack: {},
+  turbopack: {
+    root: projectRoot,
+  },
 };
 
 export default withSerwist(withNextIntl(nextConfig));

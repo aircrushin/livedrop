@@ -13,6 +13,7 @@ import { DownloadQRButton } from "./download-qr-button";
 import { StatisticsPanel } from "./statistics-panel";
 import { BrandingSettings } from "./branding-settings";
 import { EventStatusToggle } from "./event-status-toggle";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { getEventStatistics } from "@/lib/supabase/statistics";
 import { KickoffSettings } from "./kickoff-settings";
 import { canEditKickoff, getUserEventRole } from "@/lib/supabase/event-permissions";
@@ -82,24 +83,27 @@ export default async function EventManagePage({ params }: Props) {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/dashboard">
-                <ArrowLeft className="h-4 w-4" />
-              </Link>
-            </Button>
-            <div className="flex items-center gap-2">
-              <LiveDropLogo subtitle={event.name} iconClassName="h-8 w-8 rounded-xl" />
-              <span
-                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                  event.is_active
-                    ? "bg-emerald-500/15 text-emerald-500"
-                    : "bg-destructive/15 text-destructive"
-                }`}
-              >
-                {event.is_active ? t("eventOnline") : t("eventOffline")}
-              </span>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" asChild>
+                <Link href="/dashboard">
+                  <ArrowLeft className="h-4 w-4" />
+                </Link>
+              </Button>
+              <div className="flex items-center gap-2">
+                <LiveDropLogo subtitle={event.name} iconClassName="h-8 w-8 rounded-xl" />
+                <span
+                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                    event.is_active
+                      ? "bg-emerald-500/15 text-emerald-500"
+                      : "bg-destructive/15 text-destructive"
+                  }`}
+                >
+                  {event.is_active ? t("eventOnline") : t("eventOffline")}
+                </span>
+              </div>
             </div>
+            <ThemeToggle className="text-foreground hover:bg-secondary/50" />
           </div>
         </div>
       </header>

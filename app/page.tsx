@@ -7,6 +7,7 @@ import { Camera, QrCode, Zap } from "lucide-react";
 import { DraggablePhotoCollage } from "@/components/landing/draggable-photo-collage";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { LiveDropLogo } from "@/components/livedrop-logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
@@ -163,7 +164,7 @@ export default async function Home() {
   } = await supabase.auth.getUser();
 
   return (
-    <div className="dark relative min-h-screen bg-background pb-28 text-foreground md:pb-0">
+    <div className="relative min-h-screen bg-background pb-28 text-foreground md:pb-0">
       <LandingJsonLd />
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(hsl(var(--foreground)/0.18)_1px,transparent_1px)] bg-size-[18px_18px] opacity-45" />
 
@@ -176,6 +177,7 @@ export default async function Home() {
             </Link>
             <div className="flex items-center gap-4">
               <LanguageSwitcher />
+              <ThemeToggle className="text-foreground hover:bg-secondary/50" />
               {user ? (
                 <Button size="sm" asChild>
                   <Link href="/dashboard">{t("nav.dashboard")}</Link>
