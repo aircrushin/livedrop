@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LiveDropLogo } from "@/components/livedrop-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Camera, ExternalLink, Edit2, Trash2, MoreVertical } from "lucide-react";
+import { Camera, Radio, Edit2, Trash2, MoreVertical } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { SignOutButton } from "./sign-out-button";
 import { CreateEventModal } from "./create-event-modal";
@@ -107,7 +107,7 @@ export function DashboardClient({ events, userEmail }: DashboardClientProps) {
                     </Button>
                     <Button variant="secondary" size="sm" asChild>
                       <Link href={`/live/${event.slug}`} target="_blank">
-                        <ExternalLink className="h-4 w-4" />
+                        <Radio className="h-4 w-4" />
                       </Link>
                     </Button>
                   </div>
