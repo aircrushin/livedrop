@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { QrCode, Users, WifiOff, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trackKickoffEvent } from "@/lib/analytics/kickoff";
+import type { LiveDateFilter } from "@/lib/live-date-filter";
 import { createClient } from "@/lib/supabase/client";
 import { getKickoffMetrics } from "@/lib/supabase/kickoff-actions";
 import { normalizeKickoffConfig, shouldAutoSwitchToLive } from "@/lib/supabase/kickoff";
@@ -27,6 +28,8 @@ interface LiveDisplayProps {
   initialMode: DisplayMode;
   kickoffConfig: KickoffConfig;
   guestUrl: string;
+  liveDateFilter: LiveDateFilter | null;
+  forceLiveMode: boolean;
   branding: BrandingView;
   initialViewerCount: number;
   initialMetrics: KickoffMetrics | null;
@@ -62,6 +65,8 @@ export function LiveDisplay({
   initialMode,
   kickoffConfig,
   guestUrl,
+  liveDateFilter,
+  forceLiveMode,
   branding,
   initialViewerCount,
   initialMetrics,
@@ -82,6 +87,7 @@ export function LiveDisplay({
   );
 
   useEffect(() => {
+    if (forceLiveMode) return;
     if (displayMode !== "kickoff") return;
 
     const timer = setInterval(() => {
@@ -89,13 +95,14 @@ export function LiveDisplay({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [displayMode]);
+  }, [displayMode, forceLiveMode]);
 
   useEffect(() => {
+    if (forceLiveMode) return;
     if (displayMode !== "kickoff") return;
 
     trackKickoffEvent("kickoff_screen_viewed", { eventId: event.id });
-  }, [displayMode, event.id]);
+  }, [displayMode, event.id, forceLiveMode]);
 
   const refreshMetrics = useCallback(async () => {
     const result = await getKickoffMetrics(event.id);
@@ -110,6 +117,7 @@ export function LiveDisplay({
   }, [event.id]);
 
   useEffect(() => {
+    if (forceLiveMode) return;
     if (displayMode !== "kickoff") return;
 
     const timer = setInterval(() => {
@@ -117,7 +125,7 @@ export function LiveDisplay({
     }, 8000);
 
     return () => clearInterval(timer);
-  }, [displayMode, refreshMetrics]);
+  }, [displayMode, forceLiveMode, refreshMetrics]);
 
   useEffect(() => {
     const channel = supabase
@@ -131,7 +139,10 @@ export function LiveDisplay({
           filter: `id=eq.${event.id}`,
         },
         (payload: { new: { display_mode?: DisplayMode; kickoff_config?: Json | null } }) => {
-          if (payload.new?.display_mode === "kickoff" || payload.new?.display_mode === "live") {
+          if (
+            !forceLiveMode &&
+            (payload.new?.display_mode === "kickoff" || payload.new?.display_mode === "live")
+          ) {
             setDisplayModeState(payload.new.display_mode);
           }
 
@@ -151,9 +162,10 @@ export function LiveDisplay({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [event.id, supabase]);
+  }, [event.id, forceLiveMode, supabase]);
 
   useEffect(() => {
+    if (forceLiveMode) return;
     if (displayMode !== "kickoff") {
       autoTrackedRef.current = false;
       return;
@@ -176,10 +188,17 @@ export function LiveDisplay({
     }
 
     return () => clearTimeout(timer);
-  }, [currentKickoffConfig, displayMode, event.id, nowMs]);
+  }, [currentKickoffConfig, displayMode, event.id, forceLiveMode, nowMs]);
 
-  if (displayMode === "live") {
-    return <LiveGallery event={event} initialPhotos={initialPhotos} initialViewerCount={initialViewerCount} />;
+  if (forceLiveMode || displayMode === "live") {
+    return (
+      <LiveGallery
+        event={event}
+        initialPhotos={initialPhotos}
+        initialViewerCount={initialViewerCount}
+        liveDateFilter={liveDateFilter}
+      />
+    );
   }
 
   const title = currentKickoffConfig.title || event.name;

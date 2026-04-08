@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from 'next-intl';
 import { useBatchDownload } from "@/lib/hooks/use-batch-download";
+import type { LiveDateFilter } from "@/lib/live-date-filter";
 import { useLiveGallery } from "./use-live-gallery";
 import { GalleryHeader } from "./gallery-header";
 import { PhotoGrid } from "./photo-grid";
@@ -19,9 +20,10 @@ interface LiveGalleryProps {
   event: Pick<Event, "id" | "name" | "slug">;
   initialPhotos: PhotoWithLikes[];
   initialViewerCount: number;
+  liveDateFilter: LiveDateFilter | null;
 }
 
-export function LiveGallery({ event, initialPhotos, initialViewerCount }: LiveGalleryProps) {
+export function LiveGallery({ event, initialPhotos, initialViewerCount, liveDateFilter }: LiveGalleryProps) {
   const t = useTranslations('live');
   const [selectedPhoto, setSelectedPhoto] = useState<PhotoWithLikes | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("default");
@@ -43,7 +45,7 @@ export function LiveGallery({ event, initialPhotos, initialViewerCount }: LiveGa
     selectAll,
     deselectAll,
     togglePhotoSelection,
-  } = useLiveGallery({ event, initialPhotos, initialViewerCount });
+  } = useLiveGallery({ event, initialPhotos, initialViewerCount, dateFilter: liveDateFilter });
 
   const { isDownloading, downloadPhotos } = useBatchDownload({
     eventSlug: event.slug,

@@ -10,6 +10,7 @@ import { QRCodeDisplay } from "./qr-code-display";
 import { PhotoGrid } from "./photo-grid";
 import { CopyButton } from "./copy-button";
 import { DownloadQRButton } from "./download-qr-button";
+import { LiveWallLinkGenerator } from "./live-wall-link-generator";
 import { StatisticsPanel } from "./statistics-panel";
 import { BrandingSettings } from "./branding-settings";
 import { EventStatusToggle } from "./event-status-toggle";
@@ -164,13 +165,14 @@ export default async function EventManagePage({ params }: Props) {
                   {t('projectorDesc')}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <Button className="w-full" asChild>
                   <Link href={liveUrl} target="_blank">
                     <ExternalLink className="h-4 w-4 mr-2" />
                     {t('openLiveView')}
                   </Link>
                 </Button>
+                <LiveWallLinkGenerator liveUrl={liveUrl} />
               </CardContent>
             </Card>
 

@@ -2,6 +2,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { EventUnavailableState } from "@/components/event-unavailable-state";
+import { getLiveDateFilter } from "@/lib/live-date-filter";
 import { normalizeKickoffConfig, shouldAutoSwitchToLive } from "@/lib/supabase/kickoff";
 import { getKickoffMetrics } from "@/lib/supabase/kickoff-actions";
 import { LiveDisplay } from "./live-display";
@@ -9,6 +10,7 @@ import type { Event, Photo } from "@/lib/supabase/types";
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ date?: string | string[] }>;
 }
 
 export interface PhotoWithLikes extends Photo {
@@ -26,9 +28,10 @@ const LIVE_PHOTO_SELECT = `
   comments_count:photo_comments(count)
 `;
 
-export default async function LiveViewPage({ params }: Props) {
-  const { slug } = await params;
+export default async function LiveViewPage({ params, searchParams }: Props) {
+  const [{ slug }, { date }] = await Promise.all([params, searchParams]);
   const supabase = await createClient();
+  const liveDateFilter = getLiveDateFilter(date);
 
   const { data: eventData } = await supabase
     .from("events")
@@ -51,19 +54,29 @@ export default async function LiveViewPage({ params }: Props) {
 
   const kickoffConfig = normalizeKickoffConfig(event.kickoff_config);
   const initialMode =
-    kickoffConfig.enabled && !shouldAutoSwitchToLive(kickoffConfig)
+    liveDateFilter
+      ? "live"
+      : kickoffConfig.enabled && !shouldAutoSwitchToLive(kickoffConfig)
       ? event.display_mode
       : "live";
+
+  let photosQuery = supabase
+    .from("photos")
+    .select(LIVE_PHOTO_SELECT)
+    .eq("event_id", event.id)
+    .eq("is_visible", true)
+    .order("created_at", { ascending: false });
+
+  if (liveDateFilter) {
+    photosQuery = photosQuery
+      .gte("created_at", liveDateFilter.startUtc)
+      .lt("created_at", liveDateFilter.endUtc);
+  }
 
   const [locale, messages, photosResult, viewerResult, metricsResult] = await Promise.all([
     getLocale(),
     getMessages(),
-    supabase
-      .from("photos")
-      .select(LIVE_PHOTO_SELECT)
-      .eq("event_id", event.id)
-      .eq("is_visible", true)
-      .order("created_at", { ascending: false }),
+    photosQuery,
     supabase
       .from("event_viewers")
       .select("id", { count: "exact", head: true })
@@ -98,6 +111,8 @@ export default async function LiveViewPage({ params }: Props) {
         initialMode={initialMode}
         kickoffConfig={kickoffConfig}
         guestUrl={guestUrl}
+        liveDateFilter={liveDateFilter}
+        forceLiveMode={Boolean(liveDateFilter)}
         branding={{
           logoUrl: branding.logoUrl || null,
           primaryColor: branding.primaryColor || "#000000",

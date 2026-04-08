@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import type { LiveDateFilter } from "@/lib/live-date-filter";
+import { matchesLiveDateFilter } from "@/lib/live-date-filter";
 import { createClient } from "@/lib/supabase/client";
 import { useViewerTracking } from "@/lib/hooks/use-viewer-tracking";
 import type { Event } from "@/lib/supabase/types";
@@ -12,6 +14,7 @@ export interface UseLiveGalleryProps {
   event: Pick<Event, "id" | "name" | "slug">;
   initialPhotos: PhotoWithLikes[];
   initialViewerCount: number;
+  dateFilter: LiveDateFilter | null;
 }
 
 export interface UseLiveGalleryReturn {
@@ -46,7 +49,25 @@ const LIVE_PHOTO_SELECT = `
   comments_count:photo_comments(count)
 `;
 
-export function useLiveGallery({ event, initialPhotos, initialViewerCount }: UseLiveGalleryProps): UseLiveGalleryReturn {
+function mapPhotoWithCounts(photo: unknown): PhotoWithLikes {
+  const livePhoto = photo as PhotoWithLikes & {
+    likes_count?: [{ count: number }];
+    comments_count?: [{ count: number }];
+  };
+
+  return {
+    ...livePhoto,
+    likes_count: livePhoto.likes_count?.[0]?.count || 0,
+    comments_count: livePhoto.comments_count?.[0]?.count || 0,
+  };
+}
+
+export function useLiveGallery({
+  event,
+  initialPhotos,
+  initialViewerCount,
+  dateFilter,
+}: UseLiveGalleryProps): UseLiveGalleryReturn {
   const [photos, setPhotos] = useState<PhotoWithLikes[]>(initialPhotos);
   const [isConnected, setIsConnected] = useState(initialPhotos.length > 0);
   const [sortMode, setSortMode] = useState<SortMode>(() => {
@@ -147,19 +168,23 @@ export function useLiveGallery({ event, initialPhotos, initialViewerCount }: Use
   // Poll for photos every 5 seconds as a fallback
   useEffect(() => {
     const fetchPhotos = async () => {
-      const { data } = await supabase
+      let query = supabase
         .from("photos")
         .select(LIVE_PHOTO_SELECT)
         .eq("event_id", event.id)
         .eq("is_visible", true)
         .order("created_at", { ascending: false });
 
+      if (dateFilter) {
+        query = query
+          .gte("created_at", dateFilter.startUtc)
+          .lt("created_at", dateFilter.endUtc);
+      }
+
+      const { data } = await query;
+
       if (data) {
-        const photosWithCounts = data.map((photo) => ({
-          ...photo,
-          likes_count: (photo as unknown as { likes_count: [{ count: number }] }).likes_count?.[0]?.count || 0,
-          comments_count: (photo as unknown as { comments_count: [{ count: number }] }).comments_count?.[0]?.count || 0,
-        })) as PhotoWithLikes[];
+        const photosWithCounts = data.map(mapPhotoWithCounts);
         setPhotos(photosWithCounts);
         // Mark as connected once we have photos loaded
         if (photosWithCounts.length > 0) {
@@ -171,7 +196,7 @@ export function useLiveGallery({ event, initialPhotos, initialViewerCount }: Use
     void fetchPhotos();
     const interval = setInterval(fetchPhotos, 5000);
     return () => clearInterval(interval);
-  }, [event.id, supabase]);
+  }, [dateFilter, event.id, supabase]);
 
   // Fallback: mark as connected after 3 seconds if we have initial photos
   useEffect(() => {
@@ -197,7 +222,7 @@ export function useLiveGallery({ event, initialPhotos, initialViewerCount }: Use
         },
         (payload: { new: PhotoWithLikes }) => {
           const newPhoto = payload.new;
-          if (newPhoto.is_visible) {
+          if (newPhoto.is_visible && matchesLiveDateFilter(newPhoto.created_at, dateFilter)) {
             setPhotos((prev) => [
               { ...newPhoto, likes_count: 0, comments_count: 0 },
               ...prev,
@@ -216,7 +241,7 @@ export function useLiveGallery({ event, initialPhotos, initialViewerCount }: Use
         (payload: { new: PhotoWithLikes }) => {
           const updatedPhoto = payload.new;
           setPhotos((prev) => {
-            if (updatedPhoto.is_visible) {
+            if (updatedPhoto.is_visible && matchesLiveDateFilter(updatedPhoto.created_at, dateFilter)) {
               const exists = prev.find((p) => p.id === updatedPhoto.id);
               if (!exists) {
                 return [
@@ -328,7 +353,7 @@ export function useLiveGallery({ event, initialPhotos, initialViewerCount }: Use
       supabase.removeChannel(eventStatusChannel);
       supabase.removeChannel(viewersChannel);
     };
-  }, [event.id, event.slug, supabase, currentUserId]);
+  }, [dateFilter, event.id, event.slug, supabase, currentUserId]);
 
   const selectAll = () => {
     setSelectedPhotos(new Set(photos.map((p) => p.id)));
