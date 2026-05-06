@@ -7,6 +7,7 @@ import { Camera, QrCode, Zap } from "lucide-react";
 import { DraggablePhotoCollage } from "@/components/landing/draggable-photo-collage";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { LiveDropLogo } from "@/components/livedrop-logo";
+import { MobileNav } from "@/components/mobile-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
@@ -164,7 +165,7 @@ export default async function Home() {
   } = await supabase.auth.getUser();
 
   return (
-    <div className="relative min-h-screen bg-background pb-28 text-foreground md:pb-0">
+    <div className="relative min-h-screen bg-background text-foreground">
       <LandingJsonLd />
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(hsl(var(--foreground)/0.18)_1px,transparent_1px)] bg-size-[18px_18px] opacity-45" />
 
@@ -176,22 +177,33 @@ export default async function Home() {
               <LiveDropLogo />
             </Link>
             <div className="flex items-center gap-4">
-              <LanguageSwitcher />
-              <ThemeToggle className="text-foreground hover:bg-secondary/50" />
-              {user ? (
-                <Button size="sm" asChild>
-                  <Link href="/dashboard">{t("nav.dashboard")}</Link>
-                </Button>
-              ) : (
-                <>
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href="/login">{t("nav.login")}</Link>
-                  </Button>
+              <div className="hidden items-center gap-4 md:flex">
+                <LanguageSwitcher />
+                <ThemeToggle className="text-foreground hover:bg-secondary/50" />
+                {user ? (
                   <Button size="sm" asChild>
-                    <Link href="/signup">{t("nav.getStarted")}</Link>
+                    <Link href="/dashboard">{t("nav.dashboard")}</Link>
                   </Button>
-                </>
-              )}
+                ) : (
+                  <>
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link href="/login">{t("nav.login")}</Link>
+                    </Button>
+                    <Button size="sm" asChild>
+                      <Link href="/signup">{t("nav.getStarted")}</Link>
+                    </Button>
+                  </>
+                )}
+              </div>
+              <MobileNav
+                user={user}
+                translations={{
+                  dashboard: t("nav.dashboard"),
+                  login: t("nav.login"),
+                  getStarted: t("nav.getStarted"),
+                  joinWithCode: t("hero.joinWithCode"),
+                }}
+              />
             </div>
           </nav>
         </div>
@@ -386,23 +398,6 @@ export default async function Home() {
           </div>
         </section>
       </main>
-
-      <div className="fixed inset-x-4 bottom-4 z-20 md:hidden">
-        <div className="grid grid-cols-2 gap-2 rounded-2xl border border-border/70 bg-card/85 p-2 shadow-[0_20px_36px_-24px_rgba(0,0,0,0.95)] backdrop-blur">
-          {user ? (
-            <Button size="sm" asChild>
-              <Link href="/dashboard">{t("nav.dashboard")}</Link>
-            </Button>
-          ) : (
-            <Button size="sm" asChild>
-              <Link href="/signup">{t("hero.hostEvent")}</Link>
-            </Button>
-          )}
-          <Button size="sm" variant="outline" className="bg-background/80" asChild>
-            <Link href="/join">{t("hero.joinWithCode")}</Link>
-          </Button>
-        </div>
-      </div>
 
       <footer className="relative z-10 border-t border-border/70 bg-card/35 py-8">
         <div className="container mx-auto px-4">
