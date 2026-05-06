@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -21,9 +22,118 @@ type MobileNavProps = {
 export function MobileNav({ user, translations }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  const drawer = (
+    <div
+      className="fixed inset-0 z-[1000] md:hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menu"
+    >
+      <button
+        type="button"
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+        onClick={() => setIsOpen(false)}
+        aria-label="Close menu"
+      />
+      <div
+        className={cn(
+          "fixed inset-y-0 right-0 z-[1001] w-full max-w-xs bg-background shadow-2xl",
+          "animate-in slide-in-from-right duration-300"
+        )}
+      >
+        <div className="flex h-full flex-col">
+          <div className="flex items-center justify-between border-b border-border/70 p-4">
+            <span className="text-lg font-semibold">Menu</span>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-secondary"
+              aria-label="Close menu"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 rounded-lg border border-border/70 bg-card/60 p-3">
+                <LanguageSwitcher />
+                <span className="text-sm text-muted-foreground">Language</span>
+              </div>
+              <div className="flex items-center gap-3 rounded-lg border border-border/70 bg-card/60 p-3">
+                <ThemeToggle className="text-foreground hover:bg-secondary/50" />
+                <span className="text-sm text-muted-foreground">Theme</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-border/70 p-4">
+            <div className="space-y-2">
+              {user ? (
+                <>
+                  <Button className="w-full" asChild>
+                    <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                      {translations.dashboard}
+                    </Link>
+                  </Button>
+                  <Button variant="outline" className="w-full bg-background/80" asChild>
+                    <Link href="/join" onClick={() => setIsOpen(false)}>
+                      {translations.joinWithCode}
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button className="w-full" asChild>
+                    <Link href="/signup" onClick={() => setIsOpen(false)}>
+                      {translations.getStarted}
+                    </Link>
+                  </Button>
+                  <Button variant="outline" className="w-full bg-background/80" asChild>
+                    <Link href="/join" onClick={() => setIsOpen(false)}>
+                      {translations.joinWithCode}
+                    </Link>
+                  </Button>
+                  <Button variant="ghost" className="w-full" asChild>
+                    <Link href="/login" onClick={() => setIsOpen(false)}>
+                      {translations.login}
+                    </Link>
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <button
+        type="button"
         onClick={() => setIsOpen(true)}
         className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/70 bg-card/60 backdrop-blur-sm transition-colors hover:bg-card md:hidden"
         aria-label="Open menu"
@@ -31,83 +141,7 @@ export function MobileNav({ user, translations }: MobileNavProps) {
         <Menu className="h-5 w-5" />
       </button>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] md:hidden">
-          <div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm"
-            onClick={() => setIsOpen(false)}
-          />
-          <div
-            className={cn(
-              "fixed inset-y-0 right-0 z-[101] w-full max-w-xs bg-background shadow-2xl",
-              "animate-in slide-in-from-right duration-300"
-            )}
-          >
-            <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between border-b border-border/70 p-4">
-                <span className="text-lg font-semibold">Menu</span>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-secondary"
-                  aria-label="Close menu"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-4">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3 rounded-lg border border-border/70 bg-card/60 p-3">
-                    <LanguageSwitcher />
-                    <span className="text-sm text-muted-foreground">Language</span>
-                  </div>
-                  <div className="flex items-center gap-3 rounded-lg border border-border/70 bg-card/60 p-3">
-                    <ThemeToggle className="text-foreground hover:bg-secondary/50" />
-                    <span className="text-sm text-muted-foreground">Theme</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-t border-border/70 p-4">
-                <div className="space-y-2">
-                  {user ? (
-                    <>
-                      <Button className="w-full" asChild>
-                        <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                          {translations.dashboard}
-                        </Link>
-                      </Button>
-                      <Button variant="outline" className="w-full bg-background/80" asChild>
-                        <Link href="/join" onClick={() => setIsOpen(false)}>
-                          {translations.joinWithCode}
-                        </Link>
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button className="w-full" asChild>
-                        <Link href="/signup" onClick={() => setIsOpen(false)}>
-                          {translations.getStarted}
-                        </Link>
-                      </Button>
-                      <Button variant="outline" className="w-full bg-background/80" asChild>
-                        <Link href="/join" onClick={() => setIsOpen(false)}>
-                          {translations.joinWithCode}
-                        </Link>
-                      </Button>
-                      <Button variant="ghost" className="w-full" asChild>
-                        <Link href="/login" onClick={() => setIsOpen(false)}>
-                          {translations.login}
-                        </Link>
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {isOpen && typeof document !== "undefined" ? createPortal(drawer, document.body) : null}
     </>
   );
 }
