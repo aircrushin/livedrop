@@ -75,6 +75,18 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
+### CLI for Agents and Admin Tasks
+
+LiveDrop includes a JSON-friendly CLI for AI agents and local admin workflows:
+
+```bash
+pnpm cli doctor --json
+pnpm cli events list --json
+pnpm cli export event <slug-or-id> --json
+```
+
+The CLI requires `SUPABASE_SERVICE_ROLE_KEY` for admin database operations. See [`docs/CLI.md`](docs/CLI.md) for the full command list.
+
 ### 5. Build for Production
 
 ```bash

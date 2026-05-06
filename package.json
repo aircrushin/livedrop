@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "cli": "jiti cli/index.ts",
     "start": "next start",
     "lint": "eslint"
   },
@@ -43,6 +44,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "jiti": "^2.6.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
