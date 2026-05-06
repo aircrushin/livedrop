@@ -32,14 +32,14 @@ export function MobileNav({ user, translations }: MobileNavProps) {
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-[100] md:hidden">
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
           />
           <div
             className={cn(
-              "fixed inset-y-0 right-0 w-full max-w-xs bg-background shadow-xl",
+              "fixed inset-y-0 right-0 z-[101] w-full max-w-xs bg-background shadow-2xl",
               "animate-in slide-in-from-right duration-300"
             )}
           >
